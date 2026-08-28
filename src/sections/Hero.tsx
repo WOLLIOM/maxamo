@@ -36,14 +36,14 @@ export function Hero() {
       (navigator.maxTouchPoints > 0 && window.innerWidth < 900);
     setIsTouch(touch);
 
-    // SimaxScene has its own built-in "lite" mode (fewer particles, no
-    // shadows, lower dpr, frameloop="demand") that already targets touch /
-    // low-core devices — so phones should get the real scene too, just in
-    // that lighter mode, instead of falling back to the flat photo stage.
-    // Only bail out for reduced-motion or genuinely low-core devices.
+    // Phones/tablets always get the dedicated mobile stage: just the
+    // guitar, gyroscope-driven, far lighter than the full desktop scene.
+    // The full multi-object SimaxScene (with its own "lite" mode) is
+    // reserved for desktop/pointer devices so it stays visually rich there
+    // without dragging phone framerates down.
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const cores = navigator.hardwareConcurrency ?? 8;
-    setMountScene(!reduce && cores > 2);
+    setMountScene(!reduce && cores > 2 && !touch);
   }, []);
 
   const { scrollYProgress } = useScroll({

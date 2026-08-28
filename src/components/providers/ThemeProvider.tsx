@@ -27,8 +27,8 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = "simax-theme";
-/** Dark is the default so the site opens in its most cinematic state. */
-const DEFAULT_THEME: TimeOfDay = "night";
+/** Golden Hour is the default first-visit experience on every device. */
+const DEFAULT_THEME: TimeOfDay = "evening";
 
 function applyTheme(theme: TimeOfDay) {
   if (typeof document === "undefined") return;

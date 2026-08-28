@@ -16,12 +16,15 @@ export function ControlDock() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 
-  const shownTheme: TimeOfDay = mounted ? theme : "night";
+  const shownTheme: TimeOfDay = mounted ? theme : "evening";
   const shownAuto = mounted ? auto : false;
   const shownEnabled = mounted ? audio.enabled : false;
 
   return (
-    <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-[60] flex items-center gap-3 sm:right-5 lg:bottom-7 lg:right-7">
+    // Hidden on phones: the mobile bottom bar already covers primary actions,
+    // so this floating dock no longer stacks another overlay on top of it
+    // there. Desktop keeps both the theme cycle and ambient-sound toggle.
+    <div className="fixed bottom-7 right-7 z-[60] hidden items-center gap-3 lg:flex">
       <button
         onClick={cycle}
         aria-label={`Ambience: ${
