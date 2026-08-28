@@ -1,0 +1,257 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   SIMAX — Design tokens
+   All palettes are expressed as space-separated RGB channels so Tailwind can
+   apply <alpha-value>. Switching the [data-theme] attribute on <html> re-skins
+   the entire site; the 1.2s transitions make the time-of-day shift cinematic.
+
+   Palette language: black, deep cherry red (the red cherry guitar), gold,
+   silver. "night" is the primary/default mode — cinematic dark studio.
+   "evening" leans into a sunset/stage-light warmth. "morning" is a cooler
+   silver-light mode for contrast, not a literal daylight beige anymore.
+   ============================================================================ */
+
+:root,
+[data-theme="night"] {
+  --c-bg: 10 10 12;
+  --c-surface: 18 17 20;
+  --c-elevated: 27 25 30;
+  --c-ink: 238 236 233;
+  --c-muted: 172 168 164;
+  --c-faint: 112 108 106;
+  --c-line: 48 45 50;
+  --c-accent: 150 40 44;
+  --c-accent-soft: 186 78 68;
+  --c-gold: 176 150 100;
+  --c-silver: 176 182 190;
+
+  --grain-opacity: 0.05;
+  --glow: 70 20 20;
+  --shadow-color: 0 0 0;
+}
+
+[data-theme="evening"] {
+  --c-bg: 26 15 19;
+  --c-surface: 37 21 25;
+  --c-elevated: 49 29 33;
+  --c-ink: 245 232 224;
+  --c-muted: 196 158 146;
+  --c-faint: 150 110 100;
+  --c-line: 68 41 41;
+  --c-accent: 214 86 48;
+  --c-accent-soft: 232 140 90;
+  --c-gold: 220 168 98;
+  --c-silver: 198 180 168;
+
+  --grain-opacity: 0.06;
+  --glow: 255 140 70;
+  --shadow-color: 20 6 6;
+}
+
+[data-theme="morning"] {
+  --c-bg: 236 237 240;
+  --c-surface: 224 226 230;
+  --c-elevated: 247 248 249;
+  --c-ink: 20 20 24;
+  --c-muted: 84 86 92;
+  --c-faint: 140 142 148;
+  --c-line: 204 206 212;
+  --c-accent: 158 34 40;
+  --c-accent-soft: 196 90 84;
+  --c-gold: 160 132 74;
+  --c-silver: 150 154 160;
+
+  --grain-opacity: 0.03;
+  --glow: 224 226 232;
+  --shadow-color: 18 18 22;
+}
+
+* {
+  border-color: rgb(var(--c-line));
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: auto; /* Lenis handles smoothing */
+  overflow-x: clip;
+}
+
+body {
+  background-color: rgb(var(--c-bg));
+  color: rgb(var(--c-ink));
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+  max-width: 100%;
+  transition:
+    background-color 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 1200ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Colour + background transitions for the theme shift on common elements */
+body * {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: 900ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::selection {
+  background: rgb(var(--c-accent) / 0.9);
+  color: rgb(var(--c-bg));
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 300;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+/* ------------------------------ Scrollbar ------------------------------ */
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: rgb(var(--c-bg));
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--c-line));
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--c-faint));
+}
+
+/* --------------------------- Utility layer ----------------------------- */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .kicker {
+    font-family: var(--font-sans);
+    text-transform: uppercase;
+    letter-spacing: 0.42em;
+    font-size: 0.68rem;
+    color: rgb(var(--c-accent));
+    font-weight: 500;
+  }
+  .hairline {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgb(var(--c-line)),
+      transparent
+    );
+  }
+  .glass {
+    background: rgb(var(--c-elevated) / 0.55);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    backdrop-filter: blur(20px) saturate(1.2);
+    border: 1px solid rgb(var(--c-ink) / 0.06);
+  }
+  .ink-underline {
+    background-image: linear-gradient(rgb(var(--c-accent)), rgb(var(--c-accent)));
+    background-size: 0% 1px;
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    transition: background-size 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .ink-underline:hover {
+    background-size: 100% 1px;
+  }
+  .scrollbar-none {
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .mask-fade-y {
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent,
+      #000 12%,
+      #000 88%,
+      transparent
+    );
+  }
+}
+
+/* ------------------------- Cinematic film grain ------------------------ */
+.grain::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 9998;
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain-shift 0.6s steps(2) infinite;
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes wireframe-spin {
+  from {
+    transform: rotate3d(0.4, 1, 0.2, 0deg);
+  }
+  to {
+    transform: rotate3d(0.4, 1, 0.2, 360deg);
+  }
+}
+
+@keyframes grain-shift {
+  0% { transform: translate(0, 0); }
+  50% { transform: translate(-2%, 1%); }
+  100% { transform: translate(1%, -1%); }
+}
+
+/* ------------------------------ Cursor --------------------------------- */
+/* Hide the native cursor only on precise pointers where we render our own. */
+@media (pointer: fine) {
+  .custom-cursor-active,
+  .custom-cursor-active * {
+    cursor: none !important;
+  }
+}
+
+/* Respect reduced motion: disable non-essential animation everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .grain::after {
+    display: none;
+  }
+}
+
+/* Accessible focus ring */
+:focus-visible {
+  outline: 2px solid rgb(var(--c-accent));
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* Vertical writing mode for tategaki Japanese accents */
+.tategaki {
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  letter-spacing: 0.25em;
+}
