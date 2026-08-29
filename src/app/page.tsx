@@ -23,6 +23,7 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }}
       />
       <Hero />
+      <GalleryPreview />
       <Awards />
       <Certificates />
       <Story />
@@ -32,7 +33,6 @@ export default function HomePage() {
       <Music />
       <ProjectLinks />
       <HomeExperience />
-      <GalleryPreview />
       <Testimonials />
       <Newsletter />
       <FAQ />

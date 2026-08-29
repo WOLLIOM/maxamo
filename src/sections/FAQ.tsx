@@ -14,6 +14,8 @@ export function FAQ() {
     <section
       id="faq"
       aria-label="Frequently asked questions"
+      data-section="faq"
+      data-palette="teal"
       className="border-t border-line/50 bg-surface/20"
     >
       <div className="mx-auto max-w-3xl px-5 py-24 md:px-10 md:py-32">

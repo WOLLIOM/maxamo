@@ -1,176 +1,154 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Image from "next/image";
+import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
-import { certificates, type Certificate, type CertificateCategory } from "@/lib/site";
+import { certificates } from "@/lib/site";
 
-const categories: (CertificateCategory | "All")[] = [
-  "All",
-  "3D & Visualization",
-  "Design",
-  "Code & AI",
-  "Business & Marketing",
-];
+const CATEGORY_ORDER = ["3D & Design", "Development", "Data & AI", "Business"] as const;
 
-/** Tilts + lifts a card toward the cursor — the "3D collection" feel. */
-function CertCard({ cert, i, onOpen }: { cert: Certificate; i: number; onOpen: () => void }) {
-  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+// Each category gets its own accent so the grid reads at a glance instead
+// of being one uniform wall of cards.
+const CATEGORY_STYLE: Record<
+  (typeof CATEGORY_ORDER)[number],
+  { ring: string; dot: string; label: string }
+> = {
+  "3D & Design": { ring: "hover:border-accent/70", dot: "bg-accent", label: "text-accent" },
+  Development: { ring: "hover:border-[#7ee0c3]/70", dot: "bg-[#7ee0c3]", label: "text-[#7ee0c3]" },
+  "Data & AI": { ring: "hover:border-[#9fb4ff]/70", dot: "bg-[#9fb4ff]", label: "text-[#9fb4ff]" },
+  Business: { ring: "hover:border-[#e0b86a]/70", dot: "bg-[#e0b86a]", label: "text-[#e0b86a]" },
+};
 
-  function handleMove(e: React.MouseEvent<HTMLButtonElement>) {
-    const r = e.currentTarget.getBoundingClientRect();
-    const px = (e.clientX - r.left) / r.width - 0.5;
-    const py = (e.clientY - r.top) / r.height - 0.5;
-    setTilt({ x: py * -10, y: px * 12 });
-  }
-
-  return (
-    <Reveal delay={i} className="h-full">
-      <motion.button
-        type="button"
-        onClick={onOpen}
-        onMouseMove={handleMove}
-        onMouseLeave={() => setTilt({ x: 0, y: 0 })}
-        animate={{ rotateX: tilt.x, rotateY: tilt.y, scale: tilt.x || tilt.y ? 1.035 : 1 }}
-        transition={{ type: "spring", stiffness: 220, damping: 18 }}
-        style={{ transformStyle: "preserve-3d", perspective: 800 }}
-        className="glass group flex h-full w-full flex-col gap-3 rounded-2xl border border-line/60 p-5 text-left transition-colors hover:border-gold/50 focus-visible:border-gold/60 focus-visible:outline-none"
-      >
-        <span className="text-[0.6rem] uppercase tracking-wider2 text-gold/80">
-          {cert.category}
-        </span>
-        <span className="text-sm font-medium leading-snug text-ink">{cert.title}</span>
-        <span className="mt-auto flex items-center justify-between text-[0.62rem] uppercase tracking-wider2 text-faint">
-          <span>{cert.issuer}</span>
-          <span>{cert.date}</span>
-        </span>
-      </motion.button>
-    </Reveal>
-  );
-}
-
-function CertDetail({ cert, onBack }: { cert: Certificate; onBack: () => void }) {
-  const href = cert.pdfPage ? `${cert.pdf}#page=${cert.pdfPage}` : cert.pdf;
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -16 }}
-      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <button
-        type="button"
-        onClick={onBack}
-        className="mb-6 inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-wider2 text-faint transition-colors hover:text-gold"
-      >
-        ← Back to certificates
-      </button>
-
-      <div className="grid gap-6 lg:grid-cols-[1.1fr_1fr]">
-        <div className="overflow-hidden rounded-2xl border border-line/60 bg-surface/40">
-          <iframe
-            src={href}
-            title={cert.title}
-            className="h-[70vh] w-full min-h-[420px]"
-            loading="lazy"
-          />
-        </div>
-
-        <div className="glass flex flex-col gap-4 rounded-2xl border border-line/60 p-6">
-          <span className="text-[0.62rem] uppercase tracking-wider2 text-gold/80">
-            {cert.category}
-          </span>
-          <h3 className="font-serif text-2xl text-ink">{cert.title}</h3>
-          <p className="text-sm leading-relaxed text-faint">{cert.summary}</p>
-          <div className="flex flex-wrap gap-2">
-            {cert.skills.map((s) => (
-              <span
-                key={s}
-                className="rounded-full border border-line/60 px-3 py-1 text-[0.62rem] uppercase tracking-wider2 text-faint"
-              >
-                {s}
-              </span>
-            ))}
-          </div>
-          <div className="mt-auto flex items-center justify-between border-t border-line/40 pt-4 text-[0.62rem] uppercase tracking-wider2 text-faint">
-            <span>{cert.issuer}</span>
-            <span>{cert.date}</span>
-          </div>
-          <a
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-center text-[0.68rem] uppercase tracking-wider2 text-gold transition-opacity hover:opacity-70"
-          >
-            Open PDF in new tab ↗
-          </a>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+// A course whose subject is code gets a monospace / terminal treatment on
+// its card, since a serif "C++ Development" title looks odd next to a
+// language it's teaching you to write in a fixed-width font.
+const MONO_TITLES = new Set([
+  "C++ Development: Advanced Concepts, Lambda Expressions, and Best Practices",
+  "HTML, CSS, and JavaScript: Building the Web",
+  "Getting Started with Python for Finance",
+]);
 
 export function Certificates() {
-  const [active, setActive] = useState<CertificateCategory | "All">("All");
-  const [openId, setOpenId] = useState<string | null>(null);
-
-  const filtered = useMemo(
-    () => (active === "All" ? certificates : certificates.filter((c) => c.category === active)),
-    [active],
-  );
-  const openCert = certificates.find((c) => c.id === openId) ?? null;
+  const [active, setActive] = useState<number | null>(null);
+  const activeCert = active !== null ? certificates[active] : null;
 
   return (
     <section
       id="certificates"
       aria-label="Certificates"
+      data-cursor="heart"
+      data-section="certificates"
+      data-palette="pink"
       className="border-y border-line/60 bg-surface/20 py-16 md:py-20 scroll-mt-24"
     >
       <div className="mx-auto max-w-[1400px] px-5 md:px-10">
         <SectionHeading
           kicker="Always learning"
           title="Certificates"
-          lede="A collection spanning 3D & visualization, design, code & AI, and business — click any card for the full certificate."
+          lede="Coursework completed across 3D, architecture, code and creative tools. Tap any card to see the certificate."
         />
 
-        <AnimatePresence mode="wait">
-          {openCert ? (
-            <CertDetail key={openCert.id} cert={openCert} onBack={() => setOpenId(null)} />
-          ) : (
+        <div className="mt-10 flex flex-col gap-10">
+          {CATEGORY_ORDER.map((category) => {
+            const items = certificates
+              .map((c, i) => ({ ...c, i }))
+              .filter((c) => c.category === category);
+            if (items.length === 0) return null;
+            const style = CATEGORY_STYLE[category];
+
+            return (
+              <div key={category}>
+                <p className={`flex items-center gap-2 text-[0.62rem] uppercase tracking-ultra text-faint`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
+                  {category}
+                </p>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                  {items.map(({ i, ...c }, idx) => (
+                    <Reveal key={c.title} delay={idx} className="h-full">
+                      <button
+                        type="button"
+                        onClick={() => setActive(i)}
+                        className={`glass flex h-full w-full flex-col gap-2 rounded-2xl border border-line/60 p-5 text-left transition-colors duration-300 ${style.ring}`}
+                      >
+                        <span
+                          className={`text-sm leading-snug text-ink ${
+                            MONO_TITLES.has(c.title) ? "font-mono tracking-tight" : "font-medium"
+                          }`}
+                        >
+                          {MONO_TITLES.has(c.title) ? `> ${c.title}` : c.title}
+                        </span>
+                        <span className="mt-auto flex items-center justify-between text-[0.62rem] uppercase tracking-wider2 text-faint">
+                          <span>{c.issuer}</span>
+                          <span>{c.date}</span>
+                        </span>
+                      </button>
+                    </Reveal>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Detail popup -- shows the actual certificate image */}
+      <AnimatePresence>
+        {activeCert && (
+          <motion.div
+            className="fixed inset-0 z-[80] flex items-end justify-center p-4 md:items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <div
+              className="absolute inset-0 bg-bg/70 backdrop-blur-md"
+              onClick={() => setActive(null)}
+            />
             <motion.div
-              key="grid"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
+              role="dialog"
+              aria-modal="true"
+              aria-label={activeCert.title}
+              initial={{ y: 60, opacity: 0, scale: 0.98 }}
+              animate={{ y: 0, opacity: 1, scale: 1 }}
+              exit={{ y: 40, opacity: 0, scale: 0.98 }}
+              transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+              className="glass relative w-full max-w-lg overflow-hidden rounded-3xl p-6 md:p-8"
             >
-              <div className="mt-8 flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setActive(cat)}
-                    className={`rounded-full border px-4 py-1.5 text-[0.65rem] uppercase tracking-wider2 transition-colors ${
-                      active === cat
-                        ? "border-gold/70 bg-gold/10 text-gold"
-                        : "border-line/60 text-faint hover:text-ink"
-                    }`}
-                  >
-                    {cat}
-                  </button>
-                ))}
+              <button
+                onClick={() => setActive(null)}
+                aria-label="Close"
+                className="absolute right-5 top-5 z-10 flex h-12 w-12 min-h-12 min-w-12 items-center justify-center rounded-full border border-line bg-bg/70 text-ink backdrop-blur-sm transition-colors hover:text-accent"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
+                  <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" strokeWidth="1.5" />
+                </svg>
+              </button>
+
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-line/60 bg-white">
+                <Image
+                  src={activeCert.image}
+                  alt={`${activeCert.title} certificate`}
+                  fill
+                  sizes="(max-width: 640px) 100vw, 32rem"
+                  className="object-contain"
+                />
               </div>
 
-              <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {filtered.map((c, i) => (
-                  <CertCard key={c.id} cert={c} i={i} onOpen={() => setOpenId(c.id)} />
-                ))}
-              </div>
+              <span className="kicker mt-5 block">{activeCert.category}</span>
+              <h3 className="mt-2 font-serif text-xl text-ink md:text-2xl">
+                {activeCert.title}
+              </h3>
+              <p className="mt-2 text-[0.68rem] uppercase tracking-wider2 text-faint">
+                {activeCert.issuer} - {activeCert.date}
+              </p>
+
+              <p className="mt-4 text-sm leading-relaxed text-muted">{activeCert.blurb}</p>
             </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

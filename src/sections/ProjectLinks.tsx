@@ -17,6 +17,8 @@ export function ProjectLinks() {
   return (
     <section
       aria-label="More projects"
+      data-section="projects"
+      data-palette="blue"
       className="mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32"
     >
       <SectionHeading kicker="Elsewhere" title="More things I've built" align="center" />

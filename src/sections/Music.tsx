@@ -34,6 +34,8 @@ export function Music() {
   return (
     <section
       aria-label="Music"
+      data-section="music"
+      data-palette="teal"
       className="mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-36"
     >
       <audio

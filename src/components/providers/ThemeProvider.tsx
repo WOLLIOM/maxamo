@@ -27,7 +27,7 @@ interface ThemeContextValue {
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 const STORAGE_KEY = "simax-theme";
-/** Golden Hour is the default first-visit experience on every device. */
+/** Golden hour is the default look on first visit. */
 const DEFAULT_THEME: TimeOfDay = "evening";
 
 function applyTheme(theme: TimeOfDay) {
@@ -55,7 +55,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setThemeState(pref);
       applyTheme(pref);
     } else {
-      // No stored choice → dark default.
+      // No stored choice → golden-hour default.
       setAuto(false);
       setThemeState(DEFAULT_THEME);
       applyTheme(DEFAULT_THEME);

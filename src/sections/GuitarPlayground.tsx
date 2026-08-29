@@ -197,6 +197,8 @@ export function GuitarPlayground() {
     <section
       id="guitar"
       aria-label="Guitar corner"
+      data-section="guitar"
+      data-palette="warm"
       className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32"
     >
       <WireframeMotif
@@ -230,7 +232,7 @@ export function GuitarPlayground() {
           aria-label="Click for a fun fact about this guitar"
         >
           <RedStratViewer />
-          <span className="absolute bottom-3 right-3 rounded-full border border-line/60 bg-bg/70 px-3 py-1.5 text-[0.6rem] uppercase tracking-wider2 text-muted backdrop-blur-sm transition-colors group-hover:border-accent group-hover:text-accent">
+          <span className="absolute bottom-2 right-2 max-w-[calc(100%-1rem)] truncate rounded-full border border-line/60 bg-bg/70 px-2.5 py-1 text-[0.55rem] uppercase tracking-wider2 text-muted backdrop-blur-sm transition-colors group-hover:border-accent group-hover:text-accent sm:bottom-3 sm:right-3 sm:max-w-none sm:px-3 sm:py-1.5 sm:text-[0.6rem]">
             Click for a story
           </span>
         </button>

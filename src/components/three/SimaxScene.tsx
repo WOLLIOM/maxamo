@@ -188,15 +188,17 @@ function Atmosphere({
 }
 
 /**
- * Depth-only rig: the cluster still drifts toward camera on scroll, but no
- * longer rotates as one block on mouse move — each Piece now owns its own
- * hover reaction (see Piece below), so hovering one object never moves the
- * others.
+ * Scroll-driven depth only — the cluster no longer tilts as a whole
+ * toward the cursor. Each object now reacts individually on hover
+ * instead (see Piece below), which reads as a much more "3D" feel
+ * than the whole group swinging together.
  */
 function ParallaxRig({
+  gyro,
   progressRef,
   children,
 }: {
+  gyro: React.MutableRefObject<Look>;
   progressRef: ScrollProgressRef;
   children: React.ReactNode;
 }) {
@@ -205,6 +207,24 @@ function ParallaxRig({
   useFrame((_, delta) => {
     if (!group.current) return;
     const p = progressRef.current;
+    const damp = 1 - p * 0.35;
+    // Only device-tilt (mobile/tablet gyro) nudges the whole cluster now —
+    // desktop cursor movement no longer rotates it.
+    const targetX = gyro.current.x * 0.35 * damp;
+    const targetY = gyro.current.y * 0.4 * damp;
+    group.current.rotation.x = THREE.MathUtils.damp(
+      group.current.rotation.x,
+      THREE.MathUtils.clamp(targetX, -0.35, 0.35),
+      4,
+      delta,
+    );
+    group.current.rotation.y = THREE.MathUtils.damp(
+      group.current.rotation.y,
+      THREE.MathUtils.clamp(targetY, -0.55, 0.55),
+      4,
+      delta,
+    );
+    // Parallax depth: whole cluster drifts toward camera a little on scroll.
     group.current.position.z = THREE.MathUtils.damp(
       group.current.position.z,
       p * 1.2,
@@ -223,7 +243,6 @@ function Piece({
   float = true,
   depth = 1,
   progressRef,
-  hoverable = false,
   children,
 }: {
   position: [number, number, number];
@@ -233,72 +252,54 @@ function Piece({
   float?: boolean;
   depth?: number;
   progressRef?: ScrollProgressRef;
-  /** Desktop only: this single object tilts toward the cursor on hover —
-   *  the rest of the cluster stays put. */
-  hoverable?: boolean;
   children: React.ReactNode;
 }) {
   const offset = useRef<THREE.Group>(null);
-  const tiltGroup = useRef<THREE.Group>(null);
-  const hover = useRef<Look>({ x: 0, y: 0 });
+  const hoverGroup = useRef<THREE.Group>(null);
   const [hovered, setHovered] = useState(false);
 
   useFrame((_, delta) => {
-    if (offset.current && progressRef) {
-      const p = progressRef.current;
-      offset.current.position.z = THREE.MathUtils.damp(
-        offset.current.position.z,
-        p * depth * 1.8,
-        3,
-        delta,
-      );
-    }
-    if (hoverable && tiltGroup.current) {
-      tiltGroup.current.rotation.x = THREE.MathUtils.damp(
-        tiltGroup.current.rotation.x,
-        hover.current.x * 0.3,
+    if (!offset.current || !progressRef) return;
+    const p = progressRef.current;
+    offset.current.position.z = THREE.MathUtils.damp(
+      offset.current.position.z,
+      p * depth * 1.8,
+      3,
+      delta,
+    );
+
+    // Only the hovered piece perks up — a small lift + scale bump reads
+    // as genuinely 3D without the whole cluster swinging together.
+    if (hoverGroup.current) {
+      const targetScale = hovered ? 1.12 : 1;
+      const s = THREE.MathUtils.damp(hoverGroup.current.scale.x, targetScale, 6, delta);
+      hoverGroup.current.scale.setScalar(s);
+      hoverGroup.current.position.y = THREE.MathUtils.damp(
+        hoverGroup.current.position.y,
+        hovered ? 0.12 : 0,
         6,
         delta,
       );
-      tiltGroup.current.rotation.y = THREE.MathUtils.damp(
-        tiltGroup.current.rotation.y,
-        hover.current.y * 0.4,
-        6,
-        delta,
-      );
-      const targetScale = hovered ? 1.08 : 1;
-      const s = THREE.MathUtils.damp(tiltGroup.current.scale.x || 1, targetScale, 6, delta);
-      tiltGroup.current.scale.setScalar(s);
     }
   });
 
-  const handleMove = hoverable
-    ? (e: { uv?: THREE.Vector2 }) => {
-        if (!e.uv) return;
-        hover.current.x = e.uv.y * 2 - 1;
-        hover.current.y = e.uv.x * 2 - 1;
-      }
-    : undefined;
-
   const body = (
     <group
+      ref={hoverGroup}
       position={position}
       rotation={rotation}
       scale={scale}
       data-cursor="food"
-      onPointerOver={hoverable ? () => setHovered(true) : undefined}
-      onPointerOut={
-        hoverable
-          ? () => {
-              setHovered(false);
-              hover.current.x = 0;
-              hover.current.y = 0;
-            }
-          : undefined
-      }
-      onPointerMove={handleMove}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        setHovered(true);
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        setHovered(false);
+      }}
     >
-      <group ref={hoverable ? tiltGroup : undefined}>{children}</group>
+      {children}
     </group>
   );
 
@@ -322,6 +323,27 @@ function Scene({
   lite: boolean;
   progressRef: ScrollProgressRef;
 }) {
+  const gyro = useRef<Look>({ x: 0, y: 0 });
+
+  useEffect(() => {
+    let baseBeta: number | null = null;
+    let baseGamma: number | null = null;
+
+    function onOrient(e: DeviceOrientationEvent) {
+      const beta = e.beta ?? 0;
+      const gamma = e.gamma ?? 0;
+      if (baseBeta === null) {
+        baseBeta = beta;
+        baseGamma = gamma;
+      }
+      gyro.current.x = THREE.MathUtils.clamp((beta - (baseBeta ?? 0)) / 28, -1, 1);
+      gyro.current.y = THREE.MathUtils.clamp((gamma - (baseGamma ?? 0)) / 28, -1, 1);
+    }
+
+    window.addEventListener("deviceorientation", onOrient, { passive: true });
+    return () => window.removeEventListener("deviceorientation", onOrient);
+  }, []);
+
   return (
     <>
       <ScrollCamera progressRef={progressRef} lite={lite} />
@@ -349,7 +371,7 @@ function Scene({
         </>
       )}
 
-      <ParallaxRig progressRef={progressRef}>
+      <ParallaxRig gyro={gyro} progressRef={progressRef}>
         {/* Guitar -- the centerpiece, the red-cherry signature object. */}
         <Piece
           position={[0, 0, 0]}
@@ -359,7 +381,6 @@ function Scene({
           float={!lite}
           depth={0.6}
           progressRef={progressRef}
-          hoverable={!lite}
         >
           <RealGuitar scale={4.4} />
         </Piece>
@@ -372,7 +393,6 @@ function Scene({
           float={!lite}
           depth={2.1}
           progressRef={progressRef}
-          hoverable={!lite}
         >
           <VinylDisc lite={lite} />
         </Piece>
@@ -385,7 +405,6 @@ function Scene({
           float={!lite}
           depth={1.4}
           progressRef={progressRef}
-          hoverable={!lite}
         >
           <Planet />
         </Piece>
@@ -399,7 +418,6 @@ function Scene({
           float={!lite}
           depth={1.8}
           progressRef={progressRef}
-          hoverable={!lite}
         >
           <ArchBlock lite={lite} />
         </Piece>
@@ -413,7 +431,6 @@ function Scene({
           float={!lite}
           depth={2.2}
           progressRef={progressRef}
-          hoverable={!lite}
         >
           <CodeShape lite={lite} />
         </Piece>
@@ -532,16 +549,12 @@ export default function SimaxScene({
         inset: 0,
         width: "100%",
         height: "100%",
-        // Desktop only (this scene no longer mounts on touch devices):
-        // pointer events stay on so each object can catch its own hover,
-        // three.js raycasting only intercepts actual mesh surfaces so the
-        // page's CTAs/links underneath remain fully clickable.
-        pointerEvents: lite ? "none" : "auto",
+        pointerEvents: "none",
       }}
       frameloop={lite ? "demand" : "always"}
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);
-        gl.domElement.style.pointerEvents = lite ? "none" : "auto";
+        gl.domElement.style.pointerEvents = "none";
         gl.domElement.addEventListener(
           "webglcontextlost",
           (e) => e.preventDefault(),

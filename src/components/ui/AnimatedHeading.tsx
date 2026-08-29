@@ -8,10 +8,13 @@ const container: Variants = {
   visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
 };
 const word: Variants = {
-  hidden: { y: "110%" },
+  hidden: { y: "115%", rotate: 4, opacity: 0, filter: "blur(6px)" },
   visible: {
     y: "0%",
-    transition: { duration: 1, ease: [0.22, 1, 0.36, 1] },
+    rotate: 0,
+    opacity: 1,
+    filter: "blur(0px)",
+    transition: { duration: 1.05, ease: [0.22, 1, 0.36, 1] },
   },
 };
 

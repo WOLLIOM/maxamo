@@ -11,6 +11,7 @@ import {
 } from "framer-motion";
 import { Magnetic } from "@/components/ui/Magnetic";
 import { HeroMobileStage } from "@/components/hero/HeroMobileStage";
+import { shouldAutoLoad3D } from "@/lib/device";
 import { site } from "@/lib/site";
 
 const SimaxScene = dynamic(() => import("@/components/three/SimaxScene"), {
@@ -35,15 +36,10 @@ export function Hero() {
       window.matchMedia("(pointer: coarse)").matches ||
       (navigator.maxTouchPoints > 0 && window.innerWidth < 900);
     setIsTouch(touch);
-
-    // Phones/tablets always get the dedicated mobile stage: just the
-    // guitar, gyroscope-driven, far lighter than the full desktop scene.
-    // The full multi-object SimaxScene (with its own "lite" mode) is
-    // reserved for desktop/pointer devices so it stays visually rich there
-    // without dragging phone framerates down.
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const cores = navigator.hardwareConcurrency ?? 8;
-    setMountScene(!reduce && cores > 2 && !touch);
+    // Phone keeps the lighter guitar-only mobile stage (the full cluster
+    // scene was too heavy/laggy on touch devices) — desktop/laptop still
+    // gets the full SimaxScene.
+    setMountScene(shouldAutoLoad3D());
   }, []);
 
   const { scrollYProgress } = useScroll({
@@ -72,7 +68,10 @@ export function Hero() {
   return (
     <section
       ref={ref}
+      id="hero"
       aria-label="Introduction"
+      data-section="hero"
+      data-palette="gold"
       className="relative w-full"
       style={{ height: runway }}
     >
@@ -88,8 +87,10 @@ export function Hero() {
           }}
         />
 
-        {/* WebGL scene — never steals taps from the CTAs */}
-        <div className="pointer-events-none absolute inset-0 z-0">
+        {/* WebGL scene — the Canvas needs pointer events for the new
+            per-object hover effect; the CTAs/text sit in their own
+            pointer-events-none layers above so they still take priority. */}
+        <div className="absolute inset-0 z-0">
           {mountScene ? (
             <SimaxScene progressRef={progressRef} />
           ) : (
@@ -160,7 +161,7 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.55 }}
             className="mt-2 text-[0.72rem] uppercase tracking-wider2 text-accent md:text-sm"
           >
-            Simon Maxam
+            By Simon Maxam
           </motion.p>
 
           <motion.p
