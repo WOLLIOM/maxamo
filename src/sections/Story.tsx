@@ -9,6 +9,8 @@ export function Story() {
     <section
       id="story"
       aria-label="About Simon"
+      data-section="story"
+      data-palette="warm"
       className="relative mx-auto max-w-[1400px] px-5 py-24 scroll-mt-24 md:px-10 md:py-36"
     >
       <WireframeMotif
@@ -46,12 +48,12 @@ export function Story() {
 
           <Reveal delay={2}>
             <p className="mt-5 max-w-lg text-base leading-relaxed text-muted md:text-lg">
-              I&apos;m a multidisciplinary creator working across game
-              development, architecture, music and web development. Whether
-              it&apos;s building a space-exploration game in Unreal Engine,
-              designing a building in Revit, or playing guitar at church as a
-              volunteer musician, I&apos;m always chasing the same thing:
-              turning an idea into something you can actually step into.
+              Guitar is my main instrument — I play fingerstyle and lead
+              worship as a volunteer musician at church, and it&apos;s the
+              thread running through everything else I build, from web
+              projects to the studio itself. Whether I&apos;m on stage or at
+              a keyboard, I&apos;m always chasing the same thing: turning an
+              idea into something you can actually step into.
             </p>
           </Reveal>
 
@@ -73,29 +75,13 @@ export function Story() {
           </Reveal>
         </div>
 
-        <div className="order-1 grid grid-cols-2 gap-4 md:order-2">
-          <Reveal className="col-span-2">
+        <div className="order-1 md:order-2">
+          <Reveal>
             <Photo
               src="/images/real/guitar-performance.jpg"
               alt="Simon Maxam playing his red cherry acoustic guitar"
               label="Guitar — my main instrument"
-              className="aspect-[16/10]"
-            />
-          </Reveal>
-          <Reveal delay={1}>
-            <Photo
-              src="/images/generated/arch-blueprint-house.png"
-              alt="Architectural blueprint transforming into a rendered building"
-              label="Architecture"
-              className="aspect-square"
-            />
-          </Reveal>
-          <Reveal delay={2}>
-            <Photo
-              src="/images/real/solaris-earth-moon.png"
-              alt="Earth and the Moon seen from orbit in SOLARIS"
-              label="SOLARIS — game dev"
-              className="aspect-square"
+              className="aspect-[4/5] md:aspect-[3/4]"
             />
           </Reveal>
         </div>

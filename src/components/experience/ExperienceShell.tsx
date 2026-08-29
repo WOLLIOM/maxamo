@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { isTouchDevice } from "@/lib/device";
-import { Cursor } from "./Cursor";
+import { ReferenceParticleField } from "./ReferenceParticleField";
 import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
@@ -55,7 +55,7 @@ export function ExperienceShell() {
       <div className="grain pointer-events-none" aria-hidden />
       {ambience && <AmbientCanvas />}
       <ScrollComet />
-      {showCursor && <Cursor />}
+      {showCursor && <ReferenceParticleField />}
       <ControlDock />
       <MusicDock />
       {checked && showLoader && <Loader onDone={handleDone} />}

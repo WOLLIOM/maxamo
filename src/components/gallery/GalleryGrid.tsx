@@ -60,8 +60,8 @@ const shots: Shot[] = [
 
 const categories = ["All", ...Array.from(new Set(shots.map((s) => s.category)))];
 
-export function GalleryGrid() {
-  const [filter, setFilter] = useState("All");
+export function GalleryGrid({ initialFilter = "All" }: { initialFilter?: string }) {
+  const [filter, setFilter] = useState(initialFilter);
   const [open, setOpen] = useState<number | null>(null);
 
   const visible = shots

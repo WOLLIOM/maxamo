@@ -51,9 +51,9 @@ export function AmbientCanvas() {
     const pointer = { x: -9999, y: -9999, px: -9999, py: -9999, active: false };
 
     // ---- entity pools -----------------------------------------------------
-    const DUST = reduce ? 0 : mobile ? 14 : 70;
-    const RICE = reduce ? 0 : mobile ? 2 : 10;
-    const ROCKETS = reduce ? 0 : mobile ? 0 : 3;
+    const DUST = reduce ? 0 : mobile ? 9 : 46;
+    const RICE = reduce ? 0 : mobile ? 1 : 6;
+    const ROCKETS = reduce ? 0 : mobile ? 0 : 2;
 
     interface Dust { x: number; y: number; z: number; r: number; sx: number; sy: number; ph: number; }
     interface Rice { x: number; y: number; vx: number; vy: number; a: number; va: number; len: number; }

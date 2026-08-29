@@ -5,6 +5,7 @@ import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
+import { FlipLinkLabel } from "@/components/ui/FlipLink";
 import { StickyReserve } from "./StickyReserve";
 
 export function Nav() {
@@ -68,9 +69,9 @@ export function Nav() {
                 <Link
                   href={l.href}
                   prefetch={l.href.startsWith("/#") ? undefined : false}
-                  className="ink-underline text-[0.72rem] uppercase tracking-wider2 text-muted transition-colors hover:text-ink"
+                  className="group text-[0.72rem] uppercase tracking-wider2 text-muted transition-colors hover:text-ink"
                 >
-                  {l.label}
+                  <FlipLinkLabel>{l.label}</FlipLinkLabel>
                 </Link>
               </li>
             ))}

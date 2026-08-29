@@ -53,11 +53,27 @@ export function useGyroPermissionPrompt() {
     const DOE = DeviceOrientationEvent as unknown as DOE;
     if (typeof DOE.requestPermission !== "function") return;
 
+    let granted = false;
     const ask = () => {
-      DOE.requestPermission?.().catch(() => {});
-      window.removeEventListener("pointerdown", ask);
+      if (granted) return;
+      DOE.requestPermission?.()
+        .then((state) => {
+          if (state === "granted") {
+            granted = true;
+            window.removeEventListener("pointerdown", ask);
+            window.removeEventListener("touchstart", ask);
+          }
+        })
+        .catch(() => {});
     };
-    window.addEventListener("pointerdown", ask, { once: true, passive: true });
-    return () => window.removeEventListener("pointerdown", ask);
+    // Retry on every tap (not just the first) — a denied/dismissed prompt
+    // shouldn't permanently lock the visitor out of the tilt effect, and a
+    // tap anywhere on the page (not only the CTA buttons) should trigger it.
+    window.addEventListener("pointerdown", ask, { passive: true });
+    window.addEventListener("touchstart", ask, { passive: true });
+    return () => {
+      window.removeEventListener("pointerdown", ask);
+      window.removeEventListener("touchstart", ask);
+    };
   }, []);
 }

@@ -23,6 +23,8 @@ export function Newsletter() {
   return (
     <section
       aria-label="Newsletter"
+      data-section="newsletter"
+      data-palette="pink"
       className="border-y border-line/60 bg-surface/30 py-20 md:py-28"
     >
       <div className="mx-auto max-w-2xl px-5 text-center md:px-10">

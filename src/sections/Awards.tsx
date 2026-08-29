@@ -6,6 +6,8 @@ export function Awards() {
     <section
       id="awards"
       aria-label="Awards and recognition"
+      data-section="awards"
+      data-palette="blue"
       className="border-y border-line/60 bg-surface/30 py-16 md:py-20 scroll-mt-24"
     >
       <div className="mx-auto max-w-[1400px] px-5 md:px-10">
