@@ -39,11 +39,13 @@ export function FAQ() {
                       type="button"
                       onClick={() => setOpen(isOpen ? null : i)}
                       aria-expanded={isOpen}
-                      className="flex min-h-14 w-full items-center justify-between gap-6 py-5 text-left md:min-h-16"
+                      className="group flex min-h-14 w-full items-center justify-between gap-6 py-5 text-left transition-colors duration-300 md:min-h-16"
                     >
-                      <span className="font-serif text-lg text-ink md:text-2xl">{f.q}</span>
+                      <span className="font-serif text-lg text-ink transition-colors duration-300 group-hover:text-accent md:text-2xl">
+                        {f.q}
+                      </span>
                       <span
-                        className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line/60 text-accent transition-transform duration-500"
+                        className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line/60 text-accent transition-all duration-500 group-hover:border-accent/60"
                         style={{ transform: isOpen ? "rotate(45deg)" : "none" }}
                         aria-hidden
                       >

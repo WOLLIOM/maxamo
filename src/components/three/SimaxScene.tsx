@@ -256,6 +256,7 @@ function Piece({
 }) {
   const offset = useRef<THREE.Group>(null);
   const hoverGroup = useRef<THREE.Group>(null);
+  const wasHovered = useRef(false);
   const [hovered, setHovered] = useState(false);
 
   useFrame((_, delta) => {
@@ -268,18 +269,48 @@ function Piece({
       delta,
     );
 
-    // Only the hovered piece perks up — a small lift + scale bump reads
-    // as genuinely 3D without the whole cluster swinging together.
+    // The hovered piece pops toward the viewer, grows noticeably bigger,
+    // and keeps spinning slowly while hovered — reads as a genuinely
+    // present, "pick me up" 3D object rather than a flat hover tint.
     if (hoverGroup.current) {
-      const targetScale = hovered ? 1.12 : 1;
+      const targetScale = hovered ? 1.35 : 1;
       const s = THREE.MathUtils.damp(hoverGroup.current.scale.x, targetScale, 6, delta);
       hoverGroup.current.scale.setScalar(s);
       hoverGroup.current.position.y = THREE.MathUtils.damp(
         hoverGroup.current.position.y,
-        hovered ? 0.12 : 0,
+        hovered ? 0.18 : 0,
         6,
         delta,
       );
+      hoverGroup.current.position.z = THREE.MathUtils.damp(
+        hoverGroup.current.position.z,
+        hovered ? 0.9 : 0,
+        5,
+        delta,
+      );
+      if (hovered) {
+        hoverGroup.current.rotation.y += delta * 0.9;
+        wasHovered.current = true;
+      } else {
+        // The spin above can wind rotation.y many turns past the resting
+        // angle. Snap it to the closest equivalent angle the instant hover
+        // ends, so it settles back quickly instead of visibly "unwinding"
+        // for a second or two after the cursor has already left.
+        if (wasHovered.current) {
+          const twoPi = Math.PI * 2;
+          let diff = (hoverGroup.current.rotation.y - rotation[1]) % twoPi;
+          if (diff > Math.PI) diff -= twoPi;
+          if (diff < -Math.PI) diff += twoPi;
+          hoverGroup.current.rotation.y = rotation[1] + diff;
+          wasHovered.current = false;
+        }
+        hoverGroup.current.rotation.y = THREE.MathUtils.damp(
+          hoverGroup.current.rotation.y,
+          rotation[1],
+          4,
+          delta,
+        );
+      }
     }
   });
 
@@ -387,7 +418,7 @@ function Scene({
 
         {/* Vinyl / music production */}
         <Piece
-          position={[-2.35, 0.55, 0.1]}
+          position={[-3.15, 0.7, 0.1]}
           rotation={[0.1, 0.45, -0.05]}
           speed={1.1}
           float={!lite}
@@ -399,7 +430,7 @@ function Scene({
 
         {/* SOLARIS / space and game dev */}
         <Piece
-          position={[2.25, 0.35, -0.35]}
+          position={[3.05, 0.5, -0.35]}
           rotation={[0.08, -0.55, 0.08]}
           speed={1.2}
           float={!lite}
@@ -411,7 +442,7 @@ function Scene({
 
         {/* Architecture / Revit */}
         <Piece
-          position={[-1.15, -1.35, -0.55]}
+          position={[-1.55, -1.8, -0.55]}
           rotation={[0.15, 0.35, 0]}
           speed={1.35}
           scale={0.85}
@@ -424,7 +455,7 @@ function Scene({
 
         {/* Web development / code */}
         <Piece
-          position={[1.55, 1.45, -0.9]}
+          position={[2.1, 1.95, -0.9]}
           rotation={[0.35, -0.2, 0.15]}
           speed={1.15}
           scale={0.85}
@@ -549,7 +580,7 @@ export default function SimaxScene({
         inset: 0,
         width: "100%",
         height: "100%",
-        pointerEvents: "none",
+        pointerEvents: "auto",
       }}
       frameloop={lite ? "demand" : "always"}
       onCreated={({ gl }) => {

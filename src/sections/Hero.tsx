@@ -125,10 +125,12 @@ export function Hero() {
           }}
         />
 
-        {/* Stage 1 — brand + CTAs */}
+        {/* Stage 1 — brand + CTAs. pointer-events-none so it doesn't sit as
+            an invisible full-screen layer blocking hover on the 3D scene
+            underneath — only the CTA buttons re-enable pointer events. */}
         <motion.div
           style={{ y: contentY, opacity: contentOpacity, scale: contentScale }}
-          className="relative z-20 mx-auto flex h-full w-full max-w-5xl flex-col items-center px-6 text-center max-md:justify-end max-md:pb-28 max-md:pt-[46vh] md:justify-center"
+          className="pointer-events-none relative z-20 mx-auto flex h-full w-full max-w-5xl flex-col items-center px-6 text-center max-md:justify-end max-md:pb-28 max-md:pt-[46vh] md:justify-center"
         >
           <div
             aria-hidden
@@ -179,7 +181,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.9 }}
-            className="relative z-30 mt-6 flex w-full max-w-sm flex-col items-stretch gap-3 pb-4 sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5 md:mt-10 md:pb-0"
+            className="relative z-30 mt-6 flex w-full max-w-sm flex-col items-stretch gap-3 pb-4 pointer-events-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5 md:mt-10 md:pb-0"
           >
             <Cta href="/contact" primary magnetic={!isTouch}>
               Get in touch

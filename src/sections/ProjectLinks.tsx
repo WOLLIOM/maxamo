@@ -6,11 +6,11 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
  * Just swap the `href` (and label/desc if you want) for each — no other
  * code needs to change.
  */
-const links: { label: string; desc: string; href: string }[] = [
-  { label: "SIMAX", desc: "Premium Three.js / WebGL showcase", href: "https://wolliom.github.io/vite-threejs-premium/" },
-  { label: "MuseumVerse", desc: "Interactive museum experience", href: "https://wolliom.github.io/museumverse/" },
-  { label: "BarberVerse", desc: "Interactive barber shop experience", href: "https://wolliom.github.io/Barber/" },
-  { label: "Aurelio", desc: "Boutique hotel website", href: "https://wolliom.github.io/aurelio/" },
+const links: { label: string; desc: string; href: string; glow: string }[] = [
+  { label: "SIMAX", desc: "Premium Three.js / WebGL showcase", href: "https://wolliom.github.io/vite-threejs-premium/", glow: "bg-accent/15" },
+  { label: "MuseumVerse", desc: "Interactive museum experience", href: "https://wolliom.github.io/museumverse/", glow: "bg-[#9fb4ff]/15" },
+  { label: "BarberVerse", desc: "Interactive barber shop experience", href: "https://wolliom.github.io/Barber/", glow: "bg-[#e0b86a]/15" },
+  { label: "Aurelio", desc: "Boutique hotel website", href: "https://wolliom.github.io/aurelio/", glow: "bg-[#7ee0c3]/15" },
 ];
 
 export function ProjectLinks() {
@@ -47,7 +47,7 @@ export function ProjectLinks() {
               </span>
               <div
                 aria-hidden
-                className="pointer-events-none absolute -right-8 -top-8 h-24 w-24 rounded-full bg-accent/10 blur-2xl transition-opacity duration-500 group-hover:opacity-100 opacity-0"
+                className={`pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full ${l.glow} blur-2xl transition-all duration-500 group-hover:opacity-100 group-hover:scale-125 opacity-0`}
               />
             </a>
           </Reveal>

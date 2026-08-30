@@ -80,6 +80,7 @@ export function Nav() {
           <Link
             href="/contact"
             prefetch={false}
+            data-cursor-label="Say hello"
             className="inline-flex min-h-12 items-center justify-self-end rounded-full border border-ink/20 bg-elevated/40 px-4 py-3 text-[0.62rem] uppercase tracking-wider2 text-ink backdrop-blur-sm transition-all duration-500 hover:border-accent hover:text-accent lg:px-5 lg:text-[0.68rem]"
           >
             Contact

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { tracks } from "@/lib/tracks";
+import { PixelCluster } from "@/components/ui/PixelCluster";
 
 /**
  * A real, playable track list of Simon's own recordings — separate from the
@@ -36,8 +37,9 @@ export function Music() {
       aria-label="Music"
       data-section="music"
       data-palette="teal"
-      className="mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-36"
+      className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-36"
     >
+      <PixelCluster seed={5} className="absolute -right-4 top-8 hidden lg:block" />
       <audio
         ref={audioRef}
         onTimeUpdate={(e) => {
@@ -67,7 +69,9 @@ export function Music() {
                 <button
                   type="button"
                   onClick={() => toggle(track.id, track.src)}
-                  className="group relative flex w-full items-center gap-5 overflow-hidden py-5 text-left transition-colors hover:bg-surface/60"
+                  className={`group relative flex w-full items-center gap-5 overflow-hidden py-5 text-left transition-all duration-300 hover:bg-surface/60 hover:pl-2 ${
+                    isActive ? "bg-surface/40" : ""
+                  }`}
                 >
                   {/* progress fill */}
                   {isActive && (
@@ -82,13 +86,14 @@ export function Music() {
                     {String(i + 1).padStart(2, "0")}
                   </span>
 
-                  <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-ink transition-colors group-hover:border-ink/40">
+                  <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-ink transition-all duration-300 group-hover:border-ink/40 group-hover:scale-105 group-active:scale-95">
                     {isActive ? (
-                      // pause icon
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <rect x="2" y="1" width="3" height="10" fill="currentColor" />
-                        <rect x="7" y="1" width="3" height="10" fill="currentColor" />
-                      </svg>
+                      // animated equalizer bars while playing
+                      <span className="flex h-3 w-3 items-end justify-between gap-[2px]" aria-hidden>
+                        <span className="w-[2.5px] animate-eq-bar1 rounded-full bg-current" style={{ height: "100%" }} />
+                        <span className="w-[2.5px] animate-eq-bar2 rounded-full bg-current" style={{ height: "60%" }} />
+                        <span className="w-[2.5px] animate-eq-bar3 rounded-full bg-current" style={{ height: "80%" }} />
+                      </span>
                     ) : (
                       // play icon
                       <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
