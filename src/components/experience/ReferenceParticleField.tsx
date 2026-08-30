@@ -62,6 +62,22 @@ const HEART: [number, number][] = [
   [4, 6],
 ];
 
+// A square-ring "box" zone shape — same idea as HEART above, just a
+// different silhouette for sections where a heart doesn't fit the mood
+// (the guitar corner, project links, etc).
+const BOX: [number, number][] = (() => {
+  const pts: [number, number][] = [];
+  for (let i = 0; i <= 8; i++) {
+    pts.push([i, 0]);
+    pts.push([i, 8]);
+  }
+  for (let i = 1; i < 8; i++) {
+    pts.push([0, i]);
+    pts.push([8, i]);
+  }
+  return pts;
+})();
+
 export function ReferenceParticleField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -138,8 +154,9 @@ export function ReferenceParticleField() {
     let pmx = -1,
       pmy = -1,
       lastMove = -9,
-      cursorZone = "";
+      cursorZone: "" | "heart" | "box" = "";
     let wasHeart = false;
+    let wasBox = false;
     interface Spark {
       x: number;
       y: number;
@@ -253,16 +270,16 @@ export function ReferenceParticleField() {
       pacman(pacx, pacy, rad, ang, mouth, 0.72);
     }
 
-    function stampHeart(cx: number, cy: number) {
+    function stampShape(cx: number, cy: number, shape: [number, number][]) {
       const S = 2,
         bc = Math.round(cx / cell),
         br = Math.round(cy / cell),
         o = 4 * S;
-      for (let k = 0; k < HEART.length; k++) {
+      for (let k = 0; k < shape.length; k++) {
         for (let yy = 0; yy < S; yy++)
           for (let xx = 0; xx < S; xx++) {
-            const C = bc + HEART[k][0] * S + xx - o,
-              R = br + HEART[k][1] * S + yy - o;
+            const C = bc + shape[k][0] * S + xx - o,
+              R = br + shape[k][1] * S + yy - o;
             if (C < 0 || R < 0 || C >= cols || R >= rows) continue;
             const id = R * cols + C,
               w = 0.86 + 0.12 * Math.sin(C * 0.6 + R * 0.6 - t * 0.006);
@@ -271,7 +288,15 @@ export function ReferenceParticleField() {
       }
     }
 
-    function heartBoom(x: number, y: number) {
+    function stampHeart(cx: number, cy: number) {
+      stampShape(cx, cy, HEART);
+    }
+
+    function stampBox(cx: number, cy: number) {
+      stampShape(cx, cy, BOX);
+    }
+
+    function shapeBoom(x: number, y: number) {
       for (let i = 0; i < 16; i++) {
         const a = (i / 16) * 6.2832,
           sp = BRUSH * (0.7 + hsh(i, x) * 0.7);
@@ -279,8 +304,11 @@ export function ReferenceParticleField() {
       }
     }
 
-    function resolveHeartZone(target: Element | null): boolean {
-      return !!(target && target.closest('[data-cursor="heart"]'));
+    function resolveZone(target: Element | null): "" | "heart" | "box" {
+      if (!target) return "";
+      if (target.closest('[data-cursor="heart"]')) return "heart";
+      if (target.closest('[data-cursor="box"]')) return "box";
+      return "";
     }
 
     function onMove(e: PointerEvent) {
@@ -290,7 +318,7 @@ export function ReferenceParticleField() {
       my = e.clientY;
       hov = true;
       const target = document.elementFromPoint(mx, my);
-      cursorZone = resolveHeartZone(target) ? "heart" : "";
+      cursorZone = resolveZone(target);
     }
     window.addEventListener("pointermove", onMove);
 
@@ -299,7 +327,7 @@ export function ReferenceParticleField() {
       lastMove = performance.now() / 1000;
       pacOn = false;
       const target = document.elementFromPoint(mx, my);
-      cursorZone = resolveHeartZone(target) ? "heart" : "";
+      cursorZone = resolveZone(target);
     }
     window.addEventListener("scroll", onScroll, { passive: true });
 
@@ -367,13 +395,22 @@ export function ReferenceParticleField() {
       }
 
       if (hov && mx > 0 && cursorZone === "heart") {
-        if (!wasHeart) heartBoom(mx, my);
+        if (!wasHeart) shapeBoom(mx, my);
         stampHeart(mx, my);
         pmx = mx;
         pmy = my;
         wasHeart = true;
+        wasBox = false;
+      } else if (hov && mx > 0 && cursorZone === "box") {
+        if (!wasBox) shapeBoom(mx, my);
+        stampBox(mx, my);
+        pmx = mx;
+        pmy = my;
+        wasBox = true;
+        wasHeart = false;
       } else {
         if (wasHeart) wasHeart = false;
+        if (wasBox) wasBox = false;
         if (hov && mx > 0 && !cursorZone) {
           const idle = ns - lastMove;
           if (idle > 1.5) {
@@ -410,7 +447,11 @@ export function ReferenceParticleField() {
           continue;
         }
         const pw = wv.pow || 1,
-          R = age * Math.hypot(W, H) * 1.7,
+          // Explosion reach now scales with how "charged" the click was —
+          // a quick tap stays local, only a held-down or double-click
+          // press sends a ring all the way across the viewport.
+          maxR = Math.min(Math.hypot(W, H), 200 + pw * 480),
+          R = (age / 1.5) * maxR,
           sig = cell * 5.5 * pw,
           amp = Math.max(0, 1 - age / 1.5) * 1.2 * pw,
           inv = 1 / (2 * sig * sig);

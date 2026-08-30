@@ -2,6 +2,7 @@ import { Hero } from "@/sections/Hero";
 import { Awards } from "@/sections/Awards";
 import { Certificates } from "@/sections/Certificates";
 import { Story } from "@/sections/Story";
+import { ProcessSpectrum } from "@/sections/ProcessSpectrum";
 import { Signature } from "@/sections/Signature";
 import { GuitarPlayground } from "@/sections/GuitarPlayground";
 import { Music } from "@/sections/Music";
@@ -23,16 +24,18 @@ export default function HomePage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }}
       />
       <Hero />
+      <Story />
       <GalleryPreview />
       <Awards />
       <Certificates />
-      <Story />
-      <TextMarquee />
+      <ProcessSpectrum />
+      <TextMarquee text="THE ANSWER IS YES WE DO IT · THE ANSWER IS YES WE DO IT ·" />
       <Signature />
       <GuitarPlayground />
       <Music />
       <ProjectLinks />
       <HomeExperience />
+      <TextMarquee />
       <Testimonials />
       <Newsletter />
       <FAQ />

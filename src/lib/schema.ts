@@ -11,7 +11,7 @@ export function personSchema() {
     description: site.description,
     url: site.url,
     email: site.email || undefined,
-    image: [`${site.url}/og.jpg`],
+    image: [`${site.url}/og.jpg`, `${site.url}/images/real/guitar-performance.webp`],
     sameAs: [site.social.instagram, site.social.youtube, site.social.linkedin, site.social.github].filter(
       Boolean
     ),

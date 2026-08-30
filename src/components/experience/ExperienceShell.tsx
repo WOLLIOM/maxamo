@@ -8,6 +8,7 @@ import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
 import { ScrollComet } from "./ScrollComet";
+import { HalftonePanel } from "@/components/ui/HalftonePanel";
 
 // Ambient particles are nice but expensive — load after the shell is ready.
 const AmbientCanvas = dynamic(() => import("./AmbientCanvas").then((m) => m.AmbientCanvas), {
@@ -54,6 +55,12 @@ export function ExperienceShell() {
     <>
       <div className="grain pointer-events-none" aria-hidden />
       {ambience && <AmbientCanvas />}
+      {showCursor && (
+        <>
+          <HalftonePanel side="left" />
+          <HalftonePanel side="right" />
+        </>
+      )}
       <ScrollComet />
       {showCursor && <ReferenceParticleField />}
       <ControlDock />

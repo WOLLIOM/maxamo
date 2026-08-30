@@ -66,6 +66,7 @@ export const awards = [
 // category so related certificates sit beside each other on the page.
 export const certificates: {
   title: string;
+  shortTitle: string;
   image: string;
   issuer: string;
   date: string;
@@ -74,6 +75,7 @@ export const certificates: {
 }[] = [
   {
     title: "Revit to Unreal for Architecture, Visualization, and VR",
+    shortTitle: "Revit to Unreal Certificate",
     image: "/certificates/revit-to-unreal.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -83,6 +85,7 @@ export const certificates: {
   },
   {
     title: "Revit 2023: Essential Training for MEP",
+    shortTitle: "Revit MEP Certificate",
     image: "/certificates/revit-2023-mep.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -91,6 +94,7 @@ export const certificates: {
   },
   {
     title: "Unreal: Introduction to Lighting",
+    shortTitle: "Unreal Lighting Certificate",
     image: "/certificates/unreal-lighting.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -99,6 +103,7 @@ export const certificates: {
   },
   {
     title: "Blender 4.0 Essential Training",
+    shortTitle: "Blender Certificate",
     image: "/certificates/blender-4.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -107,6 +112,7 @@ export const certificates: {
   },
   {
     title: "Essential Skills in Adobe Illustrator 2025",
+    shortTitle: "Illustrator Certificate",
     image: "/certificates/adobe-illustrator.png",
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
@@ -115,6 +121,7 @@ export const certificates: {
   },
   {
     title: "Essential Skills in Adobe Photoshop 2025",
+    shortTitle: "Photoshop Certificate",
     image: "/certificates/adobe-photoshop.png",
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
@@ -123,6 +130,7 @@ export const certificates: {
   },
   {
     title: "Essential Skills in Adobe Premiere Pro 2025",
+    shortTitle: "Premiere Pro Certificate",
     image: "/certificates/adobe-premiere.png",
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
@@ -131,6 +139,7 @@ export const certificates: {
   },
   {
     title: "HTML, CSS, and JavaScript: Building the Web",
+    shortTitle: "Web Development Certificate",
     image: "/certificates/html-css-js.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -139,6 +148,7 @@ export const certificates: {
   },
   {
     title: "C++ Development: Advanced Concepts, Lambda Expressions, and Best Practices",
+    shortTitle: "C++ Certificate",
     image: "/certificates/cpp-advanced.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -147,6 +157,7 @@ export const certificates: {
   },
   {
     title: "Artificial Intelligence Foundations: Machine Learning",
+    shortTitle: "Machine Learning Certificate",
     image: "/certificates/ai-foundations-ml.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -155,6 +166,7 @@ export const certificates: {
   },
   {
     title: "AI Agents for Cybersecurity",
+    shortTitle: "AI Cybersecurity Certificate",
     image: "/certificates/ai-agents-cybersecurity.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -163,6 +175,7 @@ export const certificates: {
   },
   {
     title: "Prompt Engineering: How to Talk to the AIs",
+    shortTitle: "Prompt Engineering Certificate",
     image: "/certificates/prompt-engineering.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -171,6 +184,7 @@ export const certificates: {
   },
   {
     title: "Career Essentials in Data Analysis by Microsoft and LinkedIn",
+    shortTitle: "Data Analysis Certificate",
     image: "/certificates/data-analysis-microsoft.png",
     issuer: "LinkedIn Learning · Microsoft",
     date: "Aug 2026",
@@ -179,6 +193,7 @@ export const certificates: {
   },
   {
     title: "Data Analytics for Business Professionals",
+    shortTitle: "Data Analytics Certificate",
     image: "/certificates/data-analytics-business.png",
     issuer: "LinkedIn Learning · IIBA",
     date: "Aug 2026",
@@ -187,6 +202,7 @@ export const certificates: {
   },
   {
     title: "Getting Started with Python for Finance",
+    shortTitle: "Python for Finance Certificate",
     image: "/certificates/python-finance.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
@@ -195,6 +211,7 @@ export const certificates: {
   },
   {
     title: "Advanced SEO: Developing an SEO-Friendly Website",
+    shortTitle: "SEO Certificate",
     image: "/certificates/advanced-seo.png",
     issuer: "LinkedIn Learning",
     date: "Jul 2026",
@@ -203,6 +220,7 @@ export const certificates: {
   },
   {
     title: "Project Management Foundations",
+    shortTitle: "Project Management Certificate",
     image: "/certificates/project-management.png",
     issuer: "LinkedIn Learning · PMI",
     date: "Aug 2026",
@@ -211,6 +229,7 @@ export const certificates: {
   },
   {
     title: "Solution Sales",
+    shortTitle: "Solution Sales Certificate",
     image: "/certificates/solution-sales.png",
     issuer: "LinkedIn Learning",
     date: "Aug 2026",

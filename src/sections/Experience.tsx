@@ -33,20 +33,63 @@ export function Experience() {
         />
 
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {experiences.map((exp, i) => (
-            <button
-              key={exp.name}
-              onClick={() => setSelected(i)}
-              className="glass group relative flex flex-col items-start gap-3 overflow-hidden rounded-3xl border border-line/60 p-6 text-left transition-all duration-500 hover:border-accent/60"
-            >
-              <span className="kicker text-accent">{exp.seat}</span>
-              <h3 className="font-serif text-2xl text-ink">{exp.name}</h3>
-              <p className="text-sm leading-relaxed text-muted">{exp.summary}</p>
-              <span className="mt-2 text-[0.65rem] uppercase tracking-wider2 text-faint transition-colors group-hover:text-accent">
-                View details →
-              </span>
-            </button>
-          ))}
+          {experiences.map((exp, i) => {
+            const palette: Record<
+              string,
+              { border: string; glow: string; kickerHover: string; textHover: string }
+            > = {
+              music: {
+                border: "hover:border-[#7ee0c3]/60",
+                glow: "bg-[#7ee0c3]/15",
+                kickerHover: "group-hover:text-[#7ee0c3]",
+                textHover: "group-hover:text-[#7ee0c3]",
+              },
+              architecture: {
+                border: "hover:border-[#9fb4ff]/60",
+                glow: "bg-[#9fb4ff]/15",
+                kickerHover: "group-hover:text-[#9fb4ff]",
+                textHover: "group-hover:text-[#9fb4ff]",
+              },
+              solaris: {
+                border: "hover:border-[#e0b86a]/60",
+                glow: "bg-[#e0b86a]/15",
+                kickerHover: "group-hover:text-[#e0b86a]",
+                textHover: "group-hover:text-[#e0b86a]",
+              },
+            };
+            const p =
+              palette[exp.id] ?? {
+                border: "hover:border-accent/60",
+                glow: "bg-accent/15",
+                kickerHover: "group-hover:text-accent",
+                textHover: "group-hover:text-accent",
+              };
+            return (
+              <button
+                key={exp.name}
+                onClick={() => setSelected(i)}
+                className={`glass group relative flex flex-col items-start gap-3 overflow-hidden rounded-3xl border border-line/60 p-6 text-left transition-all duration-500 hover:-translate-y-1.5 ${p.border}`}
+              >
+                <div
+                  aria-hidden
+                  className={`pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full ${p.glow} blur-2xl opacity-0 transition-all duration-500 group-hover:opacity-100 group-hover:scale-125`}
+                />
+                <span className={`kicker relative z-10 transition-colors duration-300 ${p.kickerHover}`}>
+                  {exp.seat}
+                </span>
+                <h3 className="relative z-10 font-serif text-2xl text-ink">{exp.name}</h3>
+                <p className="relative z-10 text-sm leading-relaxed text-muted">{exp.summary}</p>
+                <span
+                  className={`relative z-10 mt-2 flex items-center gap-1 text-[0.65rem] uppercase tracking-wider2 text-faint transition-colors ${p.textHover}`}
+                >
+                  View details
+                  <span aria-hidden className="inline-block transition-transform duration-500 group-hover:translate-x-1">
+                    →
+                  </span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

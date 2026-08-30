@@ -6,29 +6,59 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { certificates } from "@/lib/site";
+import { PixelCluster } from "@/components/ui/PixelCluster";
 
 const CATEGORY_ORDER = ["3D & Design", "Development", "Data & AI", "Business"] as const;
 
-// Each category gets its own accent so the grid reads at a glance instead
-// of being one uniform wall of cards.
+// Each category gets its own permanent gradient background + glow, so the
+// grid reads at a glance instead of being one uniform wall of cards — and
+// the color doesn't wait for a hover to show up.
 const CATEGORY_STYLE: Record<
   (typeof CATEGORY_ORDER)[number],
-  { ring: string; dot: string; label: string }
+  { gradient: string; dot: string; label: string; titleGlow: string; border: string }
 > = {
-  "3D & Design": { ring: "hover:border-accent/70", dot: "bg-accent", label: "text-accent" },
-  Development: { ring: "hover:border-[#7ee0c3]/70", dot: "bg-[#7ee0c3]", label: "text-[#7ee0c3]" },
-  "Data & AI": { ring: "hover:border-[#9fb4ff]/70", dot: "bg-[#9fb4ff]", label: "text-[#9fb4ff]" },
-  Business: { ring: "hover:border-[#e0b86a]/70", dot: "bg-[#e0b86a]", label: "text-[#e0b86a]" },
+  "3D & Design": {
+    gradient: "from-accent/20 via-accent/5 to-transparent",
+    dot: "bg-accent",
+    label: "text-accent",
+    titleGlow: "text-accent [text-shadow:0_0_18px_rgba(196,162,96,0.55)]",
+    border: "border-accent/30",
+  },
+  Development: {
+    gradient: "from-[#7ee0c3]/20 via-[#7ee0c3]/5 to-transparent",
+    dot: "bg-[#7ee0c3]",
+    label: "text-[#7ee0c3]",
+    titleGlow: "text-[#7ee0c3] [text-shadow:0_0_18px_rgba(126,224,195,0.55)]",
+    border: "border-[#7ee0c3]/30",
+  },
+  "Data & AI": {
+    gradient: "from-[#9fb4ff]/20 via-[#9fb4ff]/5 to-transparent",
+    dot: "bg-[#9fb4ff]",
+    label: "text-[#9fb4ff]",
+    titleGlow: "text-[#9fb4ff] [text-shadow:0_0_18px_rgba(159,180,255,0.55)]",
+    border: "border-[#9fb4ff]/30",
+  },
+  Business: {
+    gradient: "from-[#e0b86a]/20 via-[#e0b86a]/5 to-transparent",
+    dot: "bg-[#e0b86a]",
+    label: "text-[#e0b86a]",
+    titleGlow: "text-[#e0b86a] [text-shadow:0_0_18px_rgba(224,184,106,0.55)]",
+    border: "border-[#e0b86a]/30",
+  },
 };
 
-// A course whose subject is code gets a monospace / terminal treatment on
-// its card, since a serif "C++ Development" title looks odd next to a
-// language it's teaching you to write in a fixed-width font.
-const MONO_TITLES = new Set([
-  "C++ Development: Advanced Concepts, Lambda Expressions, and Best Practices",
-  "HTML, CSS, and JavaScript: Building the Web",
-  "Getting Started with Python for Finance",
-]);
+// Courses whose issuer/tooling is a well-known brand (Adobe, Microsoft) get a
+// small colored badge next to the issuer line so they stand out from the
+// generic LinkedIn Learning listings.
+const BRAND_BADGE: Record<string, { label: string; className: string }> = {
+  Adobe: { label: "Adobe", className: "bg-[#FF0000]/15 text-[#ff5c5c] border border-[#FF0000]/30" },
+  Microsoft: { label: "Microsoft", className: "bg-[#00A4EF]/15 text-[#5fc4ff] border border-[#00A4EF]/30" },
+};
+
+function brandBadgeFor(issuer: string) {
+  const brand = Object.keys(BRAND_BADGE).find((b) => issuer.includes(b));
+  return brand ? BRAND_BADGE[brand] : null;
+}
 
 export function Certificates() {
   const [active, setActive] = useState<number | null>(null);
@@ -41,8 +71,16 @@ export function Certificates() {
       data-cursor="heart"
       data-section="certificates"
       data-palette="pink"
-      className="border-y border-line/60 bg-surface/20 py-16 md:py-20 scroll-mt-24"
+      className="relative border-y border-line/60 bg-surface/20 py-16 md:py-20 scroll-mt-24"
     >
+      <PixelCluster
+        seed={3}
+        className="absolute -left-6 top-24 hidden lg:block"
+      />
+      <PixelCluster
+        seed={9}
+        className="absolute -right-6 bottom-16 hidden lg:block"
+      />
       <div className="mx-auto max-w-[1400px] px-5 md:px-10">
         <SectionHeading
           kicker="Always learning"
@@ -64,28 +102,44 @@ export function Certificates() {
                   <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
                   {category}
                 </p>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                  {items.map(({ i, ...c }, idx) => (
-                    <Reveal key={c.title} delay={idx} className="h-full">
-                      <button
-                        type="button"
-                        onClick={() => setActive(i)}
-                        className={`glass flex h-full w-full flex-col gap-2 rounded-2xl border border-line/60 p-5 text-left transition-colors duration-300 ${style.ring}`}
-                      >
-                        <span
-                          className={`text-sm leading-snug text-ink ${
-                            MONO_TITLES.has(c.title) ? "font-mono tracking-tight" : "font-medium"
-                          }`}
+                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {items.map(({ i, ...c }, idx) => {
+                    const badge = brandBadgeFor(c.issuer);
+                    return (
+                      <Reveal key={c.title} delay={idx} className="h-full">
+                        <button
+                          type="button"
+                          onClick={() => setActive(i)}
+                          className={`group relative flex h-full min-h-[132px] w-full flex-col gap-3 overflow-hidden rounded-2xl border ${style.border} bg-gradient-to-br ${style.gradient} p-6 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:brightness-110`}
                         >
-                          {MONO_TITLES.has(c.title) ? `> ${c.title}` : c.title}
-                        </span>
-                        <span className="mt-auto flex items-center justify-between text-[0.62rem] uppercase tracking-wider2 text-faint">
-                          <span>{c.issuer}</span>
-                          <span>{c.date}</span>
-                        </span>
-                      </button>
-                    </Reveal>
-                  ))}
+                          <span
+                            aria-hidden
+                            className="absolute right-4 top-4 translate-x-1 text-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
+                          >
+                            →
+                          </span>
+                          <span
+                            className={`text-base font-bold leading-snug pr-6 md:text-lg ${style.titleGlow}`}
+                          >
+                            {c.shortTitle}
+                          </span>
+                          <span className="mt-auto flex items-center justify-between text-[0.62rem] uppercase tracking-wider2 text-faint">
+                            <span className="flex items-center gap-1.5">
+                              {c.issuer}
+                              {badge && (
+                                <span
+                                  className={`rounded-full px-1.5 py-0.5 text-[0.55rem] font-semibold tracking-wide ${badge.className}`}
+                                >
+                                  {badge.label}
+                                </span>
+                              )}
+                            </span>
+                            <span>{c.date}</span>
+                          </span>
+                        </button>
+                      </Reveal>
+                    );
+                  })}
                 </div>
               </div>
             );

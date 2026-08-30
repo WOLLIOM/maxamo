@@ -199,6 +199,7 @@ export function GuitarPlayground() {
       aria-label="Guitar corner"
       data-section="guitar"
       data-palette="warm"
+      data-cursor="box"
       className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32"
     >
       <WireframeMotif

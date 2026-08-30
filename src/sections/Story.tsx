@@ -2,6 +2,7 @@ import { Reveal } from "@/components/ui/Reveal";
 import { AnimatedHeading } from "@/components/ui/AnimatedHeading";
 import { Photo } from "@/components/ui/Photo";
 import { WireframeMotif } from "@/components/ui/WireframeMotif";
+import { PixelSmiley } from "@/components/ui/PixelSmiley";
 import { site } from "@/lib/site";
 
 export function Story() {
@@ -73,14 +74,45 @@ export function Story() {
               ))}
             </dl>
           </Reveal>
+
+          <Reveal delay={4}>
+            <div className="mt-10 grid gap-8 border-t border-line/60 pt-8 sm:grid-cols-2">
+              <div
+                data-cursor-mood="happy"
+                className="flex flex-col items-start gap-3"
+              >
+                <PixelSmiley mood="happy" className="h-11 w-11" />
+                <div className="font-mono text-[0.68rem] uppercase tracking-wider2 text-gold">
+                  Brilliant at
+                </div>
+                <p className="text-sm leading-relaxed text-muted">
+                  Producing a lot of work quickly, and getting a rough first
+                  version of almost anything in front of you.
+                </p>
+              </div>
+              <div
+                data-cursor-mood="sad"
+                className="flex flex-col items-start gap-3"
+              >
+                <PixelSmiley mood="sad" className="h-11 w-11" />
+                <div className="font-mono text-[0.68rem] uppercase tracking-wider2 text-accent">
+                  Hopeless at
+                </div>
+                <p className="text-sm leading-relaxed text-muted">
+                  Knowing which of those versions is actually any good, and
+                  having the nerve to throw the rest away.
+                </p>
+              </div>
+            </div>
+          </Reveal>
         </div>
 
         <div className="order-1 md:order-2">
           <Reveal>
             <Photo
-              src="/images/real/guitar-performance.jpg"
-              alt="Simon Maxam playing his red cherry acoustic guitar"
-              label="Guitar — my main instrument"
+              src="/images/real/throne-portrait.jpg"
+              alt="Simon Maxam portrait"
+              label="Simon Maxam"
               className="aspect-[4/5] md:aspect-[3/4]"
             />
           </Reveal>

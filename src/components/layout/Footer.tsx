@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { navLinks, site } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
+import { FooterTetris } from "@/components/layout/FooterTetris";
 
 export function Footer() {
   return (
@@ -105,6 +106,8 @@ export function Footer() {
           <span className="hidden sm:inline">{site.tagline}</span>
         </div>
       </div>
+
+      <FooterTetris />
     </footer>
   );
 }

@@ -10,6 +10,7 @@ import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { Footer } from "@/components/layout/Footer";
 import { ExperienceShell } from "@/components/experience/ExperienceShell";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
+import { CustomCursor } from "@/components/ui/CustomCursor";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -129,6 +130,7 @@ export default function RootLayout({
           <MobileBottomBar />
           <Footer />
           <ExperienceShell />
+          <CustomCursor />
         </Providers>
         <GoogleAnalytics />
       </body>

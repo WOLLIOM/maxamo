@@ -11,9 +11,12 @@ const MobileGuitarCanvas = dynamic(
 );
 
 /**
- * Phone hero — real photography + gyro parallax (no WebGL).
- * Guitar/architecture/space imagery sits in the top band; copy stays in the
- * lower half of the screen.
+ * Phone hero — on capable phones, two live 3D objects (the red-cherry
+ * guitar centerpiece + a small red wireframe "code" polygon) nudged by the
+ * device gyro, replacing the old static architecture/rover photos so the
+ * mobile hero finally matches the desktop cluster's spirit while staying
+ * light. Falls back to real photography + CSS parallax on low-end phones
+ * or when gyro/3D isn't available.
  */
 export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: number }) {
   const backRef = useRef<HTMLDivElement>(null);
@@ -94,12 +97,13 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
       >
         {use3D ? (
           <div className="relative aspect-[4/5] overflow-hidden rounded-2xl shadow-[0_18px_40px_rgba(0,0,0,0.45)] ring-1 ring-white/20">
-            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" />
+            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
           </div>
         ) : (
           <FoodFrame
             src="/images/real/guitar-performance.jpg"
-            alt="Playing the red cherry guitar"
+            alt="Simon Maxam playing guitar live performance"
+            title="Simon Maxam"
             priority
             className="aspect-[4/5]"
             objectPosition="center 15%"
@@ -107,27 +111,38 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
         )}
       </div>
 
-      <div
-        ref={leftRef}
-        className="absolute left-[4%] top-[22%] z-[2] w-[28vw] max-w-[108px] will-change-transform"
-      >
-        <FoodFrame
-          src="/images/generated/arch-model-lit.png"
-          alt="Architectural model"
-          className="aspect-square"
-        />
-      </div>
+      {use3D ? (
+        <div
+          ref={rightRef}
+          className="absolute right-[6%] top-[22%] z-[2] h-[26vw] max-h-[104px] w-[26vw] max-w-[104px] will-change-transform"
+        >
+          <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
+        </div>
+      ) : (
+        <>
+          <div
+            ref={leftRef}
+            className="absolute left-[4%] top-[22%] z-[2] w-[28vw] max-w-[108px] will-change-transform"
+          >
+            <FoodFrame
+              src="/images/generated/arch-model-lit.png"
+              alt="Architectural model"
+              className="aspect-square"
+            />
+          </div>
 
-      <div
-        ref={rightRef}
-        className="absolute right-[3%] top-[18%] z-[2] w-[30vw] max-w-[112px] will-change-transform"
-      >
-        <FoodFrame
-          src="/images/real/solaris-rover.png"
-          alt="SOLARIS — lunar rover, an educational space-exploration game built in Unreal Engine 5"
-          className="aspect-[4/5]"
-        />
-      </div>
+          <div
+            ref={rightRef}
+            className="absolute right-[3%] top-[18%] z-[2] w-[30vw] max-w-[112px] will-change-transform"
+          >
+            <FoodFrame
+              src="/images/real/solaris-rover.png"
+              alt="SOLARIS — lunar rover, an educational space-exploration game built in Unreal Engine 5"
+              className="aspect-[4/5]"
+            />
+          </div>
+        </>
+      )}
 
       {gyroHint && (
         <p className="absolute left-0 right-0 top-[52%] z-[4] text-center text-[0.58rem] uppercase tracking-ultra text-faint">
@@ -141,12 +156,14 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
 function FoodFrame({
   src,
   alt,
+  title,
   className = "",
   priority = false,
   objectPosition,
 }: {
   src: string;
   alt: string;
+  title?: string;
   className?: string;
   priority?: boolean;
   objectPosition?: string;
@@ -158,6 +175,7 @@ function FoodFrame({
       <ResponsiveImg
         src={src}
         alt={alt}
+        title={title}
         width={400}
         height={500}
         sizes="28vw"
@@ -173,6 +191,7 @@ function FoodFrame({
 function ResponsiveImg({
   src,
   alt,
+  title,
   width,
   height,
   sizes,
@@ -182,6 +201,7 @@ function ResponsiveImg({
 }: {
   src: string;
   alt: string;
+  title?: string;
   width: number;
   height: number;
   sizes: string;
@@ -196,6 +216,7 @@ function ResponsiveImg({
       <img
         src={fallback}
         alt={alt}
+        title={title}
         width={width}
         height={height}
         sizes={sizes}
