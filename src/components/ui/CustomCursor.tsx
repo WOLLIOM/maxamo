@@ -5,9 +5,14 @@ import { PixelSmiley } from "@/components/ui/PixelSmiley";
 
 /**
  * A small custom cursor: a dot that eases toward the pointer with a bit of
- * lag, an arrow that appears and points at whatever is under it, and a text
- * label that pulls in when hovering anything with a `data-cursor-label`
- * attribute. Disabled automatically on touch devices.
+ * lag, and a text label that pulls in when hovering anything with a
+ * `data-cursor-label` attribute. The blob also morphs into a pixel smiley
+ * when hovering anything flagged with `data-cursor-mood`. Disabled
+ * automatically on touch devices.
+ *
+ * The headline-pointing arrow used to live here as a plain SVG — it's now
+ * handled by <PixelCursorField />, which draws it (and the click effect) as
+ * a dot-grid heat trail instead.
  */
 export function CustomCursor() {
   const dotRef = useRef<HTMLDivElement>(null);

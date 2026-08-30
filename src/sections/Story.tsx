@@ -110,10 +110,11 @@ export function Story() {
         <div className="order-1 md:order-2">
           <Reveal>
             <Photo
-              src="/images/real/throne-portrait.jpg"
+              src="/images/real/throne-portrait.webp"
               alt="Simon Maxam portrait"
               label="Simon Maxam"
               className="aspect-[4/5] md:aspect-[3/4]"
+              data-cursor-arrow
             />
           </Reveal>
         </div>

@@ -65,7 +65,7 @@ function personSchema() {
     alternateName: site.name,
     jobTitle: "Multidisciplinary Creator",
     url: `${site.url}/about`,
-    image: `${site.url}/images/real/guitar-performance.jpg`,
+    image: `${site.url}/images/real/guitar-performance.webp`,
     address: {
       "@type": "PostalAddress",
       addressLocality: "Calgary",

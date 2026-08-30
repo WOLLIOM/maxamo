@@ -10,6 +10,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { Magnetic } from "@/components/ui/Magnetic";
+import { PixelMarquee } from "@/components/ui/PixelMarquee";
 import { HeroMobileStage } from "@/components/hero/HeroMobileStage";
 import { shouldAutoLoad3D } from "@/lib/device";
 import { site } from "@/lib/site";
@@ -194,6 +195,10 @@ export function Hero() {
               View projects
             </Cta>
           </motion.div>
+
+          <div className="mt-6 h-9 w-full max-w-md md:mt-8 md:h-10">
+            <PixelMarquee text="simon maxam — built by hand, run on code   " cell={7} />
+          </div>
         </motion.div>
 
         {/* Stage 2 — mid scroll whisper */}

@@ -55,7 +55,7 @@ export function PortraitCard() {
             <source srcSet="/images/simon-maxam.webp" type="image/webp" />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/images/real/guitar-performance.jpg"
+              src="/images/real/guitar-performance.webp"
               alt="Simon Maxam, multidisciplinary creator, in Calgary"
               width={900}
               height={1200}

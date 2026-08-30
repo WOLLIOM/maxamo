@@ -34,7 +34,7 @@ export function RedStratViewer() {
   }
 
   if (touch) {
-    const { fallback, webp } = imageSources("/images/real/guitar-performance.jpg");
+    const { fallback, webp } = imageSources("/images/real/guitar-performance.webp");
     return (
       <div className="relative aspect-square w-full max-w-xs overflow-hidden rounded-3xl border border-line/60 bg-surface/30">
         <picture>

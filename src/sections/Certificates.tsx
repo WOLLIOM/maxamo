@@ -7,8 +7,35 @@ import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { certificates } from "@/lib/site";
 import { PixelCluster } from "@/components/ui/PixelCluster";
+import { Photo } from "@/components/ui/Photo";
 
 const CATEGORY_ORDER = ["3D & Design", "Development", "Data & AI", "Business"] as const;
+
+// A representative photo/illustration beside each category, always on the
+// right as a small accent next to the cards. Swap these `src` paths for your
+// own images any time — see the prompts in the PR notes for what each one is
+// going for.
+const CATEGORY_IMAGE: Record<
+  (typeof CATEGORY_ORDER)[number],
+  { src: string; alt: string }
+> = {
+  "3D & Design": {
+    src: "/images/real/cert-3d-design.webp",
+    alt: "3D and design work",
+  },
+  Development: {
+    src: "/images/real/cert-development.webp",
+    alt: "Code and development work",
+  },
+  "Data & AI": {
+    src: "/images/real/cert-data-ai.webp",
+    alt: "Data and AI work",
+  },
+  Business: {
+    src: "/images/real/cert-business.webp",
+    alt: "Business and strategy work",
+  },
+};
 
 // Each category gets its own permanent gradient background + glow, so the
 // grid reads at a glance instead of being one uniform wall of cards — and
@@ -88,13 +115,14 @@ export function Certificates() {
           lede="Coursework completed across 3D, architecture, code and creative tools. Tap any card to see the certificate."
         />
 
-        <div className="mt-10 flex flex-col gap-10">
+        <div className="mt-10 flex flex-col gap-14 md:gap-16">
           {CATEGORY_ORDER.map((category) => {
             const items = certificates
               .map((c, i) => ({ ...c, i }))
               .filter((c) => c.category === category);
             if (items.length === 0) return null;
             const style = CATEGORY_STYLE[category];
+            const img = CATEGORY_IMAGE[category];
 
             return (
               <div key={category}>
@@ -102,15 +130,16 @@ export function Certificates() {
                   <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
                   {category}
                 </p>
-                <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {items.map(({ i, ...c }, idx) => {
+                <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center">
+                  <div className="min-w-0 flex-1 grid gap-4 sm:grid-cols-2">
+                    {items.map(({ i, ...c }, idx) => {
                     const badge = brandBadgeFor(c.issuer);
                     return (
                       <Reveal key={c.title} delay={idx} className="h-full">
                         <button
                           type="button"
                           onClick={() => setActive(i)}
-                          className={`group relative flex h-full min-h-[132px] w-full flex-col gap-3 overflow-hidden rounded-2xl border ${style.border} bg-gradient-to-br ${style.gradient} p-6 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:brightness-110`}
+                          className={`group relative flex h-full min-h-[112px] w-full flex-col gap-3 overflow-hidden rounded-2xl border ${style.border} bg-gradient-to-br ${style.gradient} p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:brightness-110 md:min-h-[132px] md:p-5`}
                         >
                           <span
                             aria-hidden
@@ -140,6 +169,15 @@ export function Certificates() {
                       </Reveal>
                     );
                   })}
+                  </div>
+                  <div className="hidden shrink-0 lg:block lg:w-[150px]">
+                    <Photo
+                      src={img.src}
+                      alt={img.alt}
+                      className="aspect-[3/4] w-full"
+                      parallax={false}
+                    />
+                  </div>
                 </div>
               </div>
             );
@@ -168,37 +206,39 @@ export function Certificates() {
               animate={{ y: 0, opacity: 1, scale: 1 }}
               exit={{ y: 40, opacity: 0, scale: 0.98 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="glass relative w-full max-w-lg overflow-hidden rounded-3xl p-6 md:p-8"
+              className="glass relative flex max-h-[85vh] w-full max-w-lg flex-col overflow-hidden rounded-3xl p-5 md:max-h-[80vh] md:p-8"
             >
               <button
                 onClick={() => setActive(null)}
                 aria-label="Close"
-                className="absolute right-5 top-5 z-10 flex h-12 w-12 min-h-12 min-w-12 items-center justify-center rounded-full border border-line bg-bg/70 text-ink backdrop-blur-sm transition-colors hover:text-accent"
+                className="absolute right-4 top-4 z-10 flex h-10 w-10 min-h-10 min-w-10 items-center justify-center rounded-full border border-line bg-bg/70 text-ink backdrop-blur-sm transition-colors hover:text-accent md:right-5 md:top-5 md:h-12 md:w-12 md:min-h-12 md:min-w-12"
               >
                 <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden>
                   <path d="M5 5l14 14M19 5L5 19" stroke="currentColor" strokeWidth="1.5" />
                 </svg>
               </button>
 
-              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-xl border border-line/60 bg-white">
-                <Image
-                  src={activeCert.image}
-                  alt={`${activeCert.title} certificate`}
-                  fill
-                  sizes="(max-width: 640px) 100vw, 32rem"
-                  className="object-contain"
-                />
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <div className="relative mx-auto aspect-[4/3] w-[min(82vw,360px)] overflow-hidden rounded-xl border border-line/60 bg-white">
+                  <Image
+                    src={activeCert.image}
+                    alt={`${activeCert.title} certificate`}
+                    fill
+                    sizes="min(82vw, 360px)"
+                    className="object-contain"
+                  />
+                </div>
+
+                <span className="kicker mt-5 block">{activeCert.category}</span>
+                <h3 className="mt-2 font-serif text-xl text-ink md:text-2xl">
+                  {activeCert.title}
+                </h3>
+                <p className="mt-2 text-[0.68rem] uppercase tracking-wider2 text-faint">
+                  {activeCert.issuer} - {activeCert.date}
+                </p>
+
+                <p className="mt-4 text-sm leading-relaxed text-muted">{activeCert.blurb}</p>
               </div>
-
-              <span className="kicker mt-5 block">{activeCert.category}</span>
-              <h3 className="mt-2 font-serif text-xl text-ink md:text-2xl">
-                {activeCert.title}
-              </h3>
-              <p className="mt-2 text-[0.68rem] uppercase tracking-wider2 text-faint">
-                {activeCert.issuer} - {activeCert.date}
-              </p>
-
-              <p className="mt-4 text-sm leading-relaxed text-muted">{activeCert.blurb}</p>
             </motion.div>
           </motion.div>
         )}

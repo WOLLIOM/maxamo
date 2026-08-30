@@ -42,6 +42,7 @@ export function Music() {
       <PixelCluster seed={5} className="absolute -right-4 top-8 hidden lg:block" />
       <audio
         ref={audioRef}
+        preload="none"
         onTimeUpdate={(e) => {
           const el = e.currentTarget;
           setProgress(el.duration ? el.currentTime / el.duration : 0);

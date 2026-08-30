@@ -15,7 +15,7 @@ const featured: {
   {
     name: "SOLARIS",
     desc: "A space-exploration educational game built in Unreal Engine and Blender over two years — planets, environments and interactive systems.",
-    img: "/images/real/solaris-menu.png",
+    img: "/images/real/solaris-menu.webp",
     alt: "SOLARIS — the game's main menu",
     tag: "Unreal Engine · Blender",
     spotlight: true,
@@ -23,14 +23,14 @@ const featured: {
   {
     name: "Frank Architecture & Interiors",
     desc: "Professional architectural design work — Revit modeling, drafting and visualization workflows.",
-    img: "/images/generated/arch-blueprint-house.png",
+    img: "/images/generated/arch-blueprint-house.webp",
     alt: "Architectural blueprint transforming into a rendered building",
     tag: "Revit · Architecture",
   },
   {
     name: "Music & Performance",
     desc: "300+ hours performing as a volunteer guitarist — rhythm, acoustic and classical pieces.",
-    img: "/images/real/guitar-performance.jpg",
+    img: "/images/real/guitar-performance.webp",
     alt: "Simon Maxam playing his red cherry acoustic guitar",
     tag: "Guitar · 7 years",
   },
