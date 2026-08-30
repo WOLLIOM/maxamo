@@ -1,16 +1,37 @@
 "use client";
 
+import { useState } from "react";
 import { Reveal } from "@/components/ui/Reveal";
 import { AnimatedHeading } from "@/components/ui/AnimatedHeading";
+import { ProcessFlowCanvas } from "@/components/ui/ProcessFlowCanvas";
 
-const SPLIT = [
-  { label: "Exploring", value: 60 },
-  { label: "Building", value: 20 },
-  { label: "Refining", value: 20 },
+const STEPS = [
+  {
+    n: "01",
+    title: "Foundations",
+    desc: "Where it started: learning the fundamentals in AutoCAD, drawing before I could build.",
+  },
+  {
+    n: "02",
+    title: "Modeling",
+    desc: "Moved into 3D — AutoCAD alongside Blender, learning to actually see and shape things in space.",
+  },
+  {
+    n: "03",
+    title: "Engineering",
+    desc: "Picked up Revit for real project work, then coding in Python to make the process my own.",
+  },
+  {
+    n: "04",
+    title: "Professional",
+    desc: "Now doing it for real: professional IT work, built on everything before it.",
+  },
 ];
 
-/** "Explore. Generate. Refine. Scale." — how the work actually breaks down. */
+/** "Explore. Generate. Refine. Scale." — my own path, told the same way. */
 export function ProcessSpectrum() {
+  const [activeStep, setActiveStep] = useState<number | null>(null);
+
   return (
     <section
       aria-label="How the work breaks down"
@@ -48,25 +69,28 @@ export function ProcessSpectrum() {
       </Reveal>
 
       <Reveal delay={2}>
-        <div className="mt-12 flex max-w-xl overflow-hidden rounded-full border border-line/60">
-          {SPLIT.map((s, i) => (
+        <ProcessFlowCanvas className="mt-10 md:mt-14" activeStep={activeStep} />
+      </Reveal>
+
+      <Reveal delay={3}>
+        <div className="mt-8 grid grid-cols-2 gap-4 md:mt-10 md:grid-cols-4 md:gap-6">
+          {STEPS.map((s, i) => (
             <div
-              key={s.label}
-              className="group relative flex h-12 items-center justify-center text-[0.65rem] uppercase tracking-wider2"
+              key={s.n}
+              className="group relative flex flex-col gap-3 border-t border-line/60 pt-4 transition-opacity duration-300"
               style={{
-                width: `${s.value}%`,
-                background:
-                  i === 0
-                    ? "rgb(var(--c-accent))"
-                    : i === 1
-                      ? "rgb(var(--c-gold))"
-                      : "rgb(var(--c-silver))",
-                color: "rgb(var(--c-bg))",
+                opacity: activeStep === null || activeStep === i ? 1 : 0.45,
               }}
-              title={`${s.label} — ${s.value}%`}
+              onMouseEnter={() => setActiveStep(i)}
+              onMouseLeave={() => setActiveStep(null)}
             >
-              <span className="hidden sm:inline">{s.label}</span>
-              <span className="sm:hidden">{s.value}%</span>
+              <div className="flex items-baseline gap-2">
+                <span className="font-mono text-xs text-gold">{s.n}</span>
+                <span className="text-sm uppercase tracking-wider2 text-ink">
+                  {s.title}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-muted">{s.desc}</p>
             </div>
           ))}
         </div>

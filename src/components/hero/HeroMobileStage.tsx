@@ -79,7 +79,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       <div ref={backRef} className="absolute inset-0 will-change-transform">
         <ResponsiveImg
-          src="/images/real/solaris-earth-moon.png"
+          src="/images/real/solaris-earth-moon.webp"
           alt=""
           sizes="100vw"
           className="absolute inset-0 h-full w-full object-cover object-[center_35%] opacity-40"
@@ -101,7 +101,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
           </div>
         ) : (
           <FoodFrame
-            src="/images/real/guitar-performance.jpg"
+            src="/images/real/guitar-performance.webp"
             alt="Simon Maxam playing guitar live performance"
             title="Simon Maxam"
             priority
@@ -125,7 +125,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
             className="absolute left-[4%] top-[22%] z-[2] w-[28vw] max-w-[108px] will-change-transform"
           >
             <FoodFrame
-              src="/images/generated/arch-model-lit.png"
+              src="/images/generated/arch-model-lit.webp"
               alt="Architectural model"
               className="aspect-square"
             />
@@ -136,7 +136,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
             className="absolute right-[3%] top-[18%] z-[2] w-[30vw] max-w-[112px] will-change-transform"
           >
             <FoodFrame
-              src="/images/real/solaris-rover.png"
+              src="/images/real/solaris-rover.webp"
               alt="SOLARIS — lunar rover, an educational space-exploration game built in Unreal Engine 5"
               className="aspect-[4/5]"
             />

@@ -13,6 +13,7 @@ import { Testimonials } from "@/sections/Testimonials";
 import { Newsletter } from "@/sections/Newsletter";
 import { FAQ } from "@/sections/FAQ";
 import { TextMarquee } from "@/components/ui/TextMarquee";
+import { PixelMarquee } from "@/components/ui/PixelMarquee";
 import { faqs } from "@/lib/faq";
 import { faqSchema } from "@/lib/schema";
 
@@ -37,6 +38,12 @@ export default function HomePage() {
       <HomeExperience />
       <TextMarquee />
       <Testimonials />
+      <div className="h-16 md:h-24">
+        <PixelMarquee
+          text="wild · i will craft more of that   "
+          cell={7}
+        />
+      </div>
       <Newsletter />
       <FAQ />
     </>

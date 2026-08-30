@@ -11,6 +11,8 @@ import { Footer } from "@/components/layout/Footer";
 import { ExperienceShell } from "@/components/experience/ExperienceShell";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { ClickBurst } from "@/components/ui/ClickBurst";
+import { PixelCursorField } from "@/components/ui/PixelCursorField";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
@@ -131,6 +133,8 @@ export default function RootLayout({
           <Footer />
           <ExperienceShell />
           <CustomCursor />
+          <ClickBurst />
+          <PixelCursorField />
         </Providers>
         <GoogleAnalytics />
       </body>

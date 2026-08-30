@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import type { HTMLAttributes } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { imageSources } from "@/lib/media";
 import { cn } from "@/lib/utils";
@@ -22,6 +23,7 @@ export function Photo({
   sizes = "(max-width: 768px) 100vw, 50vw",
   width = 1200,
   height = 1500,
+  ...rest
 }: {
   src: string;
   alt: string;
@@ -34,7 +36,7 @@ export function Photo({
   sizes?: string;
   width?: number;
   height?: number;
-}) {
+} & HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
@@ -55,6 +57,7 @@ export function Photo({
     <div
       ref={ref}
       className={cn("group relative overflow-hidden bg-surface/50", rounded, className)}
+      {...rest}
     >
       <motion.div
         style={{ y, scale }}

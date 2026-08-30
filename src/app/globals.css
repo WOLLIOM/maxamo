@@ -242,6 +242,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 .animate-pixel-float { animation: pixel-float 2.6s ease-in-out infinite; }
 
+@keyframes cursor-arrow-pulse {
+  0%, 100% { transform: translateX(0); opacity: 0.85; }
+  50% { transform: translateX(4px); opacity: 1; }
+}
+.animate-cursor-arrow-pulse { animation: cursor-arrow-pulse 0.9s ease-in-out infinite; }
+
+@keyframes pixel-assemble {
+  0% { opacity: 0; transform: scale(0.2); }
+  60% { opacity: 1; transform: scale(1.25); }
+  100% { opacity: 1; transform: scale(1); }
+}
+.animate-pixel-assemble { animation: pixel-assemble 0.32s cubic-bezier(.2,.9,.3,1.4) backwards; }
+
 /* ------------------------------ Cursor --------------------------------- */
 /* Hide the native cursor only on precise pointers where we render our own. */
 @media (pointer: fine) {
