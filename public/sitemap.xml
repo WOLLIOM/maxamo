@@ -1,39 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+<urlset xmlns="http://sitemaps.org"
         xmlns:image="http://google.com">
   
+  <!-- Main Homepage -->
   <url>
-    <loc>https://simax.pages.dev/</loc>
+    <loc>https://pages.dev</loc>
     <lastmod>2026-08-31T00:09:34.674Z</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
 
+  <!-- Gallery Page with Guitar Image -->
   <url>
-    <loc>https://simax.pages.dev/gallery/</loc>
+    <loc>https://pages.devgallery/</loc>
     <lastmod>2026-08-31T00:09:34.674Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     
-    <!-- ⬇️ COPY AND REPEAT THIS BLOCK FOR EACH IMAGE YOU WANT ON GOOGLE ⬇️ -->
+    <!-- Google Image Tag for your Guitar Performance -->
     <image:image>
-      <image:loc>https://pages.dev</image:loc>
-      <image:title>Name of Your Artwork or Photo</image:title>
-      <image:caption>A short description of what is in this image.</image:caption>
+      <image:loc>https://vercel.app</image:loc>
+      <image:title>Live Guitar Performance</image:title>
+      <image:caption>Black and white photograph of a live musical performance with an electric guitar.</image:caption>
     </image:image>
-    <!-- ⬆️ END OF IMAGE BLOCK ⬆️ -->
-
   </url>
 
+  <!-- Contact Page -->
   <url>
-    <loc>https://simax.pages.dev/contact/</loc>
+    <loc>https://pages.devcontact/</loc>
     <lastmod>2026-08-31T00:09:34.674Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
 
+  <!-- About Page -->
   <url>
-    <loc>https://simax.pages.dev/about/</loc>
+    <loc>https://pages.devabout/</loc>
     <lastmod>2026-08-31T00:09:34.674Z</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
