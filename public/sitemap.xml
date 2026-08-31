@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://sitemaps.org"
+        xmlns:image="http://google.com">
+  <url>
+    <!-- 1. Put your website homepage URL here -->
+    <loc>https://yourdomain.com</loc> 
+    
+    <image:image>
+      <!-- 2. Put the direct link to your image here -->
+      <image:loc>https://yourdomain.comyour-image-name.png</image:loc>
+      
+      <!-- 3. Put what your image is about here -->
+      <image:title>Describe your image here</image:title>
+    </image:image>
+  </url>
+</urlset>
