@@ -71,8 +71,9 @@ export const metadata: Metadata = {
   },
   manifest: "/manifest.webmanifest",
   category: "portfolio",
-  // verification.google removed — was tied to the old restaurant-site domain.
-  // Add a new Search Console token once SIMAX has its own domain.
+  verification: {
+    google: "UCc2ldyStHZIs_O_n11wGpNrNJL0Ka-Y-mw0aOpaYCY",
+  },
 };
 
 export const viewport: Viewport = {
@@ -119,7 +120,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          <a
+          
             href="#main"
             className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-full focus:bg-accent focus:px-5 focus:py-2 focus:text-sm focus:text-bg"
           >
