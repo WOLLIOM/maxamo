@@ -12,8 +12,8 @@ export const site = {
     "SIMAX — Simon Maxam. A creative studio where music, architecture, code, and storytelling come together to build immersive experiences.",
   description:
     "SIMAX is a multidisciplinary creative studio founded by Simon Maxam, combining 3D design, architecture visualization, music, technology, and digital experiences to create cinematic worlds and innovative solutions.",
-  // Live production domain. Update this once a custom domain is attached.
-  url: "https://simax.pages.dev", // placeholder — update when domain is chosen
+  // Live production domain.
+  url: "https://simonmaxam.pages.dev",
   locale: "en_US",
   email: "", // add official contact email when available
   phoneDisplay: "",
