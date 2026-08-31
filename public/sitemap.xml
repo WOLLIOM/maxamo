@@ -1,16 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://sitemaps.org"
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:image="http://google.com">
+  
   <url>
-    <!-- 1. Put your website homepage URL here -->
-    <loc>https://yourdomain.com</loc> 
-    
-    <image:image>
-      <!-- 2. Put the direct link to your image here -->
-      <image:loc>https://yourdomain.comyour-image-name.png</image:loc>
-      
-      <!-- 3. Put what your image is about here -->
-      <image:title>Describe your image here</image:title>
-    </image:image>
+    <loc>https://simax.pages.dev/</loc>
+    <lastmod>2026-08-31T00:09:34.674Z</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
   </url>
+
+  <url>
+    <loc>https://simax.pages.dev/gallery/</loc>
+    <lastmod>2026-08-31T00:09:34.674Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    
+    <!-- ⬇️ COPY AND REPEAT THIS BLOCK FOR EACH IMAGE YOU WANT ON GOOGLE ⬇️ -->
+    <image:image>
+      <image:loc>https://pages.dev</image:loc>
+      <image:title>Name of Your Artwork or Photo</image:title>
+      <image:caption>A short description of what is in this image.</image:caption>
+    </image:image>
+    <!-- ⬆️ END OF IMAGE BLOCK ⬆️ -->
+
+  </url>
+
+  <url>
+    <loc>https://simax.pages.dev/contact/</loc>
+    <lastmod>2026-08-31T00:09:34.674Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://simax.pages.dev/about/</loc>
+    <lastmod>2026-08-31T00:09:34.674Z</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
