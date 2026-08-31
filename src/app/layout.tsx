@@ -120,7 +120,7 @@ export default function RootLayout({
       </head>
       <body>
         <Providers>
-          
+          <a
             href="#main"
             className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[10001] focus:rounded-full focus:bg-accent focus:px-5 focus:py-2 focus:text-sm focus:text-bg"
           >
