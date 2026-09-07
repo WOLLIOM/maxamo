@@ -80,10 +80,12 @@ export function Footer() {
             © {new Date().getFullYear()} {site.name}. Crafted with intention.
           </span>
 
-          <Link
-            href="/about"
+          <a
+            href={site.hub}
+            target="_blank"
+            rel="noopener noreferrer author"
             className="group inline-flex min-h-12 items-center gap-3 py-2 transition-colors hover:text-ink"
-            aria-label="About the developer, Simon Maxam"
+            aria-label="Simon Maxam — main site"
           >
             <span>Designed &amp; built by</span>
             <span className="text-muted transition-colors group-hover:text-accent">
@@ -101,7 +103,7 @@ export function Footer() {
                 fill="currentColor"
               />
             </svg>
-          </Link>
+          </a>
 
           <span className="hidden sm:inline">{site.tagline}</span>
         </div>
