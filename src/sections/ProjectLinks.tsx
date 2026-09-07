@@ -7,10 +7,12 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
  * code needs to change.
  */
 const links: { label: string; desc: string; href: string; glow: string }[] = [
-  { label: "SIMAX", desc: "Premium Three.js / WebGL showcase", href: "https://wolliom.github.io/vite-threejs-premium/", glow: "bg-accent/15" },
+  { label: "YŪGEN", desc: "Omakase restaurant, San Francisco", href: "https://yugen-6b9.pages.dev/", glow: "bg-[#c9a0ff]/15" },
+  { label: "Bonterra Trattoria", desc: "Italian restaurant, Calgary", href: "https://bonterra-website.pages.dev/", glow: "bg-[#e0857a]/15" },
+  { label: "Aurelio", desc: "Boutique hotel website", href: "https://wolliom.github.io/aurelio/", glow: "bg-[#7ee0c3]/15" },
+  { label: "SIMAX Showcase", desc: "Premium Three.js / WebGL showcase", href: "https://wolliom.github.io/vite-threejs-premium/", glow: "bg-accent/15" },
   { label: "MuseumVerse", desc: "Interactive museum experience", href: "https://wolliom.github.io/museumverse/", glow: "bg-[#9fb4ff]/15" },
   { label: "BarberVerse", desc: "Interactive barber shop experience", href: "https://wolliom.github.io/Barber/", glow: "bg-[#e0b86a]/15" },
-  { label: "Aurelio", desc: "Boutique hotel website", href: "https://wolliom.github.io/aurelio/", glow: "bg-[#7ee0c3]/15" },
 ];
 
 export function ProjectLinks() {
@@ -23,7 +25,7 @@ export function ProjectLinks() {
     >
       <SectionHeading kicker="Elsewhere" title="More things I've built" align="center" />
 
-      <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {links.map((l, i) => (
           <Reveal key={l.label} delay={i}>
             <a
