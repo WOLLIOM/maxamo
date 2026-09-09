@@ -46,7 +46,15 @@ export const site = {
 
 export type NavLink = { label: string; href: string; jp?: string };
 
+// Music-only site: nav trimmed to the music sections + contact.
+// Full portfolio nav preserved below for easy restore.
 export const navLinks: NavLink[] = [
+  { label: "Music", href: "/#music" },
+  { label: "Guitar", href: "/#guitar" },
+  { label: "Contact", href: "/contact" },
+];
+
+export const fullNavLinks: NavLink[] = [
   { label: "Story", href: "/#story" },
   { label: "Work", href: "/#work" },
   { label: "Projects", href: "/gallery" },
