@@ -66,6 +66,14 @@ export function Hero() {
   // A little shorter so the dolly finishes in roughly one–two scrolls, not three.
   const runway = isTouch ? "140vh" : "165vh";
 
+  function scrollToMusic() {
+    const target = document.getElementById("music");
+    if (!target) return;
+    const lenis = (window as unknown as { lenis?: { scrollTo: (t: HTMLElement, o?: Record<string, unknown>) => void } }).lenis;
+    if (lenis) lenis.scrollTo(target, { duration: 1.4, offset: -80 });
+    else target.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
   return (
     <section
       ref={ref}
@@ -194,6 +202,21 @@ export function Hero() {
             <Cta href="/gallery" magnetic={!isTouch}>
               View projects
             </Cta>
+            <span
+              aria-hidden
+              className="hidden h-px w-8 bg-line/80 sm:block"
+            />
+            <button
+              type="button"
+              onClick={scrollToMusic}
+              data-cursor-label="Listen"
+              className="relative z-10 inline-flex w-full min-h-12 items-center justify-center gap-2 rounded-full border border-ink/40 bg-elevated/50 px-9 py-4 text-[0.72rem] uppercase tracking-wider2 text-ink backdrop-blur-sm transition-all duration-500 hover:border-accent hover:bg-elevated/70 hover:text-accent sm:w-auto"
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                <path d="M9 17.5a3 3 0 1 1-2-2.83V6l11-2v9.5a3 3 0 1 1-2-2.83V6.29L9 7.77V17.5Z" />
+              </svg>
+              Hear my songs
+            </button>
           </motion.div>
 
           <div className="mt-6 h-9 w-full max-w-md md:mt-8 md:h-10">
