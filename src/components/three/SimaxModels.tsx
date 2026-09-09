@@ -46,7 +46,17 @@ export function RedStrat({
   autoRotate?: boolean;
 }) {
   const { scene } = useGLTF("/models/red-strat.glb");
-  const cloned = useMemo(() => scene.clone(true), [scene]);
+  // Clone and recenter: the GLB's own origin isn't at the guitar's centroid,
+  // so spinning the raw model makes it orbit off-center. Shift the clone so
+  // its bounding-box center sits on (0,0,0) — then the parent group spins
+  // around the true center and the model stays framed.
+  const cloned = useMemo(() => {
+    const c = scene.clone(true);
+    const box = new THREE.Box3().setFromObject(c);
+    const center = box.getCenter(new THREE.Vector3());
+    c.position.sub(center);
+    return c;
+  }, [scene]);
   const group = useRef<THREE.Group>(null);
 
   useFrame((_, delta) => {
