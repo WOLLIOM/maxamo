@@ -29,7 +29,7 @@ export function RedStratViewer() {
   // Avoid flashing the 3D version before we know the device type.
   if (touch === null) {
     return (
-      <div className="relative aspect-square w-full max-w-xs overflow-hidden rounded-3xl border border-line/60 bg-surface/30" />
+      <div className="relative aspect-[4/3] w-full max-w-md overflow-hidden rounded-3xl border border-line/60 bg-surface/30" />
     );
   }
 
@@ -52,7 +52,7 @@ export function RedStratViewer() {
   }
 
   return (
-    <div className="relative aspect-square w-full max-w-xs overflow-hidden rounded-3xl border border-line/60 bg-surface/30">
+    <div className="relative aspect-[4/3] w-full max-w-md overflow-hidden rounded-3xl border border-line/60 bg-surface/30">
       <Canvas
         dpr={[1, 1.5]}
         camera={{ position: [0, 0, 9.5], fov: 32 }}
