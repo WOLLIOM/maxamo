@@ -57,8 +57,11 @@ export function Music() {
         <SectionHeading
           kicker="Recordings"
           title="Music"
-          lede="Eight of my own tracks — press play on any row to listen right here."
+          lede="Five songs I wrote, recorded and produced myself — press play on any row to listen right here."
         />
+        <p className="shrink-0 text-xs uppercase tracking-[0.2em] text-faint">
+          Made by Simon
+        </p>
       </div>
 
       <Reveal delay={1}>
@@ -85,6 +88,19 @@ export function Music() {
 
                   <span className="relative z-10 w-7 shrink-0 text-sm tabular-nums text-faint">
                     {String(i + 1).padStart(2, "0")}
+                  </span>
+
+                  {/* generated cover art */}
+                  <span
+                    aria-hidden
+                    className="relative z-10 hidden h-12 w-12 shrink-0 overflow-hidden rounded-md border border-line sm:block"
+                    style={{
+                      backgroundImage: `linear-gradient(135deg, ${track.art[0]}, ${track.art[1]})`,
+                    }}
+                  >
+                    <span className="absolute bottom-1 right-1.5 text-[0.7rem] font-semibold text-white/90 drop-shadow">
+                      {track.title.slice(0, 1)}
+                    </span>
                   </span>
 
                   <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-ink transition-all duration-300 group-hover:border-ink/40 group-hover:scale-105 group-active:scale-95">
