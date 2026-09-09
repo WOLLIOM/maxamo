@@ -34,10 +34,12 @@ export function Music() {
 
   return (
     <section
+      id="music"
       aria-label="Music"
       data-section="music"
       data-palette="teal"
-      className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-36"
+      data-cursor-note
+      className="relative mx-auto max-w-[1400px] scroll-mt-24 px-5 py-24 md:px-10 md:py-36"
     >
       <PixelCluster seed={5} className="absolute -right-4 top-8 hidden lg:block" />
       <audio
