@@ -12,11 +12,11 @@ export function MobileBottomBar() {
     >
       <div className="mx-auto flex max-w-md gap-3">
         <Link
-          href="/gallery"
+          href="/#music"
           prefetch={false}
           className="flex min-h-12 flex-1 items-center justify-center rounded-full border border-ink/25 bg-elevated/60 text-[0.68rem] uppercase tracking-wider2 text-ink transition-all duration-500 hover:border-accent hover:text-accent"
         >
-          Projects
+          Music
         </Link>
         <Link
           href="/contact"

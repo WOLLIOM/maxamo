@@ -199,13 +199,6 @@ export function Hero() {
               aria-hidden
               className="hidden h-px w-8 bg-line/80 sm:block"
             />
-            <Cta href="/gallery" magnetic={!isTouch}>
-              View projects
-            </Cta>
-            <span
-              aria-hidden
-              className="hidden h-px w-8 bg-line/80 sm:block"
-            />
             <button
               type="button"
               onClick={scrollToMusic}
