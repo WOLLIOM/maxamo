@@ -4,7 +4,7 @@
  * once (or is pre-cached on install), it works with no network connection.
  * Bump CACHE_NAME to invalidate old cached audio after you swap files.
  */
-const CACHE_NAME = "simax-audio-v1";
+const CACHE_NAME = "simax-audio-v2";
 const AUDIO_PATH = "/audio/";
 const PRECACHE = ["/audio/ambient.mp3"];
 
