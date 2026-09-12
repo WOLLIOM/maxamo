@@ -445,7 +445,7 @@ function Scene({
 
         {/* Architecture / Revit -- upper-left. */}
         <Piece
-          position={[-3.0, 1.55, -0.5]}
+          position={[-3.8, 2.1, -0.5]}
           rotation={[0.15, 0.35, 0]}
           speed={1.35}
           scale={0.85}
@@ -458,7 +458,7 @@ function Scene({
 
         {/* Web development / code -- lower-right. */}
         <Piece
-          position={[3.0, -1.6, -0.7]}
+          position={[4.2, -0.8, -0.7]}
           rotation={[0.35, -0.2, 0.15]}
           speed={1.15}
           scale={0.85}
