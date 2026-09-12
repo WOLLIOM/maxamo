@@ -1,95 +1,186 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { certificates } from "@/lib/site";
-import { PixelCluster } from "@/components/ui/PixelCluster";
-import { Photo } from "@/components/ui/Photo";
 
-const CATEGORY_ORDER = ["3D & Design", "Development", "Data & AI", "Business"] as const;
+/* ---------------------------------------------------------------------------
+   Certificates, grouped by ISSUER so the prestige reads instantly:
+   Google · AWS · Adobe · Microsoft · GitHub lead with their brand marks
+   (in real brand colors — the pop of colour against the section), and the
+   remaining coursework is tucked behind a "show all" toggle.
+--------------------------------------------------------------------------- */
 
-// A representative photo/illustration beside each category, always on the
-// right as a small accent next to the cards. Swap these `src` paths for your
-// own images any time — see the prompts in the PR notes for what each one is
-// going for.
-const CATEGORY_IMAGE: Record<
-  (typeof CATEGORY_ORDER)[number],
-  { src: string; alt: string }
-> = {
-  "3D & Design": {
-    src: "/images/real/cert-3d-design.webp",
-    alt: "3D and design work",
-  },
-  Development: {
-    src: "/images/real/cert-development.webp",
-    alt: "Code and development work",
-  },
-  "Data & AI": {
-    src: "/images/real/cert-data-ai.webp",
-    alt: "Data and AI work",
-  },
-  Business: {
-    src: "/images/real/cert-business.webp",
-    alt: "Business and strategy work",
-  },
+type BrandKey =
+  | "google"
+  | "aws"
+  | "adobe"
+  | "microsoft"
+  | "github"
+  | "pmi"
+  | "iiba"
+  | "linkedin";
+
+const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github"];
+
+const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = {
+  google: { name: "Google", color: "#4285F4", blurb: "Business intelligence & search marketing" },
+  aws: { name: "Amazon Web Services", color: "#FF9900", blurb: "Generative AI & cloud" },
+  adobe: { name: "Adobe", color: "#FA0F00", blurb: "Creative tools — Photoshop, Illustrator, Premiere" },
+  microsoft: { name: "Microsoft", color: "#00A4EF", blurb: "Data analysis" },
+  github: { name: "GitHub", color: "#8b8b93", blurb: "Project management & collaboration" },
+  pmi: { name: "PMI", color: "#6f7bd6", blurb: "Project management" },
+  iiba: { name: "IIBA", color: "#57b894", blurb: "Business analysis" },
+  linkedin: { name: "LinkedIn Learning", color: "#7ee0c3", blurb: "Development, 3D & more" },
 };
 
-// Each category gets its own permanent gradient background + glow, so the
-// grid reads at a glance instead of being one uniform wall of cards — and
-// the color doesn't wait for a hover to show up.
-const CATEGORY_STYLE: Record<
-  (typeof CATEGORY_ORDER)[number],
-  { gradient: string; dot: string; label: string; titleGlow: string; border: string }
-> = {
-  "3D & Design": {
-    gradient: "from-accent/20 via-accent/5 to-transparent",
-    dot: "bg-accent",
-    label: "text-accent",
-    titleGlow: "text-accent [text-shadow:0_0_18px_rgba(196,162,96,0.55)]",
-    border: "border-accent/30",
-  },
-  Development: {
-    gradient: "from-[#7ee0c3]/20 via-[#7ee0c3]/5 to-transparent",
-    dot: "bg-[#7ee0c3]",
-    label: "text-[#7ee0c3]",
-    titleGlow: "text-[#7ee0c3] [text-shadow:0_0_18px_rgba(126,224,195,0.55)]",
-    border: "border-[#7ee0c3]/30",
-  },
-  "Data & AI": {
-    gradient: "from-[#9fb4ff]/20 via-[#9fb4ff]/5 to-transparent",
-    dot: "bg-[#9fb4ff]",
-    label: "text-[#9fb4ff]",
-    titleGlow: "text-[#9fb4ff] [text-shadow:0_0_18px_rgba(159,180,255,0.55)]",
-    border: "border-[#9fb4ff]/30",
-  },
-  Business: {
-    gradient: "from-[#e0b86a]/20 via-[#e0b86a]/5 to-transparent",
-    dot: "bg-[#e0b86a]",
-    label: "text-[#e0b86a]",
-    titleGlow: "text-[#e0b86a] [text-shadow:0_0_18px_rgba(224,184,106,0.55)]",
-    border: "border-[#e0b86a]/30",
-  },
-};
+function brandOf(issuer: string, title: string): BrandKey {
+  if (/Amazon|AWS/i.test(issuer)) return "aws";
+  if (/Adobe/i.test(issuer)) return "adobe";
+  if (/Microsoft/i.test(issuer)) return "microsoft";
+  if (/Google/i.test(issuer)) return "google";
+  if (/GitHub/i.test(issuer) || /GitHub/i.test(title)) return "github";
+  if (/PMI/i.test(issuer)) return "pmi";
+  if (/IIBA/i.test(issuer)) return "iiba";
+  return "linkedin";
+}
 
-// Courses whose issuer/tooling is a well-known brand (Adobe, Microsoft) get a
-// small colored badge next to the issuer line so they stand out from the
-// generic LinkedIn Learning listings.
-const BRAND_BADGE: Record<string, { label: string; className: string }> = {
-  Adobe: { label: "Adobe", className: "bg-[#FF0000]/15 text-[#ff5c5c] border border-[#FF0000]/30" },
-  Microsoft: { label: "Microsoft", className: "bg-[#00A4EF]/15 text-[#5fc4ff] border border-[#00A4EF]/30" },
-};
-
-function brandBadgeFor(issuer: string) {
-  const brand = Object.keys(BRAND_BADGE).find((b) => issuer.includes(b));
-  return brand ? BRAND_BADGE[brand] : null;
+/** Recognisable brand lockups — real logo colors give the section its pop. */
+function BrandLogo({ brand }: { brand: BrandKey }) {
+  switch (brand) {
+    case "google":
+      return (
+        <span className="font-sans text-xl font-medium tracking-tight" style={{ fontFamily: "var(--font-sans), sans-serif" }}>
+          <span style={{ color: "#4285F4" }}>G</span>
+          <span style={{ color: "#EA4335" }}>o</span>
+          <span style={{ color: "#FBBC05" }}>o</span>
+          <span style={{ color: "#4285F4" }}>g</span>
+          <span style={{ color: "#34A853" }}>l</span>
+          <span style={{ color: "#EA4335" }}>e</span>
+        </span>
+      );
+    case "microsoft":
+      return (
+        <span className="inline-flex items-center gap-2">
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+            <rect x="0" y="0" width="8" height="8" fill="#F25022" />
+            <rect x="10" y="0" width="8" height="8" fill="#7FBA00" />
+            <rect x="0" y="10" width="8" height="8" fill="#00A4EF" />
+            <rect x="10" y="10" width="8" height="8" fill="#FFB900" />
+          </svg>
+          <span className="text-lg font-semibold text-ink">Microsoft</span>
+        </span>
+      );
+    case "adobe":
+      return (
+        <span className="inline-flex items-center gap-2">
+          <svg width="20" height="18" viewBox="0 0 20 18" aria-hidden>
+            <rect width="20" height="18" rx="4" fill="#FA0F00" />
+            <path d="M8.2 4.5 4.4 13.5h1.9l.8-2h3l-1.1-2.6H8.3l1-2.4 2.6 6.9h1.9L10 4.5H8.2Z" fill="#fff" />
+          </svg>
+          <span className="text-lg font-semibold" style={{ color: "#FA0F00" }}>Adobe</span>
+        </span>
+      );
+    case "aws":
+      return (
+        <span className="inline-flex items-end gap-2">
+          <span className="text-lg font-bold tracking-tight text-ink">aws</span>
+          <svg width="26" height="10" viewBox="0 0 26 10" aria-hidden className="mb-0.5">
+            <path d="M1 4c7 4 17 4 24 0" stroke="#FF9900" strokeWidth="2" fill="none" strokeLinecap="round" />
+            <path d="M21 3l4 1-2 3z" fill="#FF9900" />
+          </svg>
+        </span>
+      );
+    case "github":
+      return (
+        <span className="inline-flex items-center gap-2">
+          <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden className="text-ink" fill="currentColor">
+            <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+          </svg>
+          <span className="text-lg font-semibold text-ink">GitHub</span>
+        </span>
+      );
+    default:
+      return <span className="text-lg font-semibold text-ink">{BRAND[brand].name}</span>;
+  }
 }
 
 export function Certificates() {
   const [active, setActive] = useState<number | null>(null);
+  const [showAll, setShowAll] = useState(false);
   const activeCert = active !== null ? certificates[active] : null;
+
+  // Group certificate indices by brand.
+  const groups = useMemo(() => {
+    const g: Record<BrandKey, number[]> = {
+      google: [], aws: [], adobe: [], microsoft: [], github: [],
+      pmi: [], iiba: [], linkedin: [],
+    };
+    certificates.forEach((c, i) => g[brandOf(c.issuer, c.title)].push(i));
+    return g;
+  }, []);
+
+  const featured = FEATURED.filter((b) => groups[b].length > 0);
+  const rest = (Object.keys(groups) as BrandKey[]).filter(
+    (b) => !FEATURED.includes(b) && groups[b].length > 0,
+  );
+  const restCount = rest.reduce((n, b) => n + groups[b].length, 0);
+
+  const renderChip = (i: number, color: string, idx: number) => {
+    const c = certificates[i];
+    return (
+      <Reveal key={c.title} delay={idx} variant="scale">
+        <button
+          type="button"
+          onClick={() => setActive(i)}
+          className="group relative flex h-full w-full flex-col gap-2 overflow-hidden rounded-xl border border-line/60 bg-surface/40 p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+          style={{ borderColor: `${color}44` }}
+        >
+          <span
+            aria-hidden
+            className="absolute inset-x-0 top-0 h-[3px] opacity-70"
+            style={{ background: color }}
+          />
+          <span className="mt-1 text-sm font-semibold leading-snug text-ink">
+            {c.shortTitle}
+          </span>
+          <span className="mt-auto flex items-center justify-between text-[0.6rem] uppercase tracking-wider2 text-faint">
+            <span>{c.issuer}</span>
+            <span>{c.date}</span>
+          </span>
+        </button>
+      </Reveal>
+    );
+  };
+
+  const renderGroup = (brand: BrandKey) => {
+    const meta = BRAND[brand];
+    return (
+      <div key={brand} className="relative">
+        <div
+          className="mb-4 flex items-center gap-3 border-l-2 pl-4"
+          style={{ borderColor: meta.color }}
+        >
+          <BrandLogo brand={brand} />
+          <span className="hidden text-xs uppercase tracking-wider2 text-faint sm:inline">
+            {meta.blurb}
+          </span>
+          <span
+            className="ml-auto rounded-full px-2 py-0.5 text-[0.6rem] font-semibold"
+            style={{ background: `${meta.color}22`, color: meta.color }}
+          >
+            {groups[brand].length} cert{groups[brand].length > 1 ? "s" : ""}
+          </span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {groups[brand].map((i, idx) => renderChip(i, meta.color, idx))}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <section
@@ -97,92 +188,47 @@ export function Certificates() {
       aria-label="Certificates"
       data-cursor="heart"
       data-section="certificates"
-      data-palette="pink"
-      className="relative border-y border-line/60 bg-surface/20 py-16 md:py-20 scroll-mt-24"
+      className="relative border-y border-line/60 bg-surface/20 py-16 md:py-24 scroll-mt-24"
     >
-      <PixelCluster
-        seed={3}
-        className="absolute -left-6 top-24 hidden lg:block"
-      />
-      <PixelCluster
-        seed={9}
-        className="absolute -right-6 bottom-16 hidden lg:block"
-      />
-      <div className="mx-auto max-w-[1400px] px-5 md:px-10">
+      <div className="mx-auto max-w-[1200px] px-5 md:px-10">
         <SectionHeading
-          kicker="Always learning"
+          kicker="Certified"
           title="Certificates"
-          lede="Coursework completed across 3D, architecture, code and creative tools. Tap any card to see the certificate."
+          lede="Credentials from Google, Amazon, Adobe, Microsoft and GitHub — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
         />
 
-        <div className="mt-10 flex flex-col gap-14 md:gap-16">
-          {CATEGORY_ORDER.map((category) => {
-            const items = certificates
-              .map((c, i) => ({ ...c, i }))
-              .filter((c) => c.category === category);
-            if (items.length === 0) return null;
-            const style = CATEGORY_STYLE[category];
-            const img = CATEGORY_IMAGE[category];
-
-            return (
-              <div key={category}>
-                <p className={`flex items-center gap-2 text-[0.62rem] uppercase tracking-ultra text-faint`}>
-                  <span className={`h-1.5 w-1.5 rounded-full ${style.dot}`} />
-                  {category}
-                </p>
-                <div className="mt-4 flex flex-col gap-6 lg:flex-row lg:items-center">
-                  <div className="min-w-0 flex-1 grid gap-4 sm:grid-cols-2">
-                    {items.map(({ i, ...c }, idx) => {
-                    const badge = brandBadgeFor(c.issuer);
-                    return (
-                      <Reveal key={c.title} delay={idx} variant={idx % 2 === 0 ? "left" : "right"} className="h-full">
-                        <button
-                          type="button"
-                          onClick={() => setActive(i)}
-                          className={`group relative flex h-full min-h-[112px] w-full flex-col gap-3 overflow-hidden rounded-2xl border ${style.border} bg-gradient-to-br ${style.gradient} p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:brightness-110 md:min-h-[132px] md:p-5`}
-                        >
-                          <span
-                            aria-hidden
-                            className="absolute right-4 top-4 translate-x-1 text-lg opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100"
-                          >
-                            →
-                          </span>
-                          <span
-                            className={`text-base font-bold leading-snug pr-6 md:text-lg ${style.titleGlow}`}
-                          >
-                            {c.shortTitle}
-                          </span>
-                          <span className="mt-auto flex items-center justify-between text-[0.62rem] uppercase tracking-wider2 text-faint">
-                            <span className="flex items-center gap-1.5">
-                              {c.issuer}
-                              {badge && (
-                                <span
-                                  className={`rounded-full px-1.5 py-0.5 text-[0.55rem] font-semibold tracking-wide ${badge.className}`}
-                                >
-                                  {badge.label}
-                                </span>
-                              )}
-                            </span>
-                            <span>{c.date}</span>
-                          </span>
-                        </button>
-                      </Reveal>
-                    );
-                  })}
-                  </div>
-                  <div className="hidden shrink-0 lg:block lg:w-[150px]">
-                    <Photo
-                      src={img.src}
-                      alt={img.alt}
-                      className="aspect-[3/4] w-full"
-                      parallax={false}
-                    />
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+        <div className="mt-12 flex flex-col gap-12">
+          {featured.map((b) => renderGroup(b))}
         </div>
+
+        {restCount > 0 && (
+          <div className="mt-12">
+            <button
+              type="button"
+              onClick={() => setShowAll((s) => !s)}
+              className="flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-xs uppercase tracking-wider2 text-ink transition-colors hover:text-accent"
+            >
+              {showAll ? "Hide" : `Show all ${restCount} more`}
+              <span className={`transition-transform ${showAll ? "rotate-180" : ""}`}>↓</span>
+            </button>
+
+            <AnimatePresence initial={false}>
+              {showAll && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+                  className="overflow-hidden"
+                >
+                  <div className="mt-8 flex flex-col gap-12">
+                    {rest.map((b) => renderGroup(b))}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
 
       {/* Detail popup -- shows the actual certificate image */}
