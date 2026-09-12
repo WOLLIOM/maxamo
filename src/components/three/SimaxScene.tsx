@@ -80,9 +80,9 @@ const PIECE_CONFIG = {
   },
   codeShape: {
     name: "Code Shape",
-    position: [4.8, -1.4, -0.7] as const,
+    position: [4.8, 10.4, -0.7] as const,
     rotation: [0.35, -0.2, 0.15] as const,
-    scale: 1.0,
+    scale: 100.0,
     speed: 1.15,
     depth: 2.2,
   },
@@ -356,7 +356,7 @@ function Piece({
     // and keeps spinning slowly while hovered — reads as a genuinely
     // present, "pick me up" 3D object rather than a flat hover tint.
     if (hoverGroup.current) {
-      const targetScale = hovered ? 1.35 : 1;
+      const targetScale = hovered ? 1.35 * scale : scale;  // Multiply by config scale, not replace
       const s = THREE.MathUtils.damp(hoverGroup.current.scale.x, targetScale, 6, delta);
       hoverGroup.current.scale.setScalar(s);
       hoverGroup.current.position.y = THREE.MathUtils.damp(
