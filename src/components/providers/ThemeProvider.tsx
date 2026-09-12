@@ -81,11 +81,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(THEME_ORDER[(idx + 1) % THEME_ORDER.length]);
   };
 
-  // Scroll journey: apply the section's theme without saving it as a preference.
+  // Scroll journey: apply the section's theme INSTANTLY (no per-element colour
+  // transition) so switching while scrolling stays smooth — the animated
+  // cross-fade is only for deliberate dock picks.
   const setScene = (t: TimeOfDay) => {
     setThemeState((prev) => {
-      if (prev === t) return prev;
-      applyTheme(t, true);
+      if (prev === t || typeof document === "undefined") return prev;
+      const root = document.documentElement;
+      root.classList.add("theme-instant");
+      root.setAttribute("data-theme", t);
+      window.dispatchEvent(new CustomEvent("themechange", { detail: t }));
+      requestAnimationFrame(() =>
+        requestAnimationFrame(() => root.classList.remove("theme-instant")),
+      );
       return t;
     });
   };

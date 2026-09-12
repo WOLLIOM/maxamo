@@ -133,6 +133,13 @@ canvas {
   transition: none !important;
 }
 
+/* Scroll-journey theme switches apply instantly (this class is on <html> only
+   for that frame) so mid-scroll switching never pays a transition cost. */
+html.theme-instant body,
+html.theme-instant body * {
+  transition: none !important;
+}
+
 ::selection {
   background: rgb(var(--c-accent) / 0.9);
   color: rgb(var(--c-bg));
