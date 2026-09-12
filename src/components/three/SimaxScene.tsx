@@ -469,26 +469,26 @@ function Scene({
 
         {!lite && (
           <>
-            {/* Two notes only, tucked top and bottom, away from everything. */}
+            {/* Two notes — distinct colour + size so they don't read as twins. */}
             <Piece
-              position={[1.75, 2.0, 0.2]}
+              position={[2.0, 2.05, 0.2]}
               rotation={[0.2, -0.3, 0.1]}
               speed={1.05}
-              scale={0.9}
+              scale={0.95}
               depth={1.0}
               progressRef={progressRef}
             >
-              <MusicNote scale={1.0} />
+              <MusicNote color={GOLD} scale={1.1} />
             </Piece>
             <Piece
-              position={[-1.8, -2.05, 0.3]}
+              position={[-2.1, -2.1, 0.35]}
               rotation={[0.25, 0.5, -0.1]}
               speed={1.25}
-              scale={0.7}
+              scale={0.55}
               depth={2.0}
               progressRef={progressRef}
             >
-              <MusicNote color={GOLD} scale={0.75} />
+              <MusicNote color="#a82026" scale={0.55} />
             </Piece>
           </>
         )}
