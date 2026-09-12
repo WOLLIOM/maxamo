@@ -94,6 +94,26 @@ export const certificates: {
       "Advanced generative AI on AWS — model fine-tuning, optimization, and automated evaluation with Amazon Bedrock.",
   },
   {
+    title: "Google Business Intelligence",
+    shortTitle: "Google Business Intelligence",
+    image: "/certificates/google-business-intelligence.png",
+    issuer: "Google · Coursera",
+    date: "Sep 2026",
+    category: "Data & AI",
+    blurb:
+      "Google's professional certificate in business intelligence — data pipelines, dashboards, and turning data into decisions.",
+  },
+  {
+    title: "Practical GitHub Project Management and Collaboration",
+    shortTitle: "GitHub Project Management",
+    image: "/certificates/github-pm.png",
+    issuer: "GitHub",
+    date: "Aug 2026",
+    category: "Development",
+    blurb:
+      "Managing software projects and collaborating with issues, pull requests and project boards on GitHub.",
+  },
+  {
     title: "Revit to Unreal for Architecture, Visualization, and VR",
     shortTitle: "Revit to Unreal Certificate",
     image: "/certificates/revit-to-unreal.png",
