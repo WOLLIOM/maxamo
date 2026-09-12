@@ -35,16 +35,23 @@ export function FooterTetris() {
         .trim();
       return v ? `rgb(${v.replace(/\s+/g, ",")})` : "#888";
     }
-    const PAL = [
-      cssVar("--c-line"),
-      cssVar("--c-accent"),
-      cssVar("--c-gold"),
-      cssVar("--c-silver"),
-      cssVar("--c-accent-soft"),
-    ];
+    // Re-read on theme change so the blocks always match the active preset
+    // (the footer sits in the golden-hour zone, but the theme can be switched).
+    let PAL = ["#888", "#888", "#888", "#888", "#888"];
+    function refreshPalette() {
+      PAL = [
+        cssVar("--c-line"),
+        cssVar("--c-accent"),
+        cssVar("--c-gold"),
+        cssVar("--c-silver"),
+        cssVar("--c-accent-soft"),
+      ];
+    }
+    refreshPalette();
+    window.addEventListener("themechange", refreshPalette);
 
     let DPR = Math.min(window.devicePixelRatio || 1, 2);
-    const cell = 9;
+    const cell = 13;
     let W = 0,
       H = 0,
       cols = 0,
@@ -523,6 +530,7 @@ export function FooterTetris() {
     return () => {
       cancelAnimationFrame(raf);
       clearTimeout(grav);
+      window.removeEventListener("themechange", refreshPalette);
       document.removeEventListener("keydown", key);
       footer.removeEventListener("click", onFooterClick);
       again?.removeEventListener("click", onAgain);
@@ -536,7 +544,7 @@ export function FooterTetris() {
   return (
     <div
       ref={footerRef}
-      className="tt-footer-game relative h-[calc(var(--tt-cell,9px)*9)] w-full cursor-pointer overflow-hidden transition-[height] duration-500"
+      className="tt-footer-game relative h-[calc(var(--tt-cell,13px)*9)] w-full cursor-pointer overflow-hidden transition-[height] duration-500"
       role="button"
       aria-label="Play a hidden Tetris game"
     >
