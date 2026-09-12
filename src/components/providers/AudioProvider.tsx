@@ -18,7 +18,7 @@ interface AudioContextValue {
 
 const AudioCtx = createContext<AudioContextValue | null>(null);
 
-const TRACK = "/audio/ambient.mp3";
+const TRACK = "/audio/replay.mp3";
 const TARGET_VOLUME = 0.32;
 const FADE_MS = 1600;
 const STORAGE_KEY = "simax-sound";
