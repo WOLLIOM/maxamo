@@ -11,6 +11,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ExperienceShell } from "@/components/experience/ExperienceShell";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { CustomCursor } from "@/components/ui/CustomCursor";
+import { HalftonePanel } from "@/components/ui/HalftonePanel";
 // import { ClickBurst } from "@/components/ui/ClickBurst"; // disabled — see below
 import { PixelCursorField } from "@/components/ui/PixelCursorField";
 
@@ -127,7 +128,14 @@ export default function RootLayout({
             Skip to content
           </a>
           <Nav />
-          <main id="main" className="pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+          <main
+            id="main"
+            className="relative overflow-x-clip pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0"
+          >
+            {/* Halftone side dots live inside <main> so they scroll with the
+                content instead of staying pinned to the viewport. */}
+            <HalftonePanel side="left" />
+            <HalftonePanel side="right" />
             {children}
           </main>
           <MobileBottomBar />

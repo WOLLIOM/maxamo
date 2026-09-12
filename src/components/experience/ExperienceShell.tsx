@@ -7,7 +7,6 @@ import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
 import { ScrollComet } from "./ScrollComet";
-import { HalftonePanel } from "@/components/ui/HalftonePanel";
 
 // Ambient particles are nice but expensive — load after the shell is ready.
 const AmbientCanvas = dynamic(() => import("./AmbientCanvas").then((m) => m.AmbientCanvas), {
@@ -54,12 +53,8 @@ export function ExperienceShell() {
     <>
       <div className="grain pointer-events-none" aria-hidden />
       {ambience && <AmbientCanvas />}
-      {showCursor && (
-        <>
-          <HalftonePanel side="left" />
-          <HalftonePanel side="right" />
-        </>
-      )}
+      {/* HalftonePanel side dots now live inside <main> (layout.tsx) so they
+          scroll with the content instead of being pinned to the viewport. */}
       <ScrollComet />
       {/* ReferenceParticleField removed — PixelCursorField (in layout.tsx) is the
           single cursor particle system now; running both was redundant. */}
