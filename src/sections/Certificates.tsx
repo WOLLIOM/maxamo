@@ -135,7 +135,7 @@ export function Certificates() {
                     {items.map(({ i, ...c }, idx) => {
                     const badge = brandBadgeFor(c.issuer);
                     return (
-                      <Reveal key={c.title} delay={idx} className="h-full">
+                      <Reveal key={c.title} delay={idx} variant={idx % 2 === 0 ? "left" : "right"} className="h-full">
                         <button
                           type="button"
                           onClick={() => setActive(i)}
