@@ -51,19 +51,16 @@ export function PortraitCard() {
       />
       <div className="relative overflow-hidden rounded-[1.6rem] border border-line/70 bg-surface/60 shadow-2xl shadow-black/30">
         <div className="relative aspect-[3/4] w-full">
-          <picture>
-            <source srcSet="/images/simon-maxam.webp" type="image/webp" />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/images/real/guitar-performance.webp"
-              alt="Simon Maxam, multidisciplinary creator, in Calgary"
-              width={900}
-              height={1200}
-              className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.04]"
-              loading="lazy"
-              decoding="async"
-            />
-          </picture>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/real/simon-portrait.webp"
+            alt="Simon Maxam — developer, Calgary"
+            width={1100}
+            height={1650}
+            className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.04]"
+            loading="lazy"
+            decoding="async"
+          />
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_120%_at_50%_0%,transparent_55%,rgba(0,0,0,0.45))]" />
           <span className="pointer-events-none absolute bottom-4 left-5 text-[0.6rem] uppercase tracking-wider2 text-white/85">
             Calgary · Canada
