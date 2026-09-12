@@ -22,9 +22,11 @@ interface ThemeContextValue {
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-const STORAGE_KEY = "simax-theme";
-/** Golden hour is the default look on first visit. */
-const DEFAULT_THEME: TimeOfDay = "evening";
+// Bumped to -v2 so returning visitors pick up the new Monochrome default
+// instead of an old saved preference.
+const STORAGE_KEY = "simax-theme-v2";
+/** Monochrome is the default look on first visit. */
+const DEFAULT_THEME: TimeOfDay = "mono";
 
 /** Applies the preset and briefly enables the color-transition class so the
  *  switch animates smoothly without paying that cost the rest of the time. */

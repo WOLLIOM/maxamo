@@ -222,6 +222,40 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* ===========================================================================
+   Per-theme background "worlds" — each preset gets its own atmosphere, not
+   just a recolor. Rendered as a fixed body::before behind all content.
+   (Monochrome + Golden hour intentionally have none — kept clean.)
+   ======================================================================== */
+[data-theme="blueprint"] body::before,
+[data-theme="vivid"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Blueprint — a drafting grid: a fine grid plus bolder major lines, like a
+   technical sheet. Echoes the simonmaxam.pages.dev hub. */
+[data-theme="blueprint"] body::before {
+  opacity: 0.5;
+  background-image:
+    repeating-linear-gradient(0deg, transparent 0 31px, rgb(var(--c-line) / 0.8) 31px 32px),
+    repeating-linear-gradient(90deg, transparent 0 31px, rgb(var(--c-line) / 0.8) 31px 32px),
+    repeating-linear-gradient(0deg, transparent 0 159px, rgb(var(--c-accent) / 0.35) 159px 160px),
+    repeating-linear-gradient(90deg, transparent 0 159px, rgb(var(--c-accent) / 0.35) 159px 160px);
+}
+
+/* Vivid — a soft multi-hue aurora glow. */
+[data-theme="vivid"] body::before {
+  opacity: 0.7;
+  background-image:
+    radial-gradient(55% 45% at 18% 12%, rgb(var(--c-accent) / 0.22), transparent 60%),
+    radial-gradient(50% 45% at 85% 22%, rgb(var(--c-accent-soft) / 0.2), transparent 60%),
+    radial-gradient(55% 50% at 72% 92%, rgb(var(--c-gold) / 0.16), transparent 62%);
+}
+
 /* ------------------------- Cinematic film grain ------------------------ */
 .grain::after {
   content: "";

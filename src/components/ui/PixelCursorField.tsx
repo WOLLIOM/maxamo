@@ -52,13 +52,18 @@ export function PixelCursorField() {
     // always matches the active preset.
     let ACCENT = "214 86 48";
     let GOLD = "232 140 90";
+    let currentTheme = document.documentElement.getAttribute("data-theme") || "mono";
     function readColors() {
       const root = getComputedStyle(document.documentElement);
       ACCENT = root.getPropertyValue("--c-accent").trim() || ACCENT;
       GOLD = root.getPropertyValue("--c-accent-soft").trim() || GOLD;
+      currentTheme = document.documentElement.getAttribute("data-theme") || currentTheme;
     }
     readColors();
     window.addEventListener("themechange", readColors);
+
+    // Blueprint-only: dashed "ping" rings emitted on click for a futuristic feel.
+    const rings: { x: number; y: number; t0: number; pow: number }[] = [];
 
     let DPR = 1,
       W = 0,
@@ -337,18 +342,59 @@ export function PixelCursorField() {
       ctx!.clearRect(-30, -30, W + 60, H + 60);
 
       const radius = Math.max(1, CELL / 2 - 1);
+      const squareCells = currentTheme === "blueprint";
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const v = heat[r * cols + c];
           if (v < 0.3 && !(v >= 0.86 && v < 1.02)) continue;
-          ctx!.beginPath();
-          ctx!.arc((c + 0.5) * CELL, (r + 0.5) * CELL, radius, 0, 2 * Math.PI);
           ctx!.fillStyle = `rgb(${pickColor(v)})`;
           ctx!.globalAlpha = Math.min(1, v);
-          ctx!.fill();
+          if (squareCells) {
+            // technical pixel look — small squares snapped to the grid
+            const s = radius * 2;
+            ctx!.fillRect((c + 0.5) * CELL - radius, (r + 0.5) * CELL - radius, s, s);
+          } else {
+            ctx!.beginPath();
+            ctx!.arc((c + 0.5) * CELL, (r + 0.5) * CELL, radius, 0, 2 * Math.PI);
+            ctx!.fill();
+          }
         }
       }
       ctx!.globalAlpha = 1;
+
+      // Blueprint "ping": expanding dashed rings on click — futuristic blip.
+      if (currentTheme === "blueprint") {
+        for (let ri = rings.length - 1; ri >= 0; ri--) {
+          const rg = rings[ri];
+          const age = ns - rg.t0;
+          if (age > 1.1) {
+            rings.splice(ri, 1);
+            continue;
+          }
+          const rad = age * 340 * rg.pow;
+          const a = Math.max(0, 1 - age / 1.1);
+          ctx!.globalAlpha = a * 0.9;
+          ctx!.strokeStyle = `rgb(${ACCENT})`;
+          ctx!.lineWidth = 1.5;
+          ctx!.setLineDash([2, 7]);
+          ctx!.beginPath();
+          ctx!.arc(rg.x, rg.y, rad, 0, 2 * Math.PI);
+          ctx!.stroke();
+          // crosshair ticks
+          ctx!.beginPath();
+          ctx!.moveTo(rg.x - rad - 6, rg.y);
+          ctx!.lineTo(rg.x - rad + 6, rg.y);
+          ctx!.moveTo(rg.x + rad - 6, rg.y);
+          ctx!.lineTo(rg.x + rad + 6, rg.y);
+          ctx!.moveTo(rg.x, rg.y - rad - 6);
+          ctx!.lineTo(rg.x, rg.y - rad + 6);
+          ctx!.moveTo(rg.x, rg.y + rad - 6);
+          ctx!.lineTo(rg.x, rg.y + rad + 6);
+          ctx!.stroke();
+          ctx!.setLineDash([]);
+        }
+        ctx!.globalAlpha = 1;
+      }
       ctx!.restore();
     }
 
@@ -381,12 +427,15 @@ export function PixelCursorField() {
       const ns = performance.now() / 1000,
         ch = Math.min((ns - chT0) / 2.2, 1);
       waves.push({ x: chx, y: chy, t0: ns, pow: 0.35 + ch * 2.1 });
+      if (currentTheme === "blueprint") rings.push({ x: chx, y: chy, t0: ns, pow: 0.7 + ch * 1.4 });
       dep(chx, chy, 1, BRUSH * (2.5 + ch * 18));
       shake = 0.45 + ch * 1.9;
     }
     function onDoubleClick(e: MouseEvent) {
       if ((e.target as HTMLElement)?.closest("a, button, input, select, label")) return;
-      waves.push({ x: e.clientX, y: e.clientY, t0: performance.now() / 1000, pow: 2.8 });
+      const ns2 = performance.now() / 1000;
+      waves.push({ x: e.clientX, y: e.clientY, t0: ns2, pow: 2.8 });
+      if (currentTheme === "blueprint") rings.push({ x: e.clientX, y: e.clientY, t0: ns2, pow: 1.6 });
       dep(e.clientX, e.clientY, 1, BRUSH * 22);
       shake = 2.4;
     }
