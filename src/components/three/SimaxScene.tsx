@@ -413,13 +413,14 @@ function Scene({
           depth={0.6}
           progressRef={progressRef}
         >
-          <RealGuitar scale={4.4} />
+          <RealGuitar scale={4.2} />
         </Piece>
 
-        {/* Vinyl / music production */}
+        {/* Vinyl / music production -- lower-left, tilted so it reads as a
+            record on edge rather than a flat black disc. */}
         <Piece
-          position={[-3.15, 0.7, 0.1]}
-          rotation={[0.1, 0.45, -0.05]}
+          position={[-3.5, -1.5, -0.1]}
+          rotation={[1.15, 0.5, 0.15]}
           speed={1.1}
           float={!lite}
           depth={2.1}
@@ -428,9 +429,9 @@ function Scene({
           <VinylDisc lite={lite} />
         </Piece>
 
-        {/* SOLARIS / space and game dev */}
+        {/* SOLARIS / space and game dev -- upper-right, clear of the guitar. */}
         <Piece
-          position={[3.05, 0.5, -0.35]}
+          position={[3.5, 1.55, -0.5]}
           rotation={[0.08, -0.55, 0.08]}
           speed={1.2}
           float={!lite}
@@ -440,9 +441,9 @@ function Scene({
           <Planet />
         </Piece>
 
-        {/* Architecture / Revit */}
+        {/* Architecture / Revit -- upper-left. */}
         <Piece
-          position={[-1.55, -1.8, -0.55]}
+          position={[-3.0, 1.55, -0.5]}
           rotation={[0.15, 0.35, 0]}
           speed={1.35}
           scale={0.85}
@@ -453,9 +454,9 @@ function Scene({
           <ArchBlock lite={lite} />
         </Piece>
 
-        {/* Web development / code */}
+        {/* Web development / code -- lower-right. */}
         <Piece
-          position={[2.1, 1.95, -0.9]}
+          position={[3.0, -1.6, -0.7]}
           rotation={[0.35, -0.2, 0.15]}
           speed={1.15}
           scale={0.85}
@@ -468,55 +469,26 @@ function Scene({
 
         {!lite && (
           <>
+            {/* Two notes only, tucked top and bottom, away from everything. */}
             <Piece
-              position={[1.9, -1.1, 0.35]}
+              position={[1.75, 2.0, 0.2]}
               rotation={[0.2, -0.3, 0.1]}
               speed={1.05}
               scale={0.9}
               depth={1.0}
               progressRef={progressRef}
             >
-              <MusicNote scale={1.1} />
+              <MusicNote scale={1.0} />
             </Piece>
             <Piece
-              position={[-2.0, 1.55, -0.7]}
+              position={[-1.8, -2.05, 0.3]}
               rotation={[0.25, 0.5, -0.1]}
               speed={1.25}
-              scale={0.75}
+              scale={0.7}
               depth={2.0}
               progressRef={progressRef}
             >
-              <MusicNote color="#a82026" scale={0.85} />
-            </Piece>
-            <Piece
-              position={[-1.6, -0.5, 1.1]}
-              rotation={[0.15, -0.4, 0.05]}
-              speed={0.95}
-              scale={0.6}
-              depth={1.5}
-              progressRef={progressRef}
-            >
-              <MusicNote color={GOLD} scale={0.6} />
-            </Piece>
-            <Piece
-              position={[2.4, 1.9, 0.5]}
-              rotation={[0.1, 0.25, -0.15]}
-              speed={1.4}
-              scale={0.5}
-              depth={2.4}
-              progressRef={progressRef}
-            >
-              <MusicNote color="#a82026" scale={0.45} />
-            </Piece>
-            <Piece
-              position={[0.85, -1.85, 0.9]}
-              rotation={[0.1, 0.4, 0]}
-              speed={0.8}
-              scale={0.55}
-              depth={0.5}
-              progressRef={progressRef}
-            >
-              <Planet color="#8a3a3a" ring="#b0b6be" />
+              <MusicNote color={GOLD} scale={0.75} />
             </Piece>
           </>
         )}
