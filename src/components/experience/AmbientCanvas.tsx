@@ -53,7 +53,8 @@ export function AmbientCanvas() {
     // ---- entity pools -----------------------------------------------------
     const DUST = reduce ? 0 : mobile ? 9 : 46;
     const RICE = reduce ? 0 : mobile ? 1 : 6;
-    const ROCKETS = reduce ? 0 : mobile ? 0 : 2;
+    // Disabled: the drifting eighth-notes that chased the cursor didn't fit. (0)
+    const ROCKETS = 0;
 
     interface Dust { x: number; y: number; z: number; r: number; sx: number; sy: number; ph: number; }
     interface Rice { x: number; y: number; vx: number; vy: number; a: number; va: number; len: number; }
