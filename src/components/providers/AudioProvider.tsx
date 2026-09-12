@@ -110,8 +110,15 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
       pref = null;
     }
 
+    // On phones the soundtrack stays off until the visitor explicitly turns it
+    // on (no arming on the first tap); on desktop it arms unless muted before.
+    const isTouch =
+      typeof window !== "undefined" &&
+      (window.matchMedia?.("(pointer: coarse)").matches || "ontouchstart" in window);
+    const armAuto = isTouch ? pref === "on" : pref !== "off";
+
     let cleanupGesture: (() => void) | undefined;
-    if (pref !== "off") {
+    if (armAuto) {
       // Try immediately (works if the tab already has engagement), otherwise
       // wait for the first gesture anywhere on the page.
       el.play()

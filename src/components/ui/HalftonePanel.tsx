@@ -16,22 +16,25 @@ export function HalftonePanel({ side = "left" }: { side?: "left" | "right" }) {
   return (
     <div
       aria-hidden
-      className={`pointer-events-none fixed top-0 z-[5] hidden h-full w-20 overflow-hidden opacity-60 md:block lg:w-28 ${
+      className={`pointer-events-none fixed top-0 z-[5] hidden h-full w-16 overflow-hidden opacity-70 md:block lg:w-20 ${
         side === "left" ? "left-0" : "right-0"
       }`}
       style={{
+        // Bigger, cursor-sized dots on a wider grid.
         backgroundImage:
-          "radial-gradient(rgb(var(--c-accent)/0.5) 1px, transparent 1.3px), radial-gradient(rgb(var(--c-gold)/0.55) 1px, transparent 1.3px)",
-        backgroundSize: "10px 10px, 10px 10px",
-        backgroundPosition: "0 0, 5px 5px",
+          "radial-gradient(rgb(var(--c-accent)/0.6) 2.4px, transparent 3px), radial-gradient(rgb(var(--c-gold)/0.6) 2.4px, transparent 3px)",
+        backgroundSize: "20px 20px, 20px 20px",
+        backgroundPosition: "0 0, 10px 10px",
+        // Concentrate the dots into a soft central "vein" patch that hugs the
+        // edge and fades out in every direction — no longer a full-height wall.
         maskImage:
           side === "left"
-            ? "linear-gradient(to right, black 0%, black 45%, transparent 100%)"
-            : "linear-gradient(to left, black 0%, black 45%, transparent 100%)",
+            ? "radial-gradient(130% 42% at 0% 50%, black 0%, black 34%, transparent 72%)"
+            : "radial-gradient(130% 42% at 100% 50%, black 0%, black 34%, transparent 72%)",
         WebkitMaskImage:
           side === "left"
-            ? "linear-gradient(to right, black 0%, black 45%, transparent 100%)"
-            : "linear-gradient(to left, black 0%, black 45%, transparent 100%)",
+            ? "radial-gradient(130% 42% at 0% 50%, black 0%, black 34%, transparent 72%)"
+            : "radial-gradient(130% 42% at 100% 50%, black 0%, black 34%, transparent 72%)",
       }}
     >
       {[28, 68].map((topPct, i) => (
