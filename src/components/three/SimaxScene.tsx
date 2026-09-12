@@ -407,7 +407,7 @@ function Scene({
       <ParallaxRig gyro={gyro} progressRef={progressRef}>
         {/* Guitar -- the centerpiece, the red-cherry signature object. */}
         <Piece
-          position={[0, 0, 0]}
+          position={[0, 0.3, 0.6]}
           rotation={[Math.PI / 2.5, 2, Math.PI / -2]}
           speed={0.7}
           scale={1}
@@ -458,7 +458,7 @@ function Scene({
 
         {/* Web development / code -- lower-right. */}
         <Piece
-          position={[4.2, -0.8, -0.7]}
+          position={[4.8, -1.4, -0.7]}
           rotation={[0.35, -0.2, 0.15]}
           speed={1.15}
           scale={1.0}
