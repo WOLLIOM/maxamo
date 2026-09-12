@@ -22,7 +22,7 @@ const FEATURE_FLAGS = {
   story: true,
   gallery: true,
   awards: true,
-  processSpectrum: true,
+  processSpectrum: false,
   signature: true,
   certificates: true,
   homeExperience: true,
