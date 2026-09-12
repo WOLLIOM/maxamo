@@ -176,15 +176,6 @@ export const certificates: {
     blurb: "Advanced C++ — lambdas, modern best practices, deeper language concepts.",
   },
   {
-    title: "Career Essentials in Data Analysis by Microsoft and LinkedIn",
-    shortTitle: "Data Analysis Certificate",
-    image: "/certificates/data-analysis-microsoft.png",
-    issuer: "LinkedIn Learning · Microsoft",
-    date: "Aug 2026",
-    category: "Data & AI",
-    blurb: "Microsoft/LinkedIn learning path covering data analysis and visualization fundamentals.",
-  },
-  {
     title: "Artificial Intelligence Foundations: Machine Learning",
     shortTitle: "Machine Learning Certificate",
     image: "/certificates/ai-foundations-ml.png",
