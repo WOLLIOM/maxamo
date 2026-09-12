@@ -49,7 +49,7 @@ const PIECE_CONFIG = {
     position: [0, 0.3, 0.6] as const,
     rotation: [Math.PI / 2.5, 2, Math.PI / -2] as const,
     scale: 5.2,
-    speed: 0.7,
+    speed: 1.7,
     depth: 0.6,
     modelScale: undefined, // RealGuitar uses scale prop
   },
@@ -58,37 +58,37 @@ const PIECE_CONFIG = {
     position: [-3.5, -1.5, -0.1] as const,
     rotation: [1.15, 0.5, 0.15] as const,
     scale: 1,
-    speed: 1.1,
+    speed: 8.1,
     depth: 2.1,
   },
   saturn: {
     name: "Saturn",
-    position: [3.5, 0.75, -1.2] as const,
+    position: [3.5, 0.1, -1.2] as const,
     rotation: [0.15, -0.55, 0.08] as const,
     scale: 1,
-    speed: 1.2,
+    speed: 2.2,
     depth: 1.4,
     modelScale: 0.42,
   },
   archBlock: {
     name: "Architecture Block",
-    position: [-3.8, 2.1, -0.5] as const,
+    position: [-3.8, 1.3, -0.5] as const,
     rotation: [0.15, 0.35, 0] as const,
-    scale: 1.0,
-    speed: 1.35,
+    scale: 1.2,
+    speed: 3.35,
     depth: 1.8,
   },
   codeShape: {
     name: "Code Shape",
-    position: [4.8, 10.4, -0.7] as const,
+    position: [4.5, -1.4, -0.3] as const,
     rotation: [0.35, -0.2, 0.15] as const,
-    scale: 100.0,
+    scale: 1.2,
     speed: 1.15,
     depth: 2.2,
   },
   notaGLB: {
     name: "Music Note (GLB)",
-    position: [2.0, 2.05, 0.2] as const,
+    position: [2.0, 1.55, -1.2] as const,
     rotation: [0.2, -0.3, 0.1] as const,
     scale: 1.05,
     speed: 1.05,
@@ -99,7 +99,7 @@ const PIECE_CONFIG = {
     name: "Music Note (Red)",
     position: [-2.1, -2.1, 0.35] as const,
     rotation: [0.25, 0.5, -0.1] as const,
-    scale: 0.65,
+    scale: 1.05,
     speed: 1.25,
     depth: 2.0,
     modelScale: 0.65,
@@ -328,8 +328,8 @@ function Piece({
   progressRef,
   children,
 }: {
-  position: [number, number, number];
-  rotation?: [number, number, number];
+  position: readonly [number, number, number];
+  rotation?: readonly [number, number, number];
   speed?: number;
   scale?: number;
   float?: boolean;
@@ -359,15 +359,18 @@ function Piece({
       const targetScale = hovered ? 1.35 * scale : scale;  // Multiply by config scale, not replace
       const s = THREE.MathUtils.damp(hoverGroup.current.scale.x, targetScale, 6, delta);
       hoverGroup.current.scale.setScalar(s);
+      // IMPORTANT: add the hover-pop offset on top of the piece's own
+      // base position[1]/[2] — don't replace it, or every config Y/Z
+      // you set gets silently damped back to 0 within about a second.
       hoverGroup.current.position.y = THREE.MathUtils.damp(
         hoverGroup.current.position.y,
-        hovered ? 0.18 : 0,
+        position[1] + (hovered ? 0.18 : 0),
         6,
         delta,
       );
       hoverGroup.current.position.z = THREE.MathUtils.damp(
         hoverGroup.current.position.z,
-        hovered ? 0.9 : 0,
+        position[2] + (hovered ? 0.9 : 0),
         5,
         delta,
       );
