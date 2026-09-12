@@ -64,6 +64,27 @@ export function PixelCursorField() {
 
     // Blueprint-only: dashed "ping" rings emitted on click for a futuristic feel.
     const rings: { x: number; y: number; t0: number; pow: number }[] = [];
+    // Vivid-only: colorful confetti particles burst on click.
+    const confetti: {
+      x: number; y: number; vx: number; vy: number;
+      life: number; hue: number; size: number; rot: number; vr: number;
+    }[] = [];
+    function burstConfetti(x: number, y: number, count: number, power: number) {
+      for (let i = 0; i < count; i++) {
+        const a = Math.random() * 6.2832;
+        const sp = (1.5 + Math.random() * 6) * power;
+        confetti.push({
+          x, y,
+          vx: Math.cos(a) * sp,
+          vy: Math.sin(a) * sp - 2,
+          life: 1,
+          hue: Math.random() * 360,
+          size: 3 + Math.random() * 5,
+          rot: Math.random() * 6.2832,
+          vr: (Math.random() - 0.5) * 0.4,
+        });
+      }
+    }
 
     let DPR = 1,
       W = 0,
@@ -343,11 +364,15 @@ export function PixelCursorField() {
 
       const radius = Math.max(1, CELL / 2 - 1);
       const squareCells = currentTheme === "blueprint";
+      const rainbow = currentTheme === "vivid";
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const v = heat[r * cols + c];
           if (v < 0.3 && !(v >= 0.86 && v < 1.02)) continue;
-          ctx!.fillStyle = `rgb(${pickColor(v)})`;
+          // Vivid: hue shimmers across the grid and drifts over time.
+          ctx!.fillStyle = rainbow
+            ? `hsl(${(c * 6 + r * 6 + ns * 60) % 360} 90% ${55 + v * 12}%)`
+            : `rgb(${pickColor(v)})`;
           ctx!.globalAlpha = Math.min(1, v);
           if (squareCells) {
             // technical pixel look — small squares snapped to the grid
@@ -395,6 +420,31 @@ export function PixelCursorField() {
         }
         ctx!.globalAlpha = 1;
       }
+
+      // Vivid "confetti": colorful particles with gravity + spin, fading out.
+      if (currentTheme === "vivid" && confetti.length) {
+        for (let ci = confetti.length - 1; ci >= 0; ci--) {
+          const p = confetti[ci];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vx *= 0.96;
+          p.vy = p.vy * 0.96 + 0.22; // gravity
+          p.rot += p.vr;
+          p.life -= 0.016;
+          if (p.life <= 0) {
+            confetti.splice(ci, 1);
+            continue;
+          }
+          ctx!.save();
+          ctx!.translate(p.x, p.y);
+          ctx!.rotate(p.rot);
+          ctx!.globalAlpha = Math.max(0, p.life);
+          ctx!.fillStyle = `hsl(${p.hue} 90% 60%)`;
+          ctx!.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+          ctx!.restore();
+        }
+        ctx!.globalAlpha = 1;
+      }
       ctx!.restore();
     }
 
@@ -428,6 +478,7 @@ export function PixelCursorField() {
         ch = Math.min((ns - chT0) / 2.2, 1);
       waves.push({ x: chx, y: chy, t0: ns, pow: 0.35 + ch * 2.1 });
       if (currentTheme === "blueprint") rings.push({ x: chx, y: chy, t0: ns, pow: 0.7 + ch * 1.4 });
+      if (currentTheme === "vivid") burstConfetti(chx, chy, Math.round(20 + ch * 40), 0.7 + ch * 1.3);
       dep(chx, chy, 1, BRUSH * (2.5 + ch * 18));
       shake = 0.45 + ch * 1.9;
     }
@@ -436,6 +487,7 @@ export function PixelCursorField() {
       const ns2 = performance.now() / 1000;
       waves.push({ x: e.clientX, y: e.clientY, t0: ns2, pow: 2.8 });
       if (currentTheme === "blueprint") rings.push({ x: e.clientX, y: e.clientY, t0: ns2, pow: 1.6 });
+      if (currentTheme === "vivid") burstConfetti(e.clientX, e.clientY, 60, 1.6);
       dep(e.clientX, e.clientY, 1, BRUSH * 22);
       shake = 2.4;
     }
