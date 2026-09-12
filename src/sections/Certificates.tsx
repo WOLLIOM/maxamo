@@ -53,7 +53,7 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
   switch (brand) {
     case "google":
       return (
-        <span className="font-sans text-xl font-medium tracking-tight" style={{ fontFamily: "var(--font-sans), sans-serif" }}>
+        <span className="font-sans text-3xl font-medium tracking-tight" style={{ fontFamily: "var(--font-sans), sans-serif" }}>
           <span style={{ color: "#4285F4" }}>G</span>
           <span style={{ color: "#EA4335" }}>o</span>
           <span style={{ color: "#FBBC05" }}>o</span>
@@ -64,31 +64,31 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
       );
     case "microsoft":
       return (
-        <span className="inline-flex items-center gap-2">
-          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden>
+        <span className="inline-flex items-center gap-2.5">
+          <svg width="26" height="26" viewBox="0 0 18 18" aria-hidden>
             <rect x="0" y="0" width="8" height="8" fill="#F25022" />
             <rect x="10" y="0" width="8" height="8" fill="#7FBA00" />
             <rect x="0" y="10" width="8" height="8" fill="#00A4EF" />
             <rect x="10" y="10" width="8" height="8" fill="#FFB900" />
           </svg>
-          <span className="text-lg font-semibold text-ink">Microsoft</span>
+          <span className="text-2xl font-semibold text-ink">Microsoft</span>
         </span>
       );
     case "adobe":
       return (
-        <span className="inline-flex items-center gap-2">
-          <svg width="20" height="18" viewBox="0 0 20 18" aria-hidden>
+        <span className="inline-flex items-center gap-2.5">
+          <svg width="28" height="25" viewBox="0 0 20 18" aria-hidden>
             <rect width="20" height="18" rx="4" fill="#FA0F00" />
             <path d="M8.2 4.5 4.4 13.5h1.9l.8-2h3l-1.1-2.6H8.3l1-2.4 2.6 6.9h1.9L10 4.5H8.2Z" fill="#fff" />
           </svg>
-          <span className="text-lg font-semibold" style={{ color: "#FA0F00" }}>Adobe</span>
+          <span className="text-2xl font-semibold" style={{ color: "#FA0F00" }}>Adobe</span>
         </span>
       );
     case "aws":
       return (
-        <span className="inline-flex items-end gap-2">
-          <span className="text-lg font-bold tracking-tight text-ink">aws</span>
-          <svg width="26" height="10" viewBox="0 0 26 10" aria-hidden className="mb-0.5">
+        <span className="inline-flex items-end gap-2.5">
+          <span className="text-2xl font-bold tracking-tight text-ink">aws</span>
+          <svg width="34" height="13" viewBox="0 0 26 10" aria-hidden className="mb-1">
             <path d="M1 4c7 4 17 4 24 0" stroke="#FF9900" strokeWidth="2" fill="none" strokeLinecap="round" />
             <path d="M21 3l4 1-2 3z" fill="#FF9900" />
           </svg>
@@ -96,15 +96,15 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
       );
     case "github":
       return (
-        <span className="inline-flex items-center gap-2">
-          <svg width="20" height="20" viewBox="0 0 16 16" aria-hidden className="text-ink" fill="currentColor">
+        <span className="inline-flex items-center gap-2.5">
+          <svg width="28" height="28" viewBox="0 0 16 16" aria-hidden className="text-ink" fill="currentColor">
             <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 2-.27c.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
           </svg>
-          <span className="text-lg font-semibold text-ink">GitHub</span>
+          <span className="text-2xl font-semibold text-ink">GitHub</span>
         </span>
       );
     default:
-      return <span className="text-lg font-semibold text-ink">{BRAND[brand].name}</span>;
+      return <span className="text-xl font-semibold text-ink">{BRAND[brand].name}</span>;
   }
 }
 
@@ -132,25 +132,37 @@ export function Certificates() {
   const renderChip = (i: number, color: string, idx: number) => {
     const c = certificates[i];
     return (
-      <Reveal key={c.title} delay={idx} variant="scale">
+      <Reveal key={c.title} delay={idx} variant="scale" className="flex-1 basis-[280px]">
         <button
           type="button"
           onClick={() => setActive(i)}
-          className="group relative flex h-full w-full flex-col gap-2 overflow-hidden rounded-xl border border-line/60 bg-surface/40 p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
-          style={{ borderColor: `${color}44` }}
+          className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border bg-surface/40 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+          style={{ borderColor: `${color}55` }}
         >
           <span
             aria-hidden
-            className="absolute inset-x-0 top-0 h-[3px] opacity-70"
+            className="absolute inset-x-0 top-0 z-10 h-[3px] opacity-80"
             style={{ background: color }}
           />
-          <span className="mt-1 text-sm font-semibold leading-snug text-ink">
-            {c.shortTitle}
-          </span>
-          <span className="mt-auto flex items-center justify-between text-[0.6rem] uppercase tracking-wider2 text-faint">
-            <span>{c.issuer}</span>
-            <span>{c.date}</span>
-          </span>
+          {/* the actual certificate — fills the card, fills the row */}
+          <div className="relative aspect-[7/5] w-full overflow-hidden bg-white">
+            <Image
+              src={c.image}
+              alt={`${c.title} certificate`}
+              fill
+              sizes="(max-width: 768px) 90vw, 400px"
+              className="object-contain p-2 transition-transform duration-300 group-hover:scale-[1.03]"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5 p-4 md:p-5">
+            <span className="text-base font-semibold leading-snug text-ink md:text-lg">
+              {c.shortTitle}
+            </span>
+            <span className="flex items-center justify-between text-[0.62rem] uppercase tracking-wider2 text-faint">
+              <span>{c.issuer}</span>
+              <span>{c.date}</span>
+            </span>
+          </div>
         </button>
       </Reveal>
     );
@@ -175,7 +187,7 @@ export function Certificates() {
             {groups[brand].length} cert{groups[brand].length > 1 ? "s" : ""}
           </span>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="flex flex-wrap gap-4">
           {groups[brand].map((i, idx) => renderChip(i, meta.color, idx))}
         </div>
       </div>

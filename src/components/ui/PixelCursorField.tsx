@@ -78,7 +78,7 @@ export function PixelCursorField() {
           vx: Math.cos(a) * sp,
           vy: Math.sin(a) * sp - 2,
           life: 1,
-          hue: Math.random() * 360,
+          hue: 230 + Math.random() * 70, // purple → blue, matches vivid
           size: 3 + Math.random() * 5,
           rot: Math.random() * 6.2832,
           vr: (Math.random() - 0.5) * 0.4,
@@ -369,9 +369,9 @@ export function PixelCursorField() {
         for (let c = 0; c < cols; c++) {
           const v = heat[r * cols + c];
           if (v < 0.3 && !(v >= 0.86 && v < 1.02)) continue;
-          // Vivid: hue shimmers across the grid and drifts over time.
+          // Vivid: hue shimmers within a purple→blue band (not full rainbow).
           ctx!.fillStyle = rainbow
-            ? `hsl(${(c * 6 + r * 6 + ns * 60) % 360} 90% ${55 + v * 12}%)`
+            ? `hsl(${230 + ((c * 4 + r * 4 + ns * 30) % 70)} 85% ${58 + v * 12}%)`
             : `rgb(${pickColor(v)})`;
           ctx!.globalAlpha = Math.min(1, v);
           if (squareCells) {
