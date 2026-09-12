@@ -48,13 +48,17 @@ export function PixelCursorField() {
 
     // colours pulled from the site's own CSS vars — two tones, same as the
     // rest of the pixel UI (accent for the body of the effect, gold for hot
-    // crests / wave fronts)
-    const root = getComputedStyle(document.documentElement);
-    const ACCENT = root.getPropertyValue("--c-accent").trim() || "214 86 48";
-    // Was --c-gold, which reads as a washed-out pale yellow on the hot tips.
-    // accent-soft is a richer warm orange that actually matches the
-    // golden-hour palette.
-    const GOLD = root.getPropertyValue("--c-accent-soft").trim() || "232 140 90";
+    // crests / wave fronts). Re-read on every theme switch so the cursor
+    // always matches the active preset.
+    let ACCENT = "214 86 48";
+    let GOLD = "232 140 90";
+    function readColors() {
+      const root = getComputedStyle(document.documentElement);
+      ACCENT = root.getPropertyValue("--c-accent").trim() || ACCENT;
+      GOLD = root.getPropertyValue("--c-accent-soft").trim() || GOLD;
+    }
+    readColors();
+    window.addEventListener("themechange", readColors);
 
     let DPR = 1,
       W = 0,
@@ -398,6 +402,7 @@ export function PixelCursorField() {
     return () => {
       cancelAnimationFrame(animId);
       window.removeEventListener("resize", onResize);
+      window.removeEventListener("themechange", readColors);
       window.removeEventListener("load", collectHeadlines);
       mo.disconnect();
       document.removeEventListener("pointermove", onPointerMove);

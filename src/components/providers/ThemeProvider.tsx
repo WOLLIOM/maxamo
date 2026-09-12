@@ -8,19 +8,15 @@ import {
   useRef,
   useState,
 } from "react";
-import {
-  getTimeOfDay,
-  msUntilNextPhase,
-  type TimeOfDay,
-} from "@/lib/time-of-day";
+import { THEME_ORDER, isTheme, type TimeOfDay } from "@/lib/time-of-day";
 
 interface ThemeContextValue {
   theme: TimeOfDay;
-  /** true when the theme is following the visitor's local clock. */
+  /** Kept for API compatibility with the dock; presets are always manual now. */
   auto: boolean;
-  /** Manually pick a theme (disables auto). */
+  /** Pick a specific preset. */
   setTheme: (t: TimeOfDay) => void;
-  /** Cycle night → morning → evening → auto. */
+  /** Advance to the next preset in THEME_ORDER. */
   cycle: () => void;
 }
 
@@ -30,15 +26,27 @@ const STORAGE_KEY = "simax-theme";
 /** Golden hour is the default look on first visit. */
 const DEFAULT_THEME: TimeOfDay = "evening";
 
-function applyTheme(theme: TimeOfDay) {
+/** Applies the preset and briefly enables the color-transition class so the
+ *  switch animates smoothly without paying that cost the rest of the time. */
+function applyTheme(theme: TimeOfDay, animate = false) {
   if (typeof document === "undefined") return;
-  document.documentElement.setAttribute("data-theme", theme);
+  const root = document.documentElement;
+  if (animate) {
+    root.classList.add("theme-anim");
+    window.clearTimeout((applyTheme as { _t?: number })._t);
+    (applyTheme as { _t?: number })._t = window.setTimeout(
+      () => root.classList.remove("theme-anim"),
+      600,
+    );
+  }
+  root.setAttribute("data-theme", theme);
+  // Let canvas visuals (cursor field, etc.) re-read the new accent colors.
+  window.dispatchEvent(new CustomEvent("themechange", { detail: theme }));
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<TimeOfDay>(DEFAULT_THEME);
-  const [auto, setAuto] = useState(false);
-  const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const mounted = useRef(false);
 
   // Hydrate from the saved preference (matches the pre-paint script in layout).
   useEffect(() => {
@@ -48,69 +56,31 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       pref = null;
     }
-    if (pref === "auto") {
-      setAuto(true);
-    } else if (pref === "morning" || pref === "evening" || pref === "night") {
-      setAuto(false);
-      setThemeState(pref);
-      applyTheme(pref);
-    } else {
-      // No stored choice → golden-hour default.
-      setAuto(false);
-      setThemeState(DEFAULT_THEME);
-      applyTheme(DEFAULT_THEME);
-    }
+    const next = isTheme(pref) ? pref : DEFAULT_THEME;
+    setThemeState(next);
+    applyTheme(next);
+    mounted.current = true;
   }, []);
 
-  // When in auto mode, follow the local clock and re-check at each phase edge.
-  useEffect(() => {
-    if (!auto) return;
-
-    function sync() {
-      const next = getTimeOfDay();
-      setThemeState(next);
-      applyTheme(next);
-      timer.current = setTimeout(sync, msUntilNextPhase() + 500);
-    }
-    sync();
-
-    return () => {
-      if (timer.current) clearTimeout(timer.current);
-    };
-  }, [auto]);
-
-  const persist = (value: string) => {
+  const setTheme = (t: TimeOfDay) => {
+    setThemeState(t);
+    applyTheme(t, true);
     try {
-      localStorage.setItem(STORAGE_KEY, value);
+      localStorage.setItem(STORAGE_KEY, t);
     } catch {
       /* storage unavailable — ignore */
     }
   };
 
-  const setTheme = (t: TimeOfDay) => {
-    setAuto(false);
-    setThemeState(t);
-    applyTheme(t);
-    persist(t);
-  };
-
   const cycle = () => {
-    const order: (TimeOfDay | "auto")[] = ["night", "morning", "evening", "auto"];
-    const current = auto ? "auto" : theme;
-    const idx = order.indexOf(current);
-    const next = order[(idx + 1) % order.length];
-    if (next === "auto") {
-      setAuto(true);
-      persist("auto");
-    } else {
-      setTheme(next);
-    }
+    const idx = THEME_ORDER.indexOf(theme);
+    setTheme(THEME_ORDER[(idx + 1) % THEME_ORDER.length]);
   };
 
   const value = useMemo(
-    () => ({ theme, auto, setTheme, cycle }),
+    () => ({ theme, auto: false, setTheme, cycle }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [theme, auto],
+    [theme],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
