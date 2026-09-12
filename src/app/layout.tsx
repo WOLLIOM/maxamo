@@ -11,7 +11,7 @@ import { Footer } from "@/components/layout/Footer";
 import { ExperienceShell } from "@/components/experience/ExperienceShell";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
 import { CustomCursor } from "@/components/ui/CustomCursor";
-import { ClickBurst } from "@/components/ui/ClickBurst";
+// import { ClickBurst } from "@/components/ui/ClickBurst"; // disabled — see below
 import { PixelCursorField } from "@/components/ui/PixelCursorField";
 
 export const metadata: Metadata = {
@@ -134,7 +134,7 @@ export default function RootLayout({
           <Footer />
           <ExperienceShell />
           <CustomCursor />
-          <ClickBurst />
+          {/* <ClickBurst /> — disabled: square explosion + pixel heart on click (didn't match). Re-enable to bring back. */}
           <PixelCursorField />
         </Providers>
         <GoogleAnalytics />
