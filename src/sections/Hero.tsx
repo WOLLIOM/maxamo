@@ -157,7 +157,7 @@ export function Hero() {
             className="mb-6 flex items-center gap-3"
           >
             <span className="h-px w-10 bg-accent/60" />
-            <span className="kicker">Game Dev · Architecture · Music · Code</span>
+            <span className="kicker">Web · Apps · 3D · Code</span>
             <span className="h-px w-10 bg-accent/60" />
           </motion.div>
 
@@ -181,8 +181,8 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.7 }}
             className="mt-4 max-w-md text-balance text-sm font-medium leading-relaxed text-ink/85 max-md:mt-3 md:mt-7 md:text-base md:text-lg"
           >
-            Hi, I&apos;m Simon Maxam — I build immersive websites, interactive
-            3D worlds, and games.
+            Hi, I&apos;m Simon Maxam — a developer building modern websites,
+            web apps, and interactive 3D.
           </motion.p>
 
           <motion.div
