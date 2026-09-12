@@ -123,8 +123,13 @@ function ScrollCamera({
   const smooth = useRef(0);
   const look = useRef(new THREE.Vector3(0, 0, 0));
 
-  // Keyframes: start wide → glide in → intimate close-up
-  const keys = lite
+  // Keyframes: start wide → glide in → intimate close-up.
+  //
+  // GENTLE-ZOOM EXPERIMENT (2026-09-12): the camera now stays much further
+  // back so the models only get a little bigger as you scroll, instead of
+  // the guitar zooming huge on the first flick. To revert to the old strong
+  // dolly, swap the `keys` assignment back to OLD_KEYS below.
+  const OLD_KEYS = lite
     ? [
         { p: 0, pos: [0, 0.25, 8.4] as const, look: [0, 0, 0] as const },
         { p: 1, pos: [0.4, 0.55, 5.2] as const, look: [0, 0.1, 0] as const },
@@ -133,6 +138,17 @@ function ScrollCamera({
         { p: 0, pos: [0, 0.2, 8.4] as const, look: [0, 0, 0] as const },
         { p: 0.45, pos: [1.1, 0.55, 5.8] as const, look: [0.1, 0.1, -0.2] as const },
         { p: 1, pos: [-0.6, 0.9, 3.6] as const, look: [0, 0.15, 0] as const },
+      ];
+  void OLD_KEYS; // kept for easy revert — see comment above
+  const keys = lite
+    ? [
+        { p: 0, pos: [0, 0.25, 8.4] as const, look: [0, 0, 0] as const },
+        { p: 1, pos: [0.3, 0.45, 7.4] as const, look: [0, 0.1, 0] as const },
+      ]
+    : [
+        { p: 0, pos: [0, 0.2, 8.4] as const, look: [0, 0, 0] as const },
+        { p: 0.45, pos: [0.5, 0.4, 7.8] as const, look: [0.05, 0.1, -0.1] as const },
+        { p: 1, pos: [-0.3, 0.55, 6.9] as const, look: [0, 0.12, 0] as const },
       ];
 
   useFrame((_, delta) => {
@@ -308,9 +324,11 @@ function ParallaxRig({
       delta,
     );
     // Parallax depth: whole cluster drifts toward camera a little on scroll.
+    // Gentle-zoom experiment: was `p * 1.2` — reduced so the cluster barely
+    // creeps forward. Restore 1.2 to bring the old feel back.
     group.current.position.z = THREE.MathUtils.damp(
       group.current.position.z,
-      p * 1.2,
+      p * 0.5,
       2.8,
       delta,
     );
@@ -345,9 +363,11 @@ function Piece({
   useFrame((_, delta) => {
     if (!offset.current || !progressRef) return;
     const p = progressRef.current;
+    // Gentle-zoom experiment: was `p * depth * 1.8` — halved so individual
+    // pieces don't rush the camera on scroll. Restore 1.8 for the old feel.
     offset.current.position.z = THREE.MathUtils.damp(
       offset.current.position.z,
-      p * depth * 1.8,
+      p * depth * 0.8,
       3,
       delta,
     );

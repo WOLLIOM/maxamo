@@ -111,8 +111,8 @@ export function Story() {
           <Reveal>
             <Photo
               src="/images/real/throne-portrait.webp"
-              alt="Simon Maxam portrait"
-              label="Simon Maxam"
+              alt="Simon Maxam as a kid"
+              label="Simon Maxam · as a kid"
               className="aspect-[4/5] md:aspect-[3/4]"
               data-cursor-arrow
             />
