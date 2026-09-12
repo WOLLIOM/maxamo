@@ -11,7 +11,7 @@ export const site = {
   concept:
     "SIMAX — Simon Maxam. A creative studio where music, architecture, code, and storytelling come together to build immersive experiences.",
   description:
-    "SIMAX is a multidisciplinary creative studio founded by Simon Maxam, combining 3D design, architecture visualization, music, technology, and digital experiences to create cinematic worlds and innovative solutions.",
+    "Simon Maxam is a web developer and 3D artist in Calgary building immersive websites, interactive 3D worlds, and games using Three.js, Blender, and Unreal Engine 5.",
   // Live production domain for THIS site (the SIMAX portfolio).
   url: "https://maxam.vercel.app",
   // Simon's personal hub / index site — every project links back here.
