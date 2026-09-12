@@ -14,8 +14,14 @@ import { Newsletter } from "@/sections/Newsletter";
 import { FAQ } from "@/sections/FAQ";
 import { TextMarquee } from "@/components/ui/TextMarquee";
 import { PixelMarquee } from "@/components/ui/PixelMarquee";
+import { ScrollThemer } from "@/components/experience/ScrollThemer";
 import { faqs } from "@/lib/faq";
 import { faqSchema } from "@/lib/schema";
+
+/** Zero-height markers that drive the scroll theme journey (see ScrollThemer). */
+function Scene({ theme }: { theme: string }) {
+  return <span aria-hidden data-scene-theme={theme} className="block h-0 w-0" />;
+}
 
 // Feature flags — toggle sections on/off via code. Control with chat: "toggle off Certificates" etc.
 const FEATURE_FLAGS = {
@@ -39,16 +45,21 @@ export default function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }}
       />
+      <ScrollThemer />
+      {/* Scroll journey: Vivid → Monochrome (certificates) → Blueprint → Golden hour (bottom) */}
+      <Scene theme="vivid" />
       <Hero />
       {FEATURE_FLAGS.story && <Story />}
       {FEATURE_FLAGS.gallery && <GalleryPreview />}
       {FEATURE_FLAGS.awards && <Awards />}
+      <Scene theme="mono" />
       {FEATURE_FLAGS.certificates && <Certificates />}
       {FEATURE_FLAGS.processSpectrum && <ProcessSpectrum />}
       <TextMarquee text="THE ANSWER IS YES WE DO IT · THE ANSWER IS YES WE DO IT ·" />
       {FEATURE_FLAGS.signature && <Signature />}
       <GuitarPlayground />
       <Music />
+      <Scene theme="blueprint" />
       {FEATURE_FLAGS.projectLinks && <ProjectLinks />}
       {FEATURE_FLAGS.homeExperience && <HomeExperience />}
       <TextMarquee />
@@ -59,6 +70,7 @@ export default function HomePage() {
           cell={7}
         />
       </div>
+      <Scene theme="evening" />
       {FEATURE_FLAGS.newsletter && <Newsletter />}
       {FEATURE_FLAGS.faq && <FAQ />}
     </>

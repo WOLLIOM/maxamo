@@ -18,6 +18,8 @@ interface ThemeContextValue {
   setTheme: (t: TimeOfDay) => void;
   /** Advance to the next preset in THEME_ORDER. */
   cycle: () => void;
+  /** Apply a theme from the scroll journey (does not persist as a choice). */
+  setScene: (t: TimeOfDay) => void;
 }
 
 const ThemeContext = createContext<ThemeContextValue | null>(null);
@@ -79,8 +81,17 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     setTheme(THEME_ORDER[(idx + 1) % THEME_ORDER.length]);
   };
 
+  // Scroll journey: apply the section's theme without saving it as a preference.
+  const setScene = (t: TimeOfDay) => {
+    setThemeState((prev) => {
+      if (prev === t) return prev;
+      applyTheme(t, true);
+      return t;
+    });
+  };
+
   const value = useMemo(
-    () => ({ theme, auto: false, setTheme, cycle }),
+    () => ({ theme, auto: false, setTheme, cycle, setScene }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [theme],
   );
