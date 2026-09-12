@@ -26,6 +26,87 @@ type Look = { x: number; y: number };
 
 export type ScrollProgressRef = React.MutableRefObject<number>;
 
+/* ─────────────────────────────────────────────────────────────────
+   3D PIECE CONFIGURATION — Edit positions, scales, rotations here.
+   Each piece is named so you can easily adjust them locally.
+
+   HOW TO EDIT LOCALLY:
+   1. Change any [x, y, z] position, rotation, or scale below
+   2. Run: npm run dev
+   3. Reload browser to see changes in real-time
+   4. When happy, tell Claude to push it out
+
+   Parameters:
+   - position: [x-left/right, y-up/down, z-forward/back]
+   - rotation: [pitch, yaw, roll] in radians (use Math.PI/N)
+   - scale: size multiplier (1 = default)
+   - speed: float animation speed (higher = faster bobbing)
+   - depth: parallax depth during scroll (higher = moves more)
+   ───────────────────────────────────────────────────────────────── */
+const PIECE_CONFIG = {
+  guitar: {
+    name: "Guitar",
+    position: [0, 0.3, 0.6] as const,
+    rotation: [Math.PI / 2.5, 2, Math.PI / -2] as const,
+    scale: 5.2,
+    speed: 0.7,
+    depth: 0.6,
+    modelScale: undefined, // RealGuitar uses scale prop
+  },
+  vinyl: {
+    name: "Vinyl Disc",
+    position: [-3.5, -1.5, -0.1] as const,
+    rotation: [1.15, 0.5, 0.15] as const,
+    scale: 1,
+    speed: 1.1,
+    depth: 2.1,
+  },
+  saturn: {
+    name: "Saturn",
+    position: [3.5, 0.75, -1.2] as const,
+    rotation: [0.15, -0.55, 0.08] as const,
+    scale: 1,
+    speed: 1.2,
+    depth: 1.4,
+    modelScale: 0.42,
+  },
+  archBlock: {
+    name: "Architecture Block",
+    position: [-3.8, 2.1, -0.5] as const,
+    rotation: [0.15, 0.35, 0] as const,
+    scale: 1.0,
+    speed: 1.35,
+    depth: 1.8,
+  },
+  codeShape: {
+    name: "Code Shape",
+    position: [4.8, -1.4, -0.7] as const,
+    rotation: [0.35, -0.2, 0.15] as const,
+    scale: 1.0,
+    speed: 1.15,
+    depth: 2.2,
+  },
+  notaGLB: {
+    name: "Music Note (GLB)",
+    position: [2.0, 2.05, 0.2] as const,
+    rotation: [0.2, -0.3, 0.1] as const,
+    scale: 1.05,
+    speed: 1.05,
+    depth: 1.0,
+    modelScale: 0.85,
+  },
+  noteRed: {
+    name: "Music Note (Red)",
+    position: [-2.1, -2.1, 0.35] as const,
+    rotation: [0.25, 0.5, -0.1] as const,
+    scale: 0.65,
+    speed: 1.25,
+    depth: 2.0,
+    modelScale: 0.65,
+    color: "#a82026",
+  },
+};
+
 /**
  * Camera dollies through the object arrangement as the page scrolls —
  * same idea as the Horizon demo, but warm / restaurant, not cosmos.
