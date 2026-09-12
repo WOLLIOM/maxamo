@@ -84,6 +84,16 @@ export const certificates: {
   blurb: string;
 }[] = [
   {
+    title: "Amazon Bedrock Customization, Optimization & Automation",
+    shortTitle: "Amazon Bedrock Certificate",
+    image: "/certificates/amazon-bedrock.png",
+    issuer: "Amazon Web Services",
+    date: "Sep 2026",
+    category: "Data & AI",
+    blurb:
+      "Advanced generative AI on AWS — model fine-tuning, optimization, and automated evaluation with Amazon Bedrock.",
+  },
+  {
     title: "Revit to Unreal for Architecture, Visualization, and VR",
     shortTitle: "Revit to Unreal Certificate",
     image: "/certificates/revit-to-unreal.png",
@@ -166,6 +176,15 @@ export const certificates: {
     blurb: "Advanced C++ — lambdas, modern best practices, deeper language concepts.",
   },
   {
+    title: "Career Essentials in Data Analysis by Microsoft and LinkedIn",
+    shortTitle: "Data Analysis Certificate",
+    image: "/certificates/data-analysis-microsoft.png",
+    issuer: "LinkedIn Learning · Microsoft",
+    date: "Aug 2026",
+    category: "Data & AI",
+    blurb: "Microsoft/LinkedIn learning path covering data analysis and visualization fundamentals.",
+  },
+  {
     title: "Artificial Intelligence Foundations: Machine Learning",
     shortTitle: "Machine Learning Certificate",
     image: "/certificates/ai-foundations-ml.png",
@@ -218,6 +237,15 @@ export const certificates: {
     date: "Aug 2026",
     category: "Data & AI",
     blurb: "Python fundamentals applied to financial analysis.",
+  },
+  {
+    title: "Google Ads Search Professional Certification",
+    shortTitle: "Google Ads Search Certificate",
+    image: "/certificates/google-ads-search.png",
+    issuer: "Google · Skillshop",
+    date: "Aug 2026",
+    category: "Business",
+    blurb: "Google Ads Search expertise — search campaigns, optimization, and performance measurement.",
   },
   {
     title: "Advanced SEO: Developing an SEO-Friendly Website",
