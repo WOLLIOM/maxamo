@@ -17,6 +17,8 @@ import {
   Planet,
   ArchBlock,
   CodeShape,
+  SaturnModel,
+  NotaGLB,
   GOLD,
 } from "./SimaxModels";
 
@@ -429,7 +431,7 @@ function Scene({
           <VinylDisc lite={lite} />
         </Piece>
 
-        {/* SOLARIS / space and game dev -- upper-right, clear of the guitar. */}
+        {/* Saturn — space and game dev -- upper-right, clear of the guitar. */}
         <Piece
           position={[3.5, 1.55, -0.5]}
           rotation={[0.08, -0.55, 0.08]}
@@ -438,7 +440,7 @@ function Scene({
           depth={1.4}
           progressRef={progressRef}
         >
-          <Planet />
+          <SaturnModel scale={0.8} />
         </Piece>
 
         {/* Architecture / Revit -- upper-left. */}
@@ -478,7 +480,7 @@ function Scene({
               depth={1.0}
               progressRef={progressRef}
             >
-              <MusicNote color={GOLD} scale={1.1} />
+              <NotaGLB scale={0.8} />
             </Piece>
             <Piece
               position={[-2.1, -2.1, 0.35]}
