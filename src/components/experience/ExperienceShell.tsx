@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { isTouchDevice } from "@/lib/device";
-import { ReferenceParticleField } from "./ReferenceParticleField";
 import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
@@ -62,7 +61,8 @@ export function ExperienceShell() {
         </>
       )}
       <ScrollComet />
-      {showCursor && <ReferenceParticleField />}
+      {/* ReferenceParticleField removed — PixelCursorField (in layout.tsx) is the
+          single cursor particle system now; running both was redundant. */}
       <ControlDock />
       <MusicDock />
       {checked && showLoader && <Loader onDone={handleDone} />}
