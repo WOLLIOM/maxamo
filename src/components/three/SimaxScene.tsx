@@ -433,14 +433,14 @@ function Scene({
 
         {/* Saturn — space and game dev -- upper-right, clear of the guitar. */}
         <Piece
-          position={[3.5, 1.55, -0.5]}
-          rotation={[0.08, -0.55, 0.08]}
+          position={[3.5, 0.75, -1.2]}
+          rotation={[0.15, -0.55, 0.08]}
           speed={1.2}
           float={!lite}
           depth={1.4}
           progressRef={progressRef}
         >
-          <SaturnModel scale={0.8} />
+          <SaturnModel scale={0.35} />
         </Piece>
 
         {/* Architecture / Revit -- upper-left. */}
