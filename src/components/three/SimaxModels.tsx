@@ -235,3 +235,27 @@ export function CodeShape({ lite = false }: { lite?: boolean }) {
     </mesh>
   );
 }
+
+/** Saturn GLB model — loaded from disk instead of procedural. */
+export function SaturnModel({ scale = 1 }: { scale?: number }) {
+  const { scene } = useGLTF("/models/saturn.glb");
+  const cloned = useMemo(() => scene.clone(true), [scene]);
+  return (
+    <group data-cursor="pick" scale={scale}>
+      <primitive object={cloned} />
+    </group>
+  );
+}
+useGLTF.preload("/models/saturn.glb");
+
+/** Music note GLB model — loaded from disk instead of procedural. */
+export function NotaGLB({ scale = 1 }: { scale?: number }) {
+  const { scene } = useGLTF("/models/music-note.glb");
+  const cloned = useMemo(() => scene.clone(true), [scene]);
+  return (
+    <group data-cursor="pick" scale={scale}>
+      <primitive object={cloned} />
+    </group>
+  );
+}
+useGLTF.preload("/models/music-note.glb");
