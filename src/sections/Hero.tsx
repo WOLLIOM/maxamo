@@ -181,9 +181,8 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.7 }}
             className="mt-4 max-w-md text-balance text-sm font-medium leading-relaxed text-ink/85 max-md:mt-3 md:mt-7 md:text-base md:text-lg"
           >
-            {site.tagline}. I'm Simon Maxam — a multidisciplinary creator
-            building immersive experiences across games, architecture,
-            music and code.
+            Hi, I&apos;m Simon Maxam — I build immersive websites, interactive
+            3D worlds, and games.
           </motion.p>
 
           <motion.div
