@@ -12,10 +12,12 @@ export const site = {
     "SIMAX — Simon Maxam. A creative studio where music, architecture, code, and storytelling come together to build immersive experiences.",
   description:
     "Simon Maxam is a web developer and 3D artist in Calgary building immersive websites, interactive 3D worlds, and games using Three.js, Blender, and Unreal Engine 5.",
-  // Live production domain for THIS site (the SIMAX portfolio).
-  url: "https://maxam.vercel.app",
-  // Simon's personal hub / index site — every project links back here.
-  hub: "https://simonmaxam.pages.dev",
+  // Canonical home of the SIMAX portfolio. This is the URL Google already
+  // ranks #1 for "Simon Maxam", so it's the main one; the Vercel deploy below
+  // serves the same site and canonicalises here so all authority consolidates.
+  url: "https://simonmaxam.pages.dev",
+  // Mirror deployment (same site, different host).
+  hub: "https://maxam.vercel.app",
   locale: "en_US",
   email: "", // add official contact email when available
   phoneDisplay: "",
