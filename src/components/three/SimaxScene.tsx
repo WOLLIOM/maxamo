@@ -486,65 +486,64 @@ function Scene({
       )}
 
       <ParallaxRig gyro={gyro} progressRef={progressRef}>
-        {/* Guitar -- the centerpiece, the red-cherry signature object. */}
+        {/* Guitar */}
         <Piece
-          position={[0, 0.3, 0.6]}
-          rotation={[Math.PI / 2.5, 2, Math.PI / -2]}
-          speed={0.7}
+          position={PIECE_CONFIG.guitar.position}
+          rotation={PIECE_CONFIG.guitar.rotation}
+          speed={PIECE_CONFIG.guitar.speed}
           scale={1}
           float={!lite}
-          depth={0.6}
+          depth={PIECE_CONFIG.guitar.depth}
           progressRef={progressRef}
         >
-          <RealGuitar scale={5.2} />
+          <RealGuitar scale={PIECE_CONFIG.guitar.modelScale || PIECE_CONFIG.guitar.scale} />
         </Piece>
 
-        {/* Vinyl / music production -- lower-left, tilted so it reads as a
-            record on edge rather than a flat black disc. */}
+        {/* Vinyl */}
         <Piece
-          position={[-3.5, -1.5, -0.1]}
-          rotation={[1.15, 0.5, 0.15]}
-          speed={1.1}
+          position={PIECE_CONFIG.vinyl.position}
+          rotation={PIECE_CONFIG.vinyl.rotation}
+          speed={PIECE_CONFIG.vinyl.speed}
           float={!lite}
-          depth={2.1}
+          depth={PIECE_CONFIG.vinyl.depth}
           progressRef={progressRef}
         >
           <VinylDisc lite={lite} />
         </Piece>
 
-        {/* Saturn — space and game dev -- upper-right, clear of the guitar. */}
+        {/* Saturn */}
         <Piece
-          position={[3.5, 0.75, -1.2]}
-          rotation={[0.15, -0.55, 0.08]}
-          speed={1.2}
+          position={PIECE_CONFIG.saturn.position}
+          rotation={PIECE_CONFIG.saturn.rotation}
+          speed={PIECE_CONFIG.saturn.speed}
           float={!lite}
-          depth={1.4}
+          depth={PIECE_CONFIG.saturn.depth}
           progressRef={progressRef}
         >
-          <SaturnModel scale={0.42} />
+          <SaturnModel scale={PIECE_CONFIG.saturn.modelScale} />
         </Piece>
 
-        {/* Architecture / Revit -- upper-left. */}
+        {/* Architecture Block */}
         <Piece
-          position={[-3.8, 2.1, -0.5]}
-          rotation={[0.15, 0.35, 0]}
-          speed={1.35}
-          scale={1.0}
+          position={PIECE_CONFIG.archBlock.position}
+          rotation={PIECE_CONFIG.archBlock.rotation}
+          speed={PIECE_CONFIG.archBlock.speed}
+          scale={PIECE_CONFIG.archBlock.scale}
           float={!lite}
-          depth={1.8}
+          depth={PIECE_CONFIG.archBlock.depth}
           progressRef={progressRef}
         >
           <ArchBlock lite={lite} />
         </Piece>
 
-        {/* Web development / code -- lower-right. */}
+        {/* Code Shape */}
         <Piece
-          position={[4.8, -1.4, -0.7]}
-          rotation={[0.35, -0.2, 0.15]}
-          speed={1.15}
-          scale={1.0}
+          position={PIECE_CONFIG.codeShape.position}
+          rotation={PIECE_CONFIG.codeShape.rotation}
+          speed={PIECE_CONFIG.codeShape.speed}
+          scale={PIECE_CONFIG.codeShape.scale}
           float={!lite}
-          depth={2.2}
+          depth={PIECE_CONFIG.codeShape.depth}
           progressRef={progressRef}
         >
           <CodeShape lite={lite} />
@@ -552,26 +551,28 @@ function Scene({
 
         {!lite && (
           <>
-            {/* Two notes — distinct colour + size so they don't read as twins. */}
+            {/* Music Note (GLB) */}
             <Piece
-              position={[2.0, 2.05, 0.2]}
-              rotation={[0.2, -0.3, 0.1]}
-              speed={1.05}
-              scale={1.05}
-              depth={1.0}
+              position={PIECE_CONFIG.notaGLB.position}
+              rotation={PIECE_CONFIG.notaGLB.rotation}
+              speed={PIECE_CONFIG.notaGLB.speed}
+              scale={PIECE_CONFIG.notaGLB.scale}
+              depth={PIECE_CONFIG.notaGLB.depth}
               progressRef={progressRef}
             >
-              <NotaGLB scale={0.85} />
+              <NotaGLB scale={PIECE_CONFIG.notaGLB.modelScale} />
             </Piece>
+
+            {/* Music Note (Red) */}
             <Piece
-              position={[-2.1, -2.1, 0.35]}
-              rotation={[0.25, 0.5, -0.1]}
-              speed={1.25}
-              scale={0.65}
-              depth={2.0}
+              position={PIECE_CONFIG.noteRed.position}
+              rotation={PIECE_CONFIG.noteRed.rotation}
+              speed={PIECE_CONFIG.noteRed.speed}
+              scale={PIECE_CONFIG.noteRed.scale}
+              depth={PIECE_CONFIG.noteRed.depth}
               progressRef={progressRef}
             >
-              <MusicNote color="#a82026" scale={0.65} />
+              <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
             </Piece>
           </>
         )}
