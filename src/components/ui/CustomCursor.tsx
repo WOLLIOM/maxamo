@@ -130,26 +130,7 @@ export function CustomCursor() {
           >
             <path d="M9 17.5a3 3 0 1 1-2-2.83V5l12-2v10.5a3 3 0 1 1-2-2.83V5.28L9 6.8V17.5Z" />
           </svg>
-        ) : (
-          <svg
-            width="26"
-            height="26"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="-translate-x-1 -translate-y-1 text-gold drop-shadow-[0_2px_6px_rgba(0,0,0,0.35)]"
-            style={{
-              transform: `rotate(${hoveringLink ? -45 : 0}deg)`,
-              transition: "transform .25s ease",
-            }}
-          >
-            <path d="M7 17 17 7" />
-            <path d="M8 7h9v9" />
-          </svg>
-        )}
+        ) : null /* small pointer arrow removed — kept the dot-trail nav arrow + label */}
         {label ? (
           <span className="whitespace-nowrap rounded-full border border-line/60 bg-surface/90 px-3 py-1 text-[0.68rem] uppercase tracking-wider2 text-ink shadow-lg backdrop-blur-sm">
             {label}
