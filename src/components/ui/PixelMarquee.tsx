@@ -28,13 +28,26 @@ export function PixelMarquee({
 
     const DPR = Math.min(window.devicePixelRatio || 1, 2);
 
-    // palette: mostly the site's orange accent, warm gold for lift, a rare
-    // dark fleck for contrast/depth
-    const ORANGE = [214, 86, 48];
-    const ORANGE_SOFT = [232, 140, 90];
-    const GOLD = [220, 168, 98];
-    const GOLD_LIGHT = [237, 197, 138];
-    const DARK = [26, 20, 18];
+    // palette: pulled from the active theme so the marquee matches whatever
+    // preset is showing (golden hour, monochrome, vivid, blueprint). Refreshed
+    // periodically so it re-tints on a theme switch.
+    let ACCENT = [214, 86, 48];
+    let ACCENT_SOFT = [232, 140, 90];
+    let GOLD = [220, 168, 98];
+    let INK = [237, 197, 138];
+    function readColors() {
+      const cs = getComputedStyle(document.documentElement);
+      const p = (v: string, f: number[]) => {
+        const a = cs.getPropertyValue(v).trim().split(/\s+/).map(Number);
+        return a.length === 3 && a.every((n) => !Number.isNaN(n)) ? a : f;
+      };
+      ACCENT = p("--c-accent", ACCENT);
+      ACCENT_SOFT = p("--c-accent-soft", ACCENT_SOFT);
+      GOLD = p("--c-gold", GOLD);
+      INK = p("--c-ink", INK);
+    }
+    readColors();
+    window.addEventListener("themechange", readColors);
 
     function hash(n: number) {
       const s = Math.sin(n * 12.9898) * 43758.5453;
@@ -42,11 +55,10 @@ export function PixelMarquee({
     }
     function pickColor(seed: number) {
       const r = hash(seed);
-      if (r < 0.08) return DARK; // rare dark fleck for depth/contrast
       if (r < 0.4) return GOLD;
-      if (r < 0.52) return GOLD_LIGHT;
-      if (r < 0.8) return ORANGE;
-      return ORANGE_SOFT;
+      if (r < 0.52) return INK;
+      if (r < 0.8) return ACCENT;
+      return ACCENT_SOFT;
     }
 
     let W = 0,
@@ -106,10 +118,13 @@ export function PixelMarquee({
     let scroll = 0;
     let t = 0;
 
+    let themeTick = 0;
     function frame() {
       if (!cols || !maskData || !rows) return;
+      if (themeTick++ % 90 === 0) readColors();
       ctx!.clearRect(0, 0, W, H);
       const so = Math.floor(scroll);
+      const radius = (cell - 1) / 2;
 
       for (let c = 0; c < cols; c++) {
         const mc = (((so + c) % maskW) + maskW) % maskW;
@@ -124,7 +139,10 @@ export function PixelMarquee({
               255,
               col[1] * shimmer
             )}, ${Math.min(255, col[2] * shimmer)})`;
-            ctx!.fillRect(c * cell, r * cell, cell - 1, cell - 1);
+            // round dots instead of squares — matches the site's round motif
+            ctx!.beginPath();
+            ctx!.arc(c * cell + radius, r * cell + radius, radius, 0, Math.PI * 2);
+            ctx!.fill();
           }
         }
       }
@@ -145,6 +163,7 @@ export function PixelMarquee({
       cancelAnimationFrame(raf);
       ro.disconnect();
       io?.disconnect();
+      window.removeEventListener("themechange", readColors);
     };
   }, [text, cell, speed]);
 
