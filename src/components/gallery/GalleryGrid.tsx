@@ -41,7 +41,7 @@ const shots: Shot[] = [
     ratio: "aspect-[9/16]",
   },
   { img: "/images/real/basketball-friend.webp", alt: "Simon Maxam with a friend holding a high school basketball championship trophy", caption: "Celebrating a friend's championship win", category: "Life", ratio: "aspect-[3/4]" },
-  { img: "/images/real/throne-portrait.webp", alt: "Simon Maxam sitting on an oversized decorative throne at an outdoor festival", caption: "Downtown festival", category: "Life", ratio: "aspect-[3/4]" },
+  { img: "/images/real/throne-portrait.webp", alt: "Simon Maxam as a kid", caption: "Simon Maxam — as a kid", category: "Life", ratio: "aspect-[3/4]" },
   { img: "/images/real/stampede-portrait.webp", alt: "Simon Maxam at the Calgary Stampede holding a novelty item, midway lights behind him", caption: "Calgary Stampede — midway at night", category: "Life", ratio: "aspect-[4/3]" },
   { img: "/images/real/stampede-lights-1.webp", alt: "The Calgary Stampede midway lit up at night with the Ferris wheel and rides", caption: "Stampede midway — Ferris wheel & rides", category: "Life", ratio: "aspect-[4/3]" },
   { img: "/images/real/stampede-lights-2.webp", alt: "A crowded view of the Calgary Stampede midway from above at night", caption: "Stampede midway — the crowd below", category: "Life", ratio: "aspect-[4/3]" },

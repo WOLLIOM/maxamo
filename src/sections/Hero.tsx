@@ -134,6 +134,18 @@ export function Hero() {
           }}
         />
 
+        {/* Bottom fade — blends the 3D scene down into the page background so
+            the hand-off to the next section is a soft gradient, not a hard
+            horizontal seam. Sits above the scene (z-[3]) but below the text. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[28%]"
+          style={{
+            background:
+              "linear-gradient(to bottom, transparent 0%, rgb(var(--c-bg)/0.6) 55%, rgb(var(--c-bg)) 100%)",
+          }}
+        />
+
         {/* Stage 1 — brand + CTAs. pointer-events-none so it doesn't sit as
             an invisible full-screen layer blocking hover on the 3D scene
             underneath — only the CTA buttons re-enable pointer events. */}
