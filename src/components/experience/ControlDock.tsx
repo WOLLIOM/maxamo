@@ -8,7 +8,7 @@ import { timeOfDayLabel, type TimeOfDay } from "@/lib/time-of-day";
 /** Fixed dock: ambient-sound toggle + time-of-day switch. */
 export function ControlDock() {
   const audio = useAudio();
-  const { theme, auto, cycle } = useTheme();
+  const { theme, cycle } = useTheme();
 
   // The theme/sound state is read from localStorage on the client, so it can
   // differ from the server-rendered default. Render the deterministic default
@@ -17,22 +17,20 @@ export function ControlDock() {
   useEffect(() => setMounted(true), []);
 
   const shownTheme: TimeOfDay = mounted ? theme : "evening";
-  const shownAuto = mounted ? auto : false;
   const shownEnabled = mounted ? audio.enabled : false;
 
   return (
     <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-[60] flex items-center gap-3 sm:right-5 lg:bottom-7 lg:right-7">
       <button
         onClick={cycle}
-        aria-label={`Ambience: ${
-          shownAuto ? "Automatic" : timeOfDayLabel[shownTheme]
-        }. Click to change.`}
+        aria-label={`Theme: ${timeOfDayLabel[shownTheme]}. Click to switch.`}
         className="glass group flex min-h-12 items-center gap-2 rounded-full px-4 py-3 text-[0.62rem] uppercase tracking-wider2 text-ink transition-all duration-500 hover:text-accent"
       >
-        <ThemeGlyph theme={shownTheme} />
-        <span className="hidden sm:inline">
-          {shownAuto ? "Auto" : timeOfDayLabel[shownTheme]}
-        </span>
+        <span
+          aria-hidden
+          className="h-3.5 w-3.5 rounded-full border border-ink/20 bg-accent transition-colors duration-500"
+        />
+        <span className="hidden sm:inline">{timeOfDayLabel[shownTheme]}</span>
       </button>
 
       <button
@@ -44,41 +42,6 @@ export function ControlDock() {
         <MusicNote active={shownEnabled} />
       </button>
     </div>
-  );
-}
-
-function ThemeGlyph({ theme }: { theme: string }) {
-  if (theme === "night") {
-    return (
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"
-          stroke="currentColor"
-          strokeWidth="1.4"
-          strokeLinejoin="round"
-        />
-      </svg>
-    );
-  }
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <circle cx="12" cy="12" r="4.2" stroke="currentColor" strokeWidth="1.4" />
-      {Array.from({ length: 8 }).map((_, i) => {
-        const a = (i / 8) * Math.PI * 2;
-        return (
-          <line
-            key={i}
-            x1={12 + Math.cos(a) * 7}
-            y1={12 + Math.sin(a) * 7}
-            x2={12 + Math.cos(a) * 9.4}
-            y2={12 + Math.sin(a) * 9.4}
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinecap="round"
-          />
-        );
-      })}
-    </svg>
   );
 }
 

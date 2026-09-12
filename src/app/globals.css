@@ -14,25 +14,8 @@
    silver-light mode for contrast, not a literal daylight beige anymore.
    ============================================================================ */
 
+/* ── Golden Hour (default) — warm terracotta / interior glow ── */
 :root,
-[data-theme="night"] {
-  --c-bg: 10 10 12;
-  --c-surface: 18 17 20;
-  --c-elevated: 27 25 30;
-  --c-ink: 238 236 233;
-  --c-muted: 172 168 164;
-  --c-faint: 112 108 106;
-  --c-line: 48 45 50;
-  --c-accent: 150 40 44;
-  --c-accent-soft: 186 78 68;
-  --c-gold: 176 150 100;
-  --c-silver: 176 182 190;
-
-  --grain-opacity: 0.05;
-  --glow: 70 20 20;
-  --shadow-color: 0 0 0;
-}
-
 [data-theme="evening"] {
   --c-bg: 26 15 19;
   --c-surface: 37 21 25;
@@ -51,22 +34,61 @@
   --shadow-color: 20 6 6;
 }
 
-[data-theme="morning"] {
-  --c-bg: 236 237 240;
-  --c-surface: 224 226 230;
-  --c-elevated: 247 248 249;
-  --c-ink: 20 20 24;
-  --c-muted: 84 86 92;
-  --c-faint: 140 142 148;
-  --c-line: 204 206 212;
-  --c-accent: 158 34 40;
-  --c-accent-soft: 196 90 84;
-  --c-gold: 160 132 74;
-  --c-silver: 150 154 160;
+/* ── Monochrome — Apple-style black & white, modern ── */
+[data-theme="mono"] {
+  --c-bg: 9 9 11;
+  --c-surface: 20 20 22;
+  --c-elevated: 30 30 33;
+  --c-ink: 245 245 247;
+  --c-muted: 168 168 172;
+  --c-faint: 108 108 114;
+  --c-line: 44 44 48;
+  --c-accent: 236 236 240;
+  --c-accent-soft: 198 198 204;
+  --c-gold: 212 212 216;
+  --c-silver: 200 204 210;
 
-  --grain-opacity: 0.03;
-  --glow: 224 226 232;
-  --shadow-color: 18 18 22;
+  --grain-opacity: 0.04;
+  --glow: 255 255 255;
+  --shadow-color: 0 0 0;
+}
+
+/* ── Vivid — colourful, electric (violet · pink · cyan) ── */
+[data-theme="vivid"] {
+  --c-bg: 14 12 24;
+  --c-surface: 24 20 40;
+  --c-elevated: 34 28 54;
+  --c-ink: 240 238 250;
+  --c-muted: 180 172 205;
+  --c-faint: 120 112 150;
+  --c-line: 58 48 88;
+  --c-accent: 139 92 246;
+  --c-accent-soft: 236 72 153;
+  --c-gold: 34 211 238;
+  --c-silver: 190 200 220;
+
+  --grain-opacity: 0.05;
+  --glow: 168 85 247;
+  --shadow-color: 6 4 20;
+}
+
+/* ── Blueprint — deep Prussian blue + cyan (echoes the hub site) ── */
+[data-theme="blueprint"] {
+  --c-bg: 11 28 58;
+  --c-surface: 16 38 76;
+  --c-elevated: 22 50 96;
+  --c-ink: 220 230 246;
+  --c-muted: 147 166 201;
+  --c-faint: 100 120 160;
+  --c-line: 45 70 120;
+  --c-accent: 122 165 255;
+  --c-accent-soft: 150 190 255;
+  --c-gold: 130 200 230;
+  --c-silver: 190 205 230;
+
+  --grain-opacity: 0.04;
+  --glow: 90 140 255;
+  --shadow-color: 4 10 30;
 }
 
 * {
@@ -92,11 +114,23 @@ body {
     color 1200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-/* Colour + background transitions for the theme shift on common elements */
-body * {
-  transition-property: background-color, border-color, color, fill, stroke;
-  transition-duration: 900ms;
+/* Colour transitions for the theme shift. Only enabled briefly *during* a
+   switch (html.theme-anim, toggled by ThemeProvider) so we never pay the
+   per-node transition cost on normal interactions — that was the switch lag.
+   fill/stroke are left out on purpose: animating every SVG path is what
+   made the change stutter; icons snap instantly instead. */
+html.theme-anim body :where(
+  section, header, footer, nav, aside, article, main, div, p, span, a, li,
+  h1, h2, h3, h4, h5, h6, button, input, textarea, figure, figcaption
+) {
+  transition-property: background-color, border-color, color;
+  transition-duration: 480ms;
   transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Canvas-driven visuals repaint themselves; never let CSS try to tween them. */
+canvas {
+  transition: none !important;
 }
 
 ::selection {
