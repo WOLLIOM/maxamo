@@ -415,7 +415,7 @@ function Scene({
           depth={0.6}
           progressRef={progressRef}
         >
-          <RealGuitar scale={4.2} />
+          <RealGuitar scale={5.2} />
         </Piece>
 
         {/* Vinyl / music production -- lower-left, tilted so it reads as a
@@ -440,7 +440,7 @@ function Scene({
           depth={1.4}
           progressRef={progressRef}
         >
-          <SaturnModel scale={0.35} />
+          <SaturnModel scale={0.42} />
         </Piece>
 
         {/* Architecture / Revit -- upper-left. */}
@@ -448,7 +448,7 @@ function Scene({
           position={[-3.8, 2.1, -0.5]}
           rotation={[0.15, 0.35, 0]}
           speed={1.35}
-          scale={0.85}
+          scale={1.0}
           float={!lite}
           depth={1.8}
           progressRef={progressRef}
@@ -461,7 +461,7 @@ function Scene({
           position={[4.2, -0.8, -0.7]}
           rotation={[0.35, -0.2, 0.15]}
           speed={1.15}
-          scale={0.85}
+          scale={1.0}
           float={!lite}
           depth={2.2}
           progressRef={progressRef}
@@ -476,21 +476,21 @@ function Scene({
               position={[2.0, 2.05, 0.2]}
               rotation={[0.2, -0.3, 0.1]}
               speed={1.05}
-              scale={0.95}
+              scale={1.05}
               depth={1.0}
               progressRef={progressRef}
             >
-              <NotaGLB scale={0.8} />
+              <NotaGLB scale={0.85} />
             </Piece>
             <Piece
               position={[-2.1, -2.1, 0.35]}
               rotation={[0.25, 0.5, -0.1]}
               speed={1.25}
-              scale={0.55}
+              scale={0.65}
               depth={2.0}
               progressRef={progressRef}
             >
-              <MusicNote color="#a82026" scale={0.55} />
+              <MusicNote color="#a82026" scale={0.65} />
             </Piece>
           </>
         )}
