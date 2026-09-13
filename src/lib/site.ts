@@ -72,12 +72,16 @@ export const awards = [
   {
     year: "2024",
     title: "TÜBİTAK",
-    org: "1st Place (Province) · 3rd Place (Turkey)",
+    // Lead with the national placement — that's the headline achievement.
+    org: "3rd Place · Nationwide (Turkey)",
+    sub: "1st Place · Province",
+    featured: true,
   },
   {
     year: "",
     title: "Waterloo Newtonian Medal",
     org: "University of Waterloo (CEMC)",
+    featured: false,
   },
 ];
 
