@@ -12,7 +12,7 @@ import { useEffect, useRef } from "react";
  *   3. a heart zone — hover anything flagged `data-cursor-heart` and the
  *      dot field blooms into a heart shape with a burst of sparks
  *   4. idle Pac-Man — park the pointer 1.5s and a chomper drifts across,
- *      dropping food pellets (theme-aware: boxy in blueprint, confetti in vivid)
+ *      dropping food pellets (theme-aware: boxy in blueprint, heat trail in vivid)
  *   5. a box zone — hover `[data-cursor-box]` and the dots stamp a square-ring,
  *      the heart's geometric counterpart
  *
@@ -86,28 +86,6 @@ export function PixelCursorField() {
 
     // Blueprint-only: dashed "ping" rings emitted on click for a futuristic feel.
     const rings: { x: number; y: number; t0: number; pow: number }[] = [];
-    // Vivid-only: colorful confetti particles burst on click.
-    const confetti: {
-      x: number; y: number; vx: number; vy: number;
-      life: number; hue: number; size: number; rot: number; vr: number;
-    }[] = [];
-    function burstConfetti(x: number, y: number, count: number, power: number) {
-      for (let i = 0; i < count; i++) {
-        const a = Math.random() * 6.2832;
-        const sp = (1.5 + Math.random() * 6) * power;
-        confetti.push({
-          x, y,
-          vx: Math.cos(a) * sp,
-          vy: Math.sin(a) * sp - 2,
-          life: 1,
-          hue: 230 + Math.random() * 70, // purple → blue, matches vivid
-          size: 3 + Math.random() * 5,
-          rot: Math.random() * 6.2832,
-          vr: (Math.random() - 0.5) * 0.4,
-        });
-      }
-    }
-
     let DPR = 1,
       W = 0,
       H = 0,
@@ -164,11 +142,20 @@ export function PixelCursorField() {
     const onResize = () => size();
     window.addEventListener("resize", onResize, { passive: true });
 
+    // A full-charge click passes a large `sig` (up to BRUSH*20.5), which
+    // made `rad` balloon to ~460 cells -- an (2*460+1)^2 ≈ 850,000-iteration
+    // nested loop computed synchronously in ONE frame. That's the click lag
+    // Simon reported on weaker desktops (worse the longer you hold to
+    // charge). Capping rad bounds the worst case to a manageable ~141x141
+    // grid regardless of charge power; the Gaussian falloff already makes
+    // anything past this radius nearly invisible (w < 0.02), so it's not a
+    // visible change, just a performance ceiling.
+    const MAX_DEP_RAD = 70;
     function dep(cx: number, cy: number, amt: number, sig: number) {
       if (!heat) return;
       const cc = cx / CELL,
         cr = cy / CELL,
-        rad = Math.ceil(sig * 1.6),
+        rad = Math.min(Math.ceil(sig * 1.6), MAX_DEP_RAD),
         inv = 1 / (2 * sig * sig * 0.18);
       for (let dr = -rad; dr <= rad; dr++) {
         for (let dc = -rad; dc <= rad; dc++) {
@@ -366,7 +353,7 @@ export function PixelCursorField() {
 
     /** Idle wander: drift the chomper sideways, dropping + eating food pellets.
      *  Theme-aware — blueprint gets a boxy wanderer to match its geometric
-     *  language, and vivid trails confetti as it eats. */
+     *  language. */
     function wander(restx: number, resty: number) {
       if (!heat) return;
       const BOXY = currentTheme === "blueprint";
@@ -401,9 +388,6 @@ export function PixelCursorField() {
             const pid = pr * cols + pc;
             if (0.72 > heat[pid]) heat[pid] = 0.72;
           }
-        } else if (currentTheme === "vivid" && Math.abs(pacDir * (px - pacx)) < rad * 0.25) {
-          // vivid: each pellet pops into confetti the moment it's eaten
-          if (Math.random() < 0.06) burstConfetti(px, pacy, 2, 0.35);
         }
       }
       if (BOXY) {
@@ -580,30 +564,6 @@ export function PixelCursorField() {
         ctx!.globalAlpha = 1;
       }
 
-      // Vivid "confetti": colorful particles with gravity + spin, fading out.
-      if (currentTheme === "vivid" && confetti.length) {
-        for (let ci = confetti.length - 1; ci >= 0; ci--) {
-          const p = confetti[ci];
-          p.x += p.vx;
-          p.y += p.vy;
-          p.vx *= 0.96;
-          p.vy = p.vy * 0.96 + 0.22; // gravity
-          p.rot += p.vr;
-          p.life -= 0.016;
-          if (p.life <= 0) {
-            confetti.splice(ci, 1);
-            continue;
-          }
-          ctx!.save();
-          ctx!.translate(p.x, p.y);
-          ctx!.rotate(p.rot);
-          ctx!.globalAlpha = Math.max(0, p.life);
-          ctx!.fillStyle = `hsl(${p.hue} 90% 60%)`;
-          ctx!.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
-          ctx!.restore();
-        }
-        ctx!.globalAlpha = 1;
-      }
       ctx!.restore();
     }
 
