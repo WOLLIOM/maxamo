@@ -118,7 +118,10 @@ export function MobileGuitarCanvas({
             // parked in the empty space on the left of the mobile hero.
             <TiltGroup tilt={tilt} baseRotation={[0.35, -0.4, 0.1]} idleAmp={0.2}>
               <group scale={1.7}>
-                <ArchBlock lite />
+                {/* Not `lite` — Simon specifically wants the gold wireframe
+                    edge overlay from the desktop version, not just the
+                    plain translucent block. */}
+                <ArchBlock />
               </group>
             </TiltGroup>
           )}
