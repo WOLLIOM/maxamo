@@ -77,11 +77,14 @@ export function Nav() {
             ))}
           </ul>
 
+          {/* Hidden on phones — the bottom dock already has its own Contact
+              button there, so this one was just a redundant duplicate
+              crowding the top bar. Desktop keeps it. */}
           <Link
             href="/contact"
             prefetch={false}
             data-cursor-label="Say hello"
-            className="inline-flex min-h-12 items-center justify-self-end rounded-full border border-ink/20 bg-elevated/40 px-4 py-3 text-[0.62rem] uppercase tracking-wider2 text-ink backdrop-blur-sm transition-all duration-500 hover:border-accent hover:text-accent lg:px-5 lg:text-[0.68rem]"
+            className="hidden min-h-12 items-center justify-self-end rounded-full border border-ink/20 bg-elevated/40 px-4 py-3 text-[0.62rem] uppercase tracking-wider2 text-ink backdrop-blur-sm transition-all duration-500 hover:border-accent hover:text-accent md:inline-flex lg:px-5 lg:text-[0.68rem]"
           >
             Contact
           </Link>

@@ -23,7 +23,6 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   const heroRef = useRef<HTMLDivElement>(null);
   const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
-  const [gyroHint, setGyroHint] = useState(true);
   const [use3D, setUse3D] = useState(false);
   const tilt = useDeviceTiltRef(true);
   const progressRef = useRef(scrollProgress);
@@ -52,8 +51,6 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
     const apply = () => {
       const { x, y } = tilt.current;
       const p = progressRef.current;
-      if (Math.abs(x) > 0.04 || Math.abs(y) > 0.04) setGyroHint(false);
-
       const scrollLift = p * 40;
       const scrollFade = 1 - Math.min(1, p * 1.2);
       // No scroll "zoom" on mobile — Simon didn't want the guitar growing as
@@ -113,7 +110,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
                 empty space next to the guitar. ============================ */}
           <div
             ref={rightRef}
-            className="absolute left-[52%] top-[0%] z-[4] aspect-square w-[34vw] max-w-[150px] will-change-transform"
+            className="absolute left-[54%] top-[calc(env(safe-area-inset-top)+3.2rem)] z-[4] aspect-square w-[32vw] max-w-[140px] will-change-transform"
           >
             <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
           </div>
@@ -145,21 +142,26 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
         </>
       )}
 
-      {gyroHint && (
-        <p className="absolute left-0 right-0 top-[58%] z-[4] text-center text-[0.58rem] uppercase tracking-ultra text-faint">
-          Tilt to explore
-        </p>
-      )}
+      {/* The old "Tilt to explore" hint lived at top-[58%], which is exactly
+          where the hero's text block (By Simon Maxam / paragraph) sits on
+          phones — Simon found the two overlapping and unreadable. Removed:
+          the explicit "Tap to enable tilt" button below covers the same
+          need without covering any text. */}
     </div>
     {needsGyroTap && (
       // Rendered OUTSIDE the pointer-events-none wrapper above (this whole
       // decorative layer ignores taps) so this button is actually tappable.
       // iOS Safari only grants motion-sensor access from inside a real click
       // handler on a real element — this is that element.
+      // Parked right under the header, over the guitar's headstock — the
+      // hero's text block is anchored to the BOTTOM on phones (see Hero.tsx's
+      // max-md:justify-end), so this top strip is guaranteed clear of it
+      // regardless of device height, instead of the old percentage guess
+      // that landed on top of "By Simon Maxam".
       <button
         type="button"
         onClick={requestGyro}
-        className="absolute left-1/2 top-[46%] z-[6] -translate-x-1/2 rounded-full border border-white/30 bg-black/50 px-4 py-2 text-[0.62rem] uppercase tracking-wider2 text-white backdrop-blur-sm"
+        className="absolute left-1/2 top-[calc(env(safe-area-inset-top)+4rem)] z-[6] -translate-x-1/2 rounded-full border border-white/30 bg-black/50 px-4 py-2 text-[0.62rem] uppercase tracking-wider2 text-white backdrop-blur-sm"
       >
         Tap to enable tilt
       </button>
