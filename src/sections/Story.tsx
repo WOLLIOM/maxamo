@@ -114,7 +114,7 @@ export function Story() {
               alt="Simon Maxam as a kid"
               label="Simon Maxam · as a kid"
               className="aspect-[4/5] md:aspect-[3/4]"
-              data-cursor-arrow
+              data-cursor-heart
             />
           </Reveal>
         </div>

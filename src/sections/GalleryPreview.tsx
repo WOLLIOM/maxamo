@@ -9,6 +9,7 @@ export function GalleryPreview() {
       aria-label="Gallery"
       data-section="gallery"
       data-palette="blue"
+      data-cursor="box"
       className="mx-auto max-w-[1400px] px-5 pt-24 md:px-10 md:pt-36"
     >
       <SectionHeading kicker="In frame" title="Moments from the work" className="max-w-2xl" />
