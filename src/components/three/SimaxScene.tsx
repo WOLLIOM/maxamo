@@ -47,10 +47,10 @@ const PIECE_CONFIG = {
   guitar: {
     name: "Guitar",
     position: [0, 0.3, 0.6] as const,
-    // Mobile: nudged left + shrunk a touch so it's centered and fits the
-    // narrower portrait frame instead of feeling off-center/oversized.
-    mobilePosition: [-0.7, 0.3, 0.6] as const,
-    mobileScale: 4.4,
+    // Mobile: nudged left to center it, and BIGGER now that the mobile
+    // scene is capped at 3 objects (was too small before).
+    mobilePosition: [-0.6, 0.2, 0.6] as const,
+    mobileScale: 5.6,
     rotation: [Math.PI / 2.5, 2, Math.PI / -2] as const,
     scale: 5.2,
     speed: 1.7,
@@ -77,7 +77,9 @@ const PIECE_CONFIG = {
   archBlock: {
     name: "Architecture Block",
     position: [-3.8, 1.3, -0.5] as const,
-    mobilePosition: [-2.1, -1.1, -0.5] as const,
+    // Mobile: pushed way up and to the right per Simon's note (pulled in a
+    // touch from the very edge so it doesn't clip on narrower phones).
+    mobilePosition: [1.6, 2.4, -0.3] as const,
     rotation: [0.15, 0.35, 0] as const,
     scale: 1.2,
     speed: 3.35,
@@ -86,9 +88,12 @@ const PIECE_CONFIG = {
   codeShape: {
     name: "Code Shape",
     position: [4.5, -1.4, -0.3] as const,
-    // Mobile: pulled inward from the desktop-only far-right spot so it's
-    // actually inside the narrower portrait frame instead of clipped off.
-    mobilePosition: [2.3, 0.9, -0.3] as const,
+    // Mobile: pulled inward + toward the camera (less negative Z) and
+    // scaled up so the red polygon actually reads clearly instead of
+    // getting lost in the scene. Lower-right, balancing the box's
+    // upper-right spot and the centered guitar.
+    mobilePosition: [1.7, -1.9, 0.6] as const,
+    mobileScale: 1.7,
     rotation: [0.35, -0.2, 0.15] as const,
     scale: 1.2,
     speed: 1.15,
@@ -537,29 +542,34 @@ function Scene({
           />
         </Piece>
 
-        {/* Vinyl */}
-        <Piece
-          position={PIECE_CONFIG.vinyl.position}
-          rotation={PIECE_CONFIG.vinyl.rotation}
-          speed={PIECE_CONFIG.vinyl.speed}
-          float={!lite}
-          depth={PIECE_CONFIG.vinyl.depth}
-          progressRef={progressRef}
-        >
-          <VinylDisc lite={lite} />
-        </Piece>
+        {/* Vinyl + Saturn — desktop only. Simon wants mobile capped at
+            guitar + 2 more objects (box + red polygon below) for
+            performance; the extra pieces were making the gyro janky. */}
+        {!lite && (
+          <>
+            <Piece
+              position={PIECE_CONFIG.vinyl.position}
+              rotation={PIECE_CONFIG.vinyl.rotation}
+              speed={PIECE_CONFIG.vinyl.speed}
+              float={!lite}
+              depth={PIECE_CONFIG.vinyl.depth}
+              progressRef={progressRef}
+            >
+              <VinylDisc lite={lite} />
+            </Piece>
 
-        {/* Saturn */}
-        <Piece
-          position={PIECE_CONFIG.saturn.position}
-          rotation={PIECE_CONFIG.saturn.rotation}
-          speed={PIECE_CONFIG.saturn.speed}
-          float={!lite}
-          depth={PIECE_CONFIG.saturn.depth}
-          progressRef={progressRef}
-        >
-          <SaturnModel scale={PIECE_CONFIG.saturn.modelScale} />
-        </Piece>
+            <Piece
+              position={PIECE_CONFIG.saturn.position}
+              rotation={PIECE_CONFIG.saturn.rotation}
+              speed={PIECE_CONFIG.saturn.speed}
+              float={!lite}
+              depth={PIECE_CONFIG.saturn.depth}
+              progressRef={progressRef}
+            >
+              <SaturnModel scale={PIECE_CONFIG.saturn.modelScale} />
+            </Piece>
+          </>
+        )}
 
         {/* Architecture Block */}
         <Piece
@@ -579,7 +589,7 @@ function Scene({
           position={lite ? PIECE_CONFIG.codeShape.mobilePosition : PIECE_CONFIG.codeShape.position}
           rotation={PIECE_CONFIG.codeShape.rotation}
           speed={PIECE_CONFIG.codeShape.speed}
-          scale={PIECE_CONFIG.codeShape.scale}
+          scale={lite ? PIECE_CONFIG.codeShape.mobileScale : PIECE_CONFIG.codeShape.scale}
           float={!lite}
           depth={PIECE_CONFIG.codeShape.depth}
           progressRef={progressRef}
@@ -604,18 +614,20 @@ function Scene({
           </>
         )}
 
-        {/* Music Note (Red) — the lighter procedural note. Simon wanted this
-            visible on mobile too, so it's not gated behind `!lite`. */}
-        <Piece
-          position={lite ? PIECE_CONFIG.noteRed.mobilePosition : PIECE_CONFIG.noteRed.position}
-          rotation={PIECE_CONFIG.noteRed.rotation}
-          speed={PIECE_CONFIG.noteRed.speed}
-          scale={PIECE_CONFIG.noteRed.scale}
-          depth={PIECE_CONFIG.noteRed.depth}
-          progressRef={progressRef}
-        >
-          <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
-        </Piece>
+        {/* Music Note (Red) — desktop only now too. Simon wants mobile
+            capped at guitar + box + polygon (3 pieces max) for perf. */}
+        {!lite && (
+          <Piece
+            position={PIECE_CONFIG.noteRed.position}
+            rotation={PIECE_CONFIG.noteRed.rotation}
+            speed={PIECE_CONFIG.noteRed.speed}
+            scale={PIECE_CONFIG.noteRed.scale}
+            depth={PIECE_CONFIG.noteRed.depth}
+            progressRef={progressRef}
+          >
+            <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
+          </Piece>
+        )}
       </ParallaxRig>
 
       {!lite && (

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
-import { useGyroPermissionPrompt, useGyroPermissionButton } from "@/lib/useDeviceTilt";
+import { useGyroPermissionButton } from "@/lib/useDeviceTilt";
 import { imageSources } from "@/lib/media";
 
 // Full 3D scene with guitar, polygon, box, and particles — same as desktop,
@@ -27,9 +27,13 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   const [use3D, setUse3D] = useState(false);
   const progressRef = useRef(scrollProgress);
 
-  // SimaxScene handles gyro internally, but we still need the visible button
-  // for iOS permission flow (requestPermission must come from a real click).
-  useGyroPermissionPrompt();
+  // SimaxScene handles gyro internally. Only the EXPLICIT button below asks
+  // for iOS permission now — a background any-tap listener used to run
+  // alongside it (useGyroPermissionPrompt), which could fire requestPermission()
+  // on some unrelated early tap (e.g. scrolling) before the user consciously
+  // tapped the button. If that unnoticed prompt got dismissed/denied, iOS
+  // remembers that answer and silently refuses every request after, even
+  // from the real button — likely why gyro "sometimes" stopped working.
   const { needsPrompt: needsGyroTap, request: requestGyro } = useGyroPermissionButton();
 
   useEffect(() => {
