@@ -223,13 +223,31 @@ export function Planet({ color = "#5a3a86", ring = GOLD }: { color?: string; rin
 export function ArchBlock({ lite = false }: { lite?: boolean }) {
   return (
     <group data-cursor="pick">
+      {/* Glow halo behind the box for depth */}
+      <mesh position={[0, 0, -0.05]}>
+        <sphereGeometry args={[0.95, 32, 32]} />
+        <meshBasicMaterial
+          color={GOLD}
+          transparent
+          opacity={lite ? 0.05 : 0.12}
+          fog={false}
+        />
+      </mesh>
       <RoundedBox args={[0.9, 1.2, 0.9]} radius={0.02} smoothness={lite ? 2 : 4} castShadow>
-        <meshPhysicalMaterial color={SILVER} roughness={0.5} clearcoat={0.15} transparent opacity={0.85} />
+        <meshPhysicalMaterial
+          color={SILVER}
+          roughness={0.4}
+          clearcoat={0.25}
+          clearcoatRoughness={0.1}
+          transparent
+          opacity={0.9}
+          envMapIntensity={1.2}
+        />
       </RoundedBox>
       {!lite && (
         <lineSegments>
           <edgesGeometry args={[new THREE.BoxGeometry(0.92, 1.22, 0.92)]} />
-          <lineBasicMaterial color={GOLD} />
+          <lineBasicMaterial color={GOLD} linewidth={2} />
         </lineSegments>
       )}
     </group>
