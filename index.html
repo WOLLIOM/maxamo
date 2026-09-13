@@ -1,0 +1,566 @@
+<title>Simon Maxam — Field Notes</title>
+<meta name="description" content="Simon Maxam is a web developer and 3D artist in Calgary, Alberta — building interactive websites and immersive 3D experiences with Three.js, Blender, and Unreal Engine 5." />
+<meta name="author" content="Simon Maxam" />
+<link rel="canonical" href="https://maxam.vercel.app/" />
+<link rel="icon" href="/favicon.ico" sizes="any" />
+<link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
+<link rel="icon" href="/favicon-16.png" type="image/png" sizes="16x16" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+<meta name="theme-color" content="#23479a" />
+
+<meta property="og:type" content="profile" />
+<meta property="og:title" content="Simon Maxam — Field Notes" />
+<meta property="og:description" content="Web developer & 3D artist in Calgary. Interactive websites, immersive 3D, and the work behind SIMAX." />
+<meta property="og:url" content="https://maxam.vercel.app/" />
+<meta property="og:image" content="https://maxam.vercel.app/og.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Simon Maxam — web developer and 3D artist, Calgary" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Simon Maxam — Field Notes" />
+<meta name="twitter:description" content="Web developer & 3D artist in Calgary. Interactive websites, immersive 3D, and the work behind SIMAX." />
+<meta name="twitter:image" content="https://maxam.vercel.app/og.png" />
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Simon Maxam",
+  "url": "https://maxam.vercel.app/",
+  "jobTitle": "Web Developer & 3D Artist",
+  "email": "mailto:simon@scalex.ink",
+  "image": "https://maxam.vercel.app/simon-maxam-guitar-ironwood.jpg",
+  "address": { "@type": "PostalAddress", "addressLocality": "Calgary", "addressRegion": "AB", "addressCountry": "CA" },
+  "knowsAbout": ["Three.js", "WebGL", "Blender", "Unreal Engine 5", "Revit", "AutoCAD", "Architectural visualization", "Search engine optimization", "Game development"],
+  "sameAs": [
+    "https://maxam.vercel.app/",
+    "https://www.instagram.com/simonmaxam/",
+    "https://www.linkedin.com/in/simonmaxam/",
+    "https://github.com/wolliom"
+  ]
+}
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Instrument+Sans:wght@400;500&family=Space+Mono:wght@400;700&display=swap" />
+
+<style>
+  :root {
+    /* drafting paper */
+    --ground: #efe9dd;
+    --panel: #f6f2e9;
+    --ink: #1c1a17;
+    --ink-soft: #55504733;
+    --line: #4b463c40;
+    --accent: #23479a;      /* blueprint blue */
+    --accent-soft: #23479a1f;
+    --muted: #6b655a;
+    --sheet-max: 1240px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0b1c3a;    /* cyanotype */
+      --panel: #0f244a;
+      --ink: #dce6f6;
+      --ink-soft: #dce6f622;
+      --line: #9fb8e63a;
+      --accent: #7aa5ff;
+      --accent-soft: #7aa5ff26;
+      --muted: #93a6c9;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0b1c3a;
+    --panel: #0f244a;
+    --ink: #dce6f6;
+    --ink-soft: #dce6f622;
+    --line: #9fb8e63a;
+    --accent: #7aa5ff;
+    --accent-soft: #7aa5ff26;
+    --muted: #93a6c9;
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "Instrument Sans", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  #grid-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.9;
+  }
+  .sheet {
+    position: relative;
+    z-index: 1;
+    max-width: var(--sheet-max);
+    margin: 0 auto;
+    padding: 0 clamp(20px, 5vw, 64px);
+  }
+
+  /* cursor crosshair */
+  .xhair { position: fixed; z-index: 90; top: 0; left: 0; pointer-events: none; mix-blend-mode: difference; transition: transform .12s ease, opacity .2s; }
+  .xhair::before, .xhair::after { content: ""; position: absolute; background: #fff; }
+  .xhair::before { width: 22px; height: 1px; left: -11px; top: 0; }
+  .xhair::after { width: 1px; height: 22px; left: 0; top: -11px; }
+  .xhair.big { transform: scale(1.9); }
+  @media (hover: none) { .xhair { display: none; } }
+
+  /* mono labels */
+  .tag {
+    font-family: "Space Mono", monospace;
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* top bar */
+  header.bar {
+    position: relative; z-index: 2;
+    display: flex; justify-content: space-between; align-items: baseline;
+    max-width: var(--sheet-max); margin: 0 auto;
+    padding: 22px clamp(20px, 5vw, 64px);
+    border-bottom: 1px solid var(--line);
+  }
+  header.bar nav { display: flex; gap: 22px; }
+  a { color: inherit; text-decoration: none; }
+  header.bar nav a, .theme-btn { position: relative; }
+  header.bar nav a::after {
+    content: ""; position: absolute; left: 0; bottom: -4px; height: 1px; width: 0;
+    background: var(--accent); transition: width .25s ease;
+  }
+  header.bar nav a:hover::after { width: 100%; }
+  .theme-btn {
+    font-family: "Space Mono", monospace; font-size: 12px; letter-spacing: .12em;
+    text-transform: uppercase; background: none; border: 1px solid var(--line);
+    color: var(--muted); padding: 5px 10px; cursor: pointer; border-radius: 1px;
+  }
+  .theme-btn:hover { color: var(--ink); border-color: var(--accent); }
+
+  /* hero */
+  .hero { padding: clamp(56px, 12vh, 130px) 0 64px; }
+  .hero .meta-row { display: flex; flex-wrap: wrap; gap: 8px 28px; margin-bottom: 26px; }
+  .hero h1 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 800;
+    font-size: clamp(3rem, 12vw, 9rem);
+    line-height: 0.92;
+    letter-spacing: -0.03em;
+    margin: 0;
+    text-wrap: balance;
+  }
+  .hero h1 .thin { font-weight: 400; color: var(--muted); display: block; font-size: clamp(1.1rem, 3.4vw, 2rem); letter-spacing: -0.01em; margin-top: 22px; max-width: 30ch; line-height: 1.25; }
+  .rule { border: 0; border-top: 1px solid var(--line); margin: 0; }
+  .dim { position: relative; padding-left: 20px; }
+  .dim::before { content: "↳"; position: absolute; left: 0; color: var(--accent); }
+
+  section { padding: clamp(56px, 10vh, 104px) 0; border-top: 1px solid var(--line); }
+  .sec-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 40px; }
+  .sec-head h2 {
+    font-family: "Bricolage Grotesque", sans-serif; font-weight: 600;
+    font-size: clamp(1.5rem, 4vw, 2.4rem); margin: 0; letter-spacing: -0.02em;
+  }
+  .sec-head .idx { font-family: "Space Mono", monospace; color: var(--accent); font-size: 13px; }
+
+  .about-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 28px; }
+  .about-grid p { grid-column: span 7; margin: 0 0 18px; }
+  .about-grid .facts { grid-column: 9 / 13; align-self: start; }
+  .about-grid .facts dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 10px 16px; }
+  .about-grid .facts dt { font-family: "Space Mono", monospace; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .about-grid .facts dd { margin: 0; font-size: 15px; }
+  .about-grid .portrait { grid-column: 9 / 13; grid-row: 1; margin: 0; align-self: start; }
+  .about-grid .portrait img { display: block; width: 100%; height: auto; border: 1px solid var(--line); filter: grayscale(1) contrast(1.04); }
+  .about-grid .portrait figcaption { margin-top: 10px; }
+  @media (max-width: 800px) {
+    .about-grid p, .about-grid .facts { grid-column: 1 / -1; }
+    .about-grid .portrait { grid-column: 1 / -1; grid-row: auto; max-width: 340px; }
+  }
+
+  /* work list */
+  ol.work { list-style: none; margin: 0; padding: 0; }
+  ol.work li { border-top: 1px solid var(--line); }
+  ol.work li:last-child { border-bottom: 1px solid var(--line); }
+  .work-row {
+    display: grid; grid-template-columns: 44px 1fr auto; gap: 20px; align-items: baseline;
+    padding: 22px 6px; transition: padding-left .28s ease, background .28s ease;
+  }
+  .work-row:hover { padding-left: 22px; background: var(--accent-soft); }
+  .work-row .n { font-family: "Space Mono", monospace; font-size: 13px; color: var(--muted); }
+  .work-row .title { font-family: "Bricolage Grotesque", sans-serif; font-weight: 600; font-size: clamp(1.25rem, 3.2vw, 1.9rem); letter-spacing: -0.02em; }
+  .work-row .title .arrow { display: inline-block; margin-left: 10px; opacity: 0; transform: translateX(-6px); transition: .25s ease; color: var(--accent); }
+  .work-row:hover .title .arrow { opacity: 1; transform: translateX(0); }
+  .work-row .spec { font-family: "Space Mono", monospace; font-size: 12px; color: var(--muted); text-align: right; max-width: 30ch; }
+  .work-row .blurb { grid-column: 2 / 3; font-size: 15px; color: var(--muted); max-width: 60ch; margin-top: 6px; }
+  @media (max-width: 700px) {
+    .work-row { grid-template-columns: 32px 1fr; }
+    .work-row .spec { grid-column: 2; text-align: left; margin-top: 8px; }
+  }
+
+  /* credentials */
+  .cred-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 20px; }
+  .cred-card { display: block; border: 1px solid var(--line); background: var(--panel); transition: transform .25s ease, border-color .25s ease; }
+  .cred-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+  .cred-card img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 2.83; object-fit: cover; }
+  .cred-card .meta { padding: 12px 14px; }
+  .cred-card .meta .t { font-family: "Bricolage Grotesque", sans-serif; font-weight: 600; font-size: 0.92rem; line-height: 1.25; }
+  .cred-card .meta .i { font-family: "Space Mono", monospace; font-size: 10.5px; color: var(--muted); margin-top: 6px; letter-spacing: .04em; }
+  .cred-more { margin-top: 24px; display: flex; align-items: center; gap: 10px; }
+  @media (max-width: 900px) { .cred-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 480px) { .cred-grid { grid-template-columns: 1fr; } }
+
+  /* marquee */
+  .marquee { overflow: hidden; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); padding: 18px 0; }
+  .marquee div { display: flex; gap: 46px; white-space: nowrap; width: max-content; animation: slide 32s linear infinite; }
+  .marquee span { font-family: "Bricolage Grotesque", sans-serif; font-weight: 800; font-size: clamp(1.4rem, 4vw, 2.6rem); letter-spacing: -0.02em; color: var(--muted); }
+  .marquee span::after { content: "◦"; margin-left: 46px; color: var(--accent); }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* contact */
+  .links { display: flex; flex-wrap: wrap; gap: 14px 40px; margin-top: 10px; }
+  .links a {
+    font-family: "Bricolage Grotesque", sans-serif; font-weight: 600;
+    font-size: clamp(1.4rem, 5vw, 2.6rem); letter-spacing: -0.02em;
+    border-bottom: 2px solid transparent; transition: border-color .2s;
+  }
+  .links a:hover { border-color: var(--accent); }
+
+  /* titleblock */
+  .titleblock {
+    display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line);
+    margin: 60px 0 40px; font-family: "Space Mono", monospace; font-size: 11px;
+  }
+  .titleblock div { padding: 12px 14px; border-right: 1px solid var(--line); }
+  .titleblock div:last-child { border-right: 0; }
+  .titleblock b { display: block; font-weight: 400; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; font-size: 10px; margin-bottom: 5px; }
+  @media (max-width: 640px) { .titleblock { grid-template-columns: repeat(2, 1fr); } .titleblock div:nth-child(2) { border-right: 0; } }
+
+  /* reveal */
+  .reveal { opacity: 0; transform: translateY(18px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+    .marquee div { animation: none; }
+    html { scroll-behavior: auto; }
+  }
+  ::selection { background: var(--accent); color: var(--ground); }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+</style>
+
+<canvas id="grid-canvas"></canvas>
+<div class="xhair" id="xhair" aria-hidden="true"></div>
+
+<header class="bar">
+  <a href="#top" class="tag" style="letter-spacing:.2em;color:var(--ink)">S. MAXAM</a>
+  <nav>
+    <a href="#work">Work</a>
+    <a href="#credentials">Credentials</a>
+    <a href="#about">Notes</a>
+    <a href="#contact">Contact</a>
+  </nav>
+  <button class="theme-btn" id="theme">Light / Dark</button>
+</header>
+
+<main class="sheet" id="top">
+
+  <section class="hero" style="border-top:0">
+    <div class="meta-row">
+      <span class="tag">Calgary, AB — 51.0447° N, 114.0719° W</span>
+      <span class="tag">Field notes · Sheet 01</span>
+    </div>
+    <h1>Simon<br />Maxam
+      <span class="thin">Web developer and 3D artist in Calgary. Interactive websites, immersive 3D, architectural visualization — and six years of guitar behind all of it.</span>
+    </h1>
+    <p class="dim tag" style="margin-top:40px">Scroll for the drawing set</p>
+  </section>
+
+  <section id="about">
+    <div class="sec-head">
+      <span class="idx">01</span>
+      <h2>Working notes</h2>
+    </div>
+    <div class="about-grid">
+      <div style="grid-column:span 7">
+        <p class="reveal">I'm a web developer and 3D artist based in Calgary, focused on building modern, interactive digital experiences. I make responsive sites and immersive 3D on the web with Three.js, and build architectural visualizations in Blender and Unreal Engine 5.</p>
+        <p class="reveal">I'm drawn to the intersection of engineering, architecture, and 3D visualization — building things that are as technically solid as they are visually striking. Alongside the build work I hold an Advanced SEO certification and keep sites fast, structured, and easy to find.</p>
+        <p class="reveal">Outside of tech, music has shaped a lot of who I am: six years of guitar, 300+ hours with a church band and 1,000+ hours of personal practice, plus double bass across jazz, rock, classical, and flamenco.</p>
+        <p class="reveal">This page is the index — one place that ties the separate builds together. The studio work lives under <a href="https://maxam.vercel.app/" target="_blank" rel="noopener" style="border-bottom:1px solid var(--accent)">SIMAX</a>.</p>
+      </div>
+      <figure class="portrait reveal">
+        <img src="/simon-maxam-guitar-ironwood.jpg" width="1400" height="2100"
+             alt="Simon Maxam playing guitar live at Ironwood Stage, Calgary"
+             loading="lazy" decoding="async" />
+        <figcaption class="tag">Simon Maxam — live at Ironwood Stage &amp; Grill, Calgary</figcaption>
+      </figure>
+      <div class="facts reveal">
+        <dl>
+          <dt>Based</dt><dd>Calgary, Alberta</dd>
+          <dt>Studio</dt><dd>SIMAX</dd>
+          <dt>Role</dt><dd>Web developer &amp; 3D artist</dd>
+          <dt>Since</dt><dd>Self-employed, 2024 →</dd>
+          <dt>Web</dt><dd>Three.js, GSAP, Vite, HTML/CSS/JS</dd>
+          <dt>3D</dt><dd>Blender, Unreal Engine 5</dd>
+          <dt>Drafting</dt><dd>Revit, AutoCAD, SketchUp</dd>
+          <dt>Also</dt><dd>Advanced SEO · Google BI cert</dd>
+          <dt>Music</dt><dd>Guitar (6 yrs), double bass</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div><span>Games</span><span>Buildings</span><span>Web</span><span>Music</span><span>Drawings</span><span>Games</span><span>Buildings</span><span>Web</span><span>Music</span><span>Drawings</span></div>
+  </div>
+
+  <section id="work">
+    <div class="sec-head">
+      <span class="idx">02</span>
+      <h2>The drawing set</h2>
+      <span class="tag" style="margin-left:auto">Scale 1:1</span>
+    </div>
+    <ol class="work" id="worklist">
+      <li>
+        <a class="work-row" href="https://yugen-6b9.pages.dev/" target="_blank" rel="noopener">
+          <span class="n">A-01</span>
+          <span><span class="title">YŪGEN<span class="arrow">→</span></span>
+            <span class="blurb">Site for an 18-seat San Francisco omakase counter. Restraint as the whole design language — whitespace, warm light, seasonal menu, quiet reservation flow.</span></span>
+          <span class="spec">Web · Reservations<br />Live</span>
+        </a>
+      </li>
+      <li>
+        <a class="work-row" href="https://bonterra-website.pages.dev/" target="_blank" rel="noopener">
+          <span class="n">A-02</span>
+          <span><span class="title">Bonterra Trattoria<span class="arrow">→</span></span>
+            <span class="blurb">Digital home for a downtown Calgary Italian restaurant — menu, private events, and the room itself: glass wine cellar, stone fireplace, Tuscan terrace.</span></span>
+          <span class="spec">HTML · CSS<br />Live</span>
+        </a>
+      </li>
+      <li>
+        <a class="work-row" href="https://wolliom.github.io/aurelio/" target="_blank" rel="noopener">
+          <span class="n">A-03</span>
+          <span><span class="title">Aurelio<span class="arrow">→</span></span>
+            <span class="blurb">A luxury resort site on the Big Sur cliffs. Walk every room in a WebGL environment before you book — WASD and all.</span></span>
+          <span class="spec">WebGL · Booking UI<br />Live</span>
+        </a>
+      </li>
+      <li>
+        <a class="work-row" href="https://wolliom.github.io/vite-threejs-premium/" target="_blank" rel="noopener">
+          <span class="n">A-04</span>
+          <span><span class="title">SIMAX Showcase<span class="arrow">→</span></span>
+            <span class="blurb">A premium Three.js / WebGL showcase — the reference build for how the studio treats the browser as a spatial medium.</span></span>
+          <span class="spec">Three.js · WebGL<br />Live</span>
+        </a>
+      </li>
+      <li>
+        <a class="work-row" href="https://wolliom.github.io/museumverse/" target="_blank" rel="noopener">
+          <span class="n">A-05</span>
+          <span><span class="title">MuseumVerse<span class="arrow">→</span></span>
+            <span class="blurb">An interactive museum walkthrough — an experiment in navigating exhibition space through the web.</span></span>
+          <span class="spec">Three.js · Web<br />Live</span>
+        </a>
+      </li>
+      <li>
+        <a class="work-row" href="https://wolliom.github.io/Barber/" target="_blank" rel="noopener">
+          <span class="n">A-06</span>
+          <span><span class="title">BarberVerse<span class="arrow">→</span></span>
+            <span class="blurb">An immersive barbershop experience — small room, big attention to the craft behind the counter.</span></span>
+          <span class="spec">Web · Interaction<br />Live</span>
+        </a>
+      </li>
+      <li>
+        <a class="work-row" href="https://maxam.vercel.app/" target="_blank" rel="noopener">
+          <span class="n">G-01</span>
+          <span><span class="title">SOLARIS<span class="arrow">→</span></span>
+            <span class="blurb">An educational space-exploration game — roughly two years in Unreal Engine 5 and Blender. The largest single build so far: story, systems, and a walkable Moon.</span></span>
+          <span class="spec">Unreal 5 · Blender<br />In development</span>
+        </a>
+      </li>
+      <li>
+        <a class="work-row" href="https://maxam.vercel.app/" target="_blank" rel="noopener">
+          <span class="n">B-01</span>
+          <span><span class="title">Frank Architecture &amp; Interiors<span class="arrow">→</span></span>
+            <span class="blurb">Professional architectural modelling in Revit — translating drawings into buildable digital models and learning the real workflows.</span></span>
+          <span class="spec">Revit · Modelling<br />Studio work</span>
+        </a>
+      </li>
+    </ol>
+  </section>
+
+  <section id="credentials">
+    <div class="sec-head">
+      <span class="idx">03</span>
+      <h2>Credentials</h2>
+      <span class="tag" style="margin-left:auto">19 on file</span>
+    </div>
+    <div class="cred-grid">
+      <a class="cred-card" href="/certs/google-business-intelligence.jpg" target="_blank" rel="noopener">
+        <img src="/certs/google-business-intelligence.jpg" alt="Google Business Intelligence Professional Certificate" loading="lazy" />
+        <div class="meta">
+          <div class="t">Google Business Intelligence</div>
+          <div class="i">Google · Coursera · Sep 2026</div>
+        </div>
+      </a>
+      <a class="cred-card" href="/certs/advanced-seo.jpg" target="_blank" rel="noopener">
+        <img src="/certs/advanced-seo.jpg" alt="Advanced SEO: Developing an SEO-Friendly Website certificate" loading="lazy" />
+        <div class="meta">
+          <div class="t">Advanced SEO: Developing an SEO-Friendly Website</div>
+          <div class="i">LinkedIn Learning · Jul 2026</div>
+        </div>
+      </a>
+      <a class="cred-card" href="/certs/adobe-photoshop.jpg" target="_blank" rel="noopener">
+        <img src="/certs/adobe-photoshop.jpg" alt="Essential Skills in Adobe Photoshop 2025 certificate" loading="lazy" />
+        <div class="meta">
+          <div class="t">Essential Skills in Adobe Photoshop 2025</div>
+          <div class="i">LinkedIn Learning · Adobe · Aug 2026</div>
+        </div>
+      </a>
+      <a class="cred-card" href="/certs/blender-4.jpg" target="_blank" rel="noopener">
+        <img src="/certs/blender-4.jpg" alt="Blender 4.0 Essential Training certificate" loading="lazy" />
+        <div class="meta">
+          <div class="t">Blender 4.0 Essential Training</div>
+          <div class="i">LinkedIn Learning · Aug 2026</div>
+        </div>
+      </a>
+      <a class="cred-card" href="/certs/revit-to-unreal.jpg" target="_blank" rel="noopener">
+        <img src="/certs/revit-to-unreal.jpg" alt="Revit to Unreal for Architecture, Visualization, and VR certificate" loading="lazy" />
+        <div class="meta">
+          <div class="t">Revit to Unreal for Architecture, Visualization, and VR</div>
+          <div class="i">LinkedIn Learning · Aug 2026</div>
+        </div>
+      </a>
+    </div>
+    <p class="cred-more"><a href="/credentials.html" class="tag" style="border-bottom:1px solid var(--accent)">See all 19 credentials →</a></p>
+  </section>
+
+  <section id="contact">
+    <div class="sec-head">
+      <span class="idx">04</span>
+      <h2>Get in touch</h2>
+    </div>
+    <p style="max-width:46ch;color:var(--muted)">For collaboration, commissions, or a look at work that isn't public yet.</p>
+    <div class="links">
+      <a href="mailto:simon@scalex.ink">simon@scalex.ink</a>
+    </div>
+
+    <p class="tag" style="margin-top:52px">Elsewhere</p>
+    <div class="links" style="font-size:clamp(1.1rem,3.5vw,1.7rem)">
+      <a href="https://maxam.vercel.app/" target="_blank" rel="noopener">SIMAX studio</a>
+      <a href="https://www.instagram.com/simonmaxam/" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://www.linkedin.com/in/simonmaxam/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/wolliom" target="_blank" rel="noopener">GitHub</a>
+    </div>
+
+    <div class="titleblock">
+      <div><b>Project</b>Personal index — field notes</div>
+      <div><b>Drawn by</b>Simon Maxam</div>
+      <div><b>Scale</b>1:1 @ any width</div>
+      <div><b>Sheet</b>01 of 01 · Rev. B</div>
+    </div>
+    <p class="tag">© <span id="yr"></span> Simon Maxam / SIMAX. Built as a static page.</p>
+  </section>
+
+</main>
+
+<script>
+  // year
+  document.getElementById("yr").textContent = new Date().getFullYear();
+
+  // theme toggle
+  var root = document.documentElement;
+  var tb = document.getElementById("theme");
+  try {
+    var saved = localStorage.getItem("sm-theme");
+    if (saved) root.setAttribute("data-theme", saved);
+  } catch (e) {}
+  tb.addEventListener("click", function () {
+    var cur = root.getAttribute("data-theme");
+    var mql = window.matchMedia("(prefers-color-scheme: dark)");
+    var next = (cur ? cur === "dark" : mql.matches) ? "light" : "dark";
+    root.setAttribute("data-theme", next);
+    try { localStorage.setItem("sm-theme", next); } catch (e) {}
+  });
+
+  // crosshair cursor
+  var xh = document.getElementById("xhair");
+  var fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+  if (fine) {
+    window.addEventListener("pointermove", function (e) {
+      xh.style.left = e.clientX + "px";
+      xh.style.top = e.clientY + "px";
+    });
+    document.querySelectorAll("a, button").forEach(function (el) {
+      el.addEventListener("pointerenter", function () { xh.classList.add("big"); });
+      el.addEventListener("pointerleave", function () { xh.classList.remove("big"); });
+    });
+  } else {
+    xh.style.display = "none";
+  }
+
+  // scroll reveal
+  var io = new IntersectionObserver(function (ents) {
+    ents.forEach(function (en) { if (en.isIntersecting) { en.target.classList.add("in"); io.unobserve(en.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll(".reveal").forEach(function (el) { io.observe(el); });
+
+  // blueprint canvas: static grid + slow construction lines
+  var cv = document.getElementById("grid-canvas");
+  var ctx = cv.getContext("2d");
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var W, H, DPR;
+  function css(v) { return getComputedStyle(root).getPropertyValue(v).trim(); }
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.width = innerWidth * DPR;
+    H = cv.height = innerHeight * DPR;
+  }
+  resize();
+  window.addEventListener("resize", function () { resize(); if (reduce) draw(0); });
+
+  var step = 34;
+  function draw(t) {
+    ctx.clearRect(0, 0, W, H);
+    var g = css("--line") || "rgba(120,120,120,.2)";
+    var acc = css("--accent") || "#23479a";
+    // fine grid
+    ctx.strokeStyle = g;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.5;
+    for (var x = 0; x < W; x += step * DPR) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (var y = 0; y < H; y += step * DPR) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+    // drifting construction lines
+    ctx.globalAlpha = 0.28;
+    ctx.strokeStyle = acc;
+    ctx.setLineDash([6 * DPR, 8 * DPR]);
+    var n = 3;
+    for (var i = 0; i < n; i++) {
+      var phase = t * 0.00004 + i * 2.1;
+      var cx = (0.5 + 0.42 * Math.sin(phase)) * W;
+      var cy = (0.5 + 0.42 * Math.cos(phase * 0.8)) * H;
+      ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx, H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, cy); ctx.lineTo(W, cy); ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 60 * DPR + i * 26 * DPR, 0, Math.PI * 2); ctx.stroke();
+    }
+    ctx.setLineDash([]);
+    ctx.globalAlpha = 1;
+  }
+  if (reduce) { draw(0); }
+  else {
+    (function loop(t) { draw(t); requestAnimationFrame(loop); })(0);
+  }
+</script>
