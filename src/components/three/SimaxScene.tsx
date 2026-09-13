@@ -619,34 +619,11 @@ function Scene({
           />
         </Piece>
 
-        {/* Vinyl + Saturn — desktop only. Simon wants mobile capped at
-            guitar + 2 more objects (box + red polygon below) for
-            performance; the extra pieces were making the gyro janky. */}
-        {!lite && (
-          <>
-            <Piece
-              position={PIECE_CONFIG.vinyl.position}
-              rotation={PIECE_CONFIG.vinyl.rotation}
-              speed={PIECE_CONFIG.vinyl.speed}
-              float={!lite}
-              depth={PIECE_CONFIG.vinyl.depth}
-              progressRef={progressRef}
-            >
-              <VinylDisc lite={lite} />
-            </Piece>
-
-            <Piece
-              position={PIECE_CONFIG.saturn.position}
-              rotation={PIECE_CONFIG.saturn.rotation}
-              speed={PIECE_CONFIG.saturn.speed}
-              float={!lite}
-              depth={PIECE_CONFIG.saturn.depth}
-              progressRef={progressRef}
-            >
-              <SaturnModel scale={PIECE_CONFIG.saturn.modelScale} />
-            </Piece>
-          </>
-        )}
+        {/* Vinyl + Saturn removed entirely (desktop AND mobile). Simon: on
+            desktop these read as "big circles going around" during the
+            scroll dolly and looked glitchy; removing them also lightens the
+            scene for weaker desktops, matching the earlier mobile trim to
+            guitar + box + red polygon + small note. */}
 
         {/* Architecture Block */}
         <Piece
