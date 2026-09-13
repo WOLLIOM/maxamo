@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { HTMLAttributes } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useAnimationFrame, useScroll, useTransform } from "framer-motion";
 import { imageSources } from "@/lib/media";
+import { useDeviceTiltRef } from "@/lib/useDeviceTilt";
+import { isTouchDevice } from "@/lib/device";
 import { cn } from "@/lib/utils";
 
 /**
@@ -38,9 +40,23 @@ export function Photo({
   height?: number;
 } & HTMLAttributes<HTMLDivElement>) {
   const ref = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
   const imgRef = useRef<HTMLImageElement>(null);
   const [loaded, setLoaded] = useState(false);
   const { fallback, webp } = imageSources(src);
+
+  // Gyro tilt on phones: the whole photo card tips in 3D as the visitor
+  // moves their device — Simon wanted the tilt interaction (already on the
+  // hero + About portrait) to show up on the other photos across the site
+  // too. Desktop is untouched (hook is inert when not a touch device).
+  const touch = useRef(isTouchDevice());
+  const tilt = useDeviceTiltRef(touch.current);
+  useAnimationFrame(() => {
+    if (!touch.current || !cardRef.current) return;
+    const rx = Math.max(-1, Math.min(1, tilt.current.x * 1.4)) * 7; // pitch
+    const ry = Math.max(-1, Math.min(1, tilt.current.y * 1.4)) * 9; // yaw
+    cardRef.current.style.transform = `rotateX(${-rx}deg) rotateY(${ry}deg)`;
+  });
 
   useEffect(() => {
     if (imgRef.current?.complete) setLoaded(true);
@@ -56,8 +72,16 @@ export function Photo({
   return (
     <div
       ref={ref}
-      className={cn("group relative overflow-hidden bg-surface/50", rounded, className)}
+      style={{ perspective: 900 }}
+      className={cn("group relative", className)}
       {...rest}
+    >
+    <div
+      ref={cardRef}
+      className={cn(
+        "relative h-full w-full overflow-hidden bg-surface/50 transition-transform duration-150 ease-out [transform-style:preserve-3d]",
+        rounded,
+      )}
     >
       <motion.div
         style={{ y, scale }}
@@ -95,6 +119,7 @@ export function Photo({
           {label}
         </span>
       )}
+    </div>
     </div>
   );
 }
