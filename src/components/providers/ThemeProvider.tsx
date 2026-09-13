@@ -28,7 +28,9 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 // instead of an old saved preference.
 const STORAGE_KEY = "simax-theme-v2";
 /** Monochrome is the default look on first visit. */
-const DEFAULT_THEME: TimeOfDay = "mono";
+// Vivid is the site's signature look — it's what the hero is designed around,
+// so a first-time visitor should land on it rather than the muted mono preset.
+const DEFAULT_THEME: TimeOfDay = "vivid";
 
 /** Applies the preset and briefly enables the color-transition class so the
  *  switch animates smoothly without paying that cost the rest of the time. */

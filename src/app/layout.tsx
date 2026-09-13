@@ -90,7 +90,7 @@ export const viewport: Viewport = {
 
 // Applies the saved theme (or the dark default) before paint to avoid a flash.
 // Default is Monochrome; visitors can switch presets and their choice is remembered.
-const themeInit = `(function(){try{var p=localStorage.getItem("simax-theme-v2");var ok=["evening","mono","vivid","blueprint"];var t=(ok.indexOf(p)>-1)?p:"mono";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","mono");}})();`;
+const themeInit = `(function(){try{var p=localStorage.getItem("simax-theme-v2");var ok=["evening","mono","vivid","blueprint"];var t=(ok.indexOf(p)>-1)?p:"vivid";document.documentElement.setAttribute("data-theme",t);}catch(e){document.documentElement.setAttribute("data-theme","vivid");}})();`;
 
 export default function RootLayout({
   children,
@@ -100,7 +100,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      data-theme="mono"
+      data-theme="vivid"
       suppressHydrationWarning
       className={`${serif.variable} ${sans.variable}`}
     >
