@@ -12,7 +12,7 @@ import {
 import { Magnetic } from "@/components/ui/Magnetic";
 import { PixelMarquee } from "@/components/ui/PixelMarquee";
 import { HeroMobileStage } from "@/components/hero/HeroMobileStage";
-import { shouldAutoLoad3D } from "@/lib/device";
+import { shouldAutoLoad3D, isTouchDevice } from "@/lib/device";
 import { site } from "@/lib/site";
 
 const SimaxScene = dynamic(() => import("@/components/three/SimaxScene"), {
@@ -28,18 +28,21 @@ const SimaxScene = dynamic(() => import("@/components/three/SimaxScene"), {
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
-  const [mountScene, setMountScene] = useState(false);
-  const [isTouch, setIsTouch] = useState(false);
+  // Lazy-init (not useEffect) so the correct branch renders on the very
+  // FIRST client render instead of always starting false for one tick.
+  // That one tick used to be visible as a flash of the mobile fallback
+  // photos ("two images") before flipping to the 3D scene — Simon didn't
+  // like seeing that page. shouldAutoLoad3D()/isTouchDevice() are already
+  // guarded to return false during SSR, so this is safe.
+  const [mountScene, setMountScene] = useState(() => shouldAutoLoad3D());
+  const [isTouch, setIsTouch] = useState(() => isTouchDevice());
   const [progressLabel, setProgressLabel] = useState(0);
 
   useEffect(() => {
-    const touch =
-      window.matchMedia("(pointer: coarse)").matches ||
-      (navigator.maxTouchPoints > 0 && window.innerWidth < 900);
-    setIsTouch(touch);
-    // Phone keeps the lighter guitar-only mobile stage (the full cluster
-    // scene was too heavy/laggy on touch devices) — desktop/laptop still
-    // gets the full SimaxScene.
+    // Re-check after mount in case the lazy init ran during SSR (always
+    // false there) — this is now just a confirmation pass on the client,
+    // not the first time these are computed.
+    setIsTouch(isTouchDevice());
     setMountScene(shouldAutoLoad3D());
   }, []);
 

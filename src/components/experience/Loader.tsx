@@ -20,9 +20,13 @@ export function Loader({ onDone }: { onDone: () => void }) {
   const doneRef = useRef(false);
 
   useEffect(() => {
-    const t1 = setTimeout(() => setStage(1), 200);
-    const t2 = setTimeout(() => setStage(2), 900);
-    const auto = setTimeout(() => leave(), isTouchDevice() ? 1400 : 2500);
+    // Shortened per Simon's request — was 1400/2500. The 3D chunk (GLB
+    // models etc.) now starts preloading the moment ExperienceShell mounts
+    // (see its useEffect), running in parallel with this animation, so
+    // cutting the wait here doesn't mean walking into an empty scene.
+    const t1 = setTimeout(() => setStage(1), 150);
+    const t2 = setTimeout(() => setStage(2), 650);
+    const auto = setTimeout(() => leave(), isTouchDevice() ? 950 : 1700);
     return () => [t1, t2, auto].forEach(clearTimeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
