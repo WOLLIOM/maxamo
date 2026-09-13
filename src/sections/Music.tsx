@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { tracks } from "@/lib/tracks";
+import { useAudio } from "@/components/providers/AudioProvider";
 
 /**
  * A real, playable track list of Simon's own recordings — separate from the
@@ -14,6 +15,7 @@ export function Music() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const ambient = useAudio();
 
   function toggle(id: string, src: string) {
     const audio = audioRef.current;
@@ -22,9 +24,14 @@ export function Music() {
     if (playingId === id) {
       audio.pause();
       setPlayingId(null);
+      // A recording was stopped manually — bring the ambient track back.
+      ambient.resumeAfterTrack();
       return;
     }
 
+    // Simon: ambient background music and a real recording shouldn't mix —
+    // duck (fade out + pause) the ambient track the instant a recording starts.
+    ambient.duckForTrack();
     audio.src = src;
     audio.currentTime = 0;
     audio.play().catch(() => {});
@@ -50,6 +57,7 @@ export function Music() {
         onEnded={() => {
           setPlayingId(null);
           setProgress(0);
+          ambient.resumeAfterTrack();
         }}
       />
 
