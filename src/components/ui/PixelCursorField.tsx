@@ -640,7 +640,9 @@ export function PixelCursorField() {
         ch = Math.min((ns - chT0) / 2.2, 1);
       waves.push({ x: chx, y: chy, t0: ns, pow: 0.35 + ch * 2.1 });
       if (currentTheme === "blueprint") rings.push({ x: chx, y: chy, t0: ns, pow: 0.7 + ch * 1.4 });
-      if (currentTheme === "vivid") burstConfetti(chx, chy, Math.round(20 + ch * 40), 0.7 + ch * 1.3);
+      // Confetti sprinkle after the click shockwave removed per Simon's
+      // request — he likes the wave/shockwave growing, not the particle
+      // sprinkle that used to follow it on vivid theme.
       dep(chx, chy, 1, BRUSH * (2.5 + ch * 18));
       shake = 0.45 + ch * 1.9;
     }
@@ -649,7 +651,6 @@ export function PixelCursorField() {
       const ns2 = performance.now() / 1000;
       waves.push({ x: e.clientX, y: e.clientY, t0: ns2, pow: 2.8 });
       if (currentTheme === "blueprint") rings.push({ x: e.clientX, y: e.clientY, t0: ns2, pow: 1.6 });
-      if (currentTheme === "vivid") burstConfetti(e.clientX, e.clientY, 60, 1.6);
       dep(e.clientX, e.clientY, 1, BRUSH * 22);
       shake = 2.4;
     }
