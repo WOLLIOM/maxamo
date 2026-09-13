@@ -64,7 +64,10 @@ export function Hero() {
   const endY = useTransform(scrollYProgress, [0.65, 1], [50, 0]);
 
   // A little shorter so the dolly finishes in roughly one–two scrolls, not three.
-  const runway = isTouch ? "140vh" : "165vh";
+  // Was 140vh on touch -- that meant two swipes to get past the hero.
+  // Simon wants one normal scroll to carry straight through. 100vh means the
+  // sticky stage releases as soon as its own height has scrolled by.
+  const runway = isTouch ? "100vh" : "165vh";
 
   function scrollToMusic() {
     const target = document.getElementById("music");
@@ -265,10 +268,15 @@ export function Hero() {
               style={{ width: `${Math.min(100, progressLabel * 100)}%` }}
             />
           </div>
-          <span className="text-[0.58rem] tabular-nums tracking-wider2 text-faint">
-            {String(Math.min(2, Math.floor(progressLabel * 2) + 1)).padStart(2, "0")}{" "}
-            / 02
-          </span>
+          {/* The 01/02 step counter implied a two-stage scroll, which matched
+              the old 140vh touch runway -- now that phones scroll straight
+              through in one pass, the counter no longer makes sense there. */}
+          {!isTouch && (
+            <span className="text-[0.58rem] tabular-nums tracking-wider2 text-faint">
+              {String(Math.min(2, Math.floor(progressLabel * 2) + 1)).padStart(2, "0")}{" "}
+              / 02
+            </span>
+          )}
         </div>
       </div>
     </section>

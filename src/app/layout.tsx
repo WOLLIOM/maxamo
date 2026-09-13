@@ -6,7 +6,6 @@ import { site } from "@/lib/site";
 import { personSchema, websiteSchema } from "@/lib/schema";
 import { Providers } from "@/components/providers/Providers";
 import { Nav } from "@/components/layout/Nav";
-import { MobileBottomBar } from "@/components/layout/MobileBottomBar";
 import { Footer } from "@/components/layout/Footer";
 import { ExperienceShell } from "@/components/experience/ExperienceShell";
 import { GoogleAnalytics } from "@/components/analytics/GoogleAnalytics";
@@ -130,7 +129,7 @@ export default function RootLayout({
           <Nav />
           <main
             id="main"
-            className="relative overflow-x-clip pb-[calc(4.5rem+env(safe-area-inset-bottom))] lg:pb-0"
+            className="relative overflow-x-clip pb-[env(safe-area-inset-bottom)]"
           >
             {/* Halftone side dots live inside <main> so they scroll with the
                 content instead of staying pinned to the viewport. */}
@@ -138,7 +137,6 @@ export default function RootLayout({
             <HalftonePanel side="right" />
             {children}
           </main>
-          <MobileBottomBar />
           <Footer />
           <ExperienceShell />
           <CustomCursor />

@@ -35,8 +35,10 @@ export function ExperienceShell() {
     // flash on phone, not even for a frame.
     setShowCursor(!isTouchDevice());
 
-    if (isTouchDevice()) return;
-
+    // AmbientCanvas already scales its particle count down for mobile
+    // (9 dust motes vs 46 on desktop) -- Simon wants that ambient dust on
+    // phones too, matching the desktop hero's look, so no more early-return
+    // here for touch devices.
     const t = window.setTimeout(() => setAmbience(true), seen ? 400 : 2600);
     return () => clearTimeout(t);
   }, []);
@@ -45,7 +47,7 @@ export function ExperienceShell() {
     sessionStorage.setItem("simax-entered", "1");
     document.body.style.overflow = "";
     setShowLoader(false);
-    if (!isTouchDevice()) setAmbience(true);
+    setAmbience(true);
   }
 
   return (
