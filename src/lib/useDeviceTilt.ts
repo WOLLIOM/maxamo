@@ -105,6 +105,10 @@ export function useGyroPermissionButton() {
         if (state === "granted") {
           setGranted(true);
           setNeedsPrompt(false);
+          // iOS quirk: a `deviceorientation` listener added BEFORE the grant
+          // often never starts firing. Broadcast so any listeners (e.g. the
+          // 3D scene) can (re)attach their handler now that events will flow.
+          window.dispatchEvent(new Event("simax-gyro-granted"));
         }
       })
       .catch(() => {});

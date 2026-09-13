@@ -77,9 +77,8 @@ const PIECE_CONFIG = {
   archBlock: {
     name: "Architecture Block",
     position: [-3.8, 1.3, -0.5] as const,
-    // Mobile: pushed way up and to the right per Simon's note (pulled in a
-    // touch from the very edge so it doesn't clip on narrower phones).
-    mobilePosition: [1.6, 2.4, -0.3] as const,
+    // Mobile: upper-right, nudged a little left + down per Simon's note.
+    mobilePosition: [1.2, 1.9, -0.3] as const,
     rotation: [0.15, 0.35, 0] as const,
     scale: 1.2,
     speed: 3.35,
@@ -483,6 +482,8 @@ function Scene({
     function onOrient(e: DeviceOrientationEvent) {
       const beta = e.beta ?? 0;
       const gamma = e.gamma ?? 0;
+      // First real reading becomes the neutral "phone held normally" pose, so
+      // tilt is measured relative to however the user is holding it.
       if (baseBeta === null) {
         baseBeta = beta;
         baseGamma = gamma;
@@ -491,8 +492,24 @@ function Scene({
       gyro.current.y = THREE.MathUtils.clamp((gamma - (baseGamma ?? 0)) / 28, -1, 1);
     }
 
-    window.addEventListener("deviceorientation", onOrient, { passive: true });
-    return () => window.removeEventListener("deviceorientation", onOrient);
+    // (Re)attach the orientation listener. On iOS a listener registered
+    // before permission is granted frequently never fires, so we both attach
+    // now (covers Android + already-granted iOS) AND re-attach when the
+    // permission button broadcasts a fresh grant — resetting calibration so
+    // the neutral pose is taken from the moment gyro actually turns on.
+    function attach() {
+      window.removeEventListener("deviceorientation", onOrient);
+      baseBeta = null;
+      baseGamma = null;
+      window.addEventListener("deviceorientation", onOrient, { passive: true });
+    }
+
+    attach();
+    window.addEventListener("simax-gyro-granted", attach);
+    return () => {
+      window.removeEventListener("deviceorientation", onOrient);
+      window.removeEventListener("simax-gyro-granted", attach);
+    };
   }, []);
 
   return (
