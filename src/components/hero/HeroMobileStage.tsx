@@ -49,24 +49,23 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
       const p = progressRef.current;
       if (Math.abs(x) > 0.04 || Math.abs(y) > 0.04) setGyroHint(false);
 
-      const scrollLift = p * 36;
-      const scrollFade = 1 - Math.min(1, p * 1.15);
+      const scrollLift = p * 40;
+      const scrollFade = 1 - Math.min(1, p * 1.2);
+      // Gentle scroll "zoom" on the guitar — grows as you scroll, echoing the
+      // desktop camera dolly.
+      const scrollZoom = 1 + p * 0.35;
 
-      if (backRef.current) {
-        backRef.current.style.transform = `translate3d(${y * 6}px, ${x * 5 - scrollLift * 0.25}px, 0) scale(1.08)`;
-        backRef.current.style.opacity = String(0.92 * scrollFade);
-      }
       if (heroRef.current) {
-        heroRef.current.style.transform = `translate3d(${y * 22}px, ${x * 16 - scrollLift * 0.85}px, 0) rotate(${y * 2.5}deg)`;
+        heroRef.current.style.transform = `translate3d(${y * 18}px, ${x * 14 - scrollLift * 0.85}px, 0) scale(${scrollZoom}) rotate(${y * 2}deg)`;
         heroRef.current.style.opacity = String(scrollFade);
       }
-      if (leftRef.current) {
-        leftRef.current.style.transform = `translate3d(${y * 30}px, ${x * 22 - scrollLift}px, 0) rotate(${-y * 4}deg)`;
-        leftRef.current.style.opacity = String(scrollFade);
-      }
       if (rightRef.current) {
-        rightRef.current.style.transform = `translate3d(${y * 26}px, ${x * 18 - scrollLift * 0.9}px, 0) rotate(${y * 5}deg)`;
+        rightRef.current.style.transform = `translate3d(${y * 30}px, ${x * 22 - scrollLift}px, 0) rotate(${y * 6}deg)`;
         rightRef.current.style.opacity = String(scrollFade);
+      }
+      if (leftRef.current) {
+        leftRef.current.style.transform = `translate3d(${y * 26}px, ${x * 18 - scrollLift * 0.9}px, 0) rotate(${-y * 4}deg)`;
+        leftRef.current.style.opacity = String(scrollFade);
       }
 
       frame = requestAnimationFrame(apply);
@@ -77,63 +76,51 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
 
   return (
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-      <div ref={backRef} className="absolute inset-0 will-change-transform">
-        <ResponsiveImg
-          src="/images/real/solaris-earth-moon.webp"
-          alt=""
-          sizes="100vw"
-          className="absolute inset-0 h-full w-full object-cover object-[center_35%] opacity-40"
-          width={1280}
-          height={719}
-          priority
-        />
-        <div className="absolute inset-0 bg-bg/55" />
-        <div className="absolute inset-0 bg-gradient-to-b from-bg/10 via-transparent to-bg/95" />
-      </div>
-
+      {/* No painted background — let the vivid theme's aurora show through so
+          the phone hero matches the desktop's colourful top. Just a soft
+          bottom scrim so the headline/buttons stay readable. */}
       <div
-        ref={heroRef}
-        className="absolute left-1/2 top-[7%] z-[3] w-[40vw] max-w-[168px] -translate-x-1/2 will-change-transform"
-      >
-        {use3D ? (
-          <div className="relative aspect-[4/5] overflow-hidden rounded-2xl shadow-[0_18px_40px_rgba(0,0,0,0.45)] ring-1 ring-white/20">
-            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
-          </div>
-        ) : (
-          <FoodFrame
-            src="/images/real/guitar-performance.webp"
-            alt="Simon Maxam playing guitar live performance"
-            title="Simon Maxam"
-            priority
-            className="aspect-[4/5]"
-            objectPosition="center 15%"
-          />
-        )}
-      </div>
+        ref={backRef}
+        className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg/90"
+      />
 
       {use3D ? (
-        <div
-          ref={rightRef}
-          className="absolute right-[6%] top-[22%] z-[2] h-[26vw] max-h-[104px] w-[26vw] max-w-[104px] will-change-transform"
-        >
-          <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
-        </div>
+        <>
+          {/* Big centred acoustic guitar — floating, no frame. */}
+          <div
+            ref={heroRef}
+            className="absolute left-1/2 top-[4%] z-[3] aspect-[3/4] w-[88vw] max-w-[380px] -translate-x-1/2 will-change-transform"
+          >
+            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
+          </div>
+
+          {/* Red rotating code polygon, tucked into the space above-right of
+              the guitar (Simon specifically wanted this kept on mobile). */}
+          <div
+            ref={rightRef}
+            className="absolute right-[5%] top-[3%] z-[4] aspect-square w-[26vw] max-w-[118px] will-change-transform"
+          >
+            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
+          </div>
+        </>
       ) : (
         <>
           <div
-            ref={leftRef}
-            className="absolute left-[4%] top-[22%] z-[2] w-[28vw] max-w-[108px] will-change-transform"
+            ref={heroRef}
+            className="absolute left-1/2 top-[6%] z-[3] w-[62vw] max-w-[240px] -translate-x-1/2 will-change-transform"
           >
             <FoodFrame
-              src="/images/generated/arch-model-lit.webp"
-              alt="Architectural model"
-              className="aspect-square"
+              src="/images/real/guitar-performance.webp"
+              alt="Simon Maxam playing guitar live performance"
+              title="Simon Maxam"
+              priority
+              className="aspect-[4/5]"
+              objectPosition="center 15%"
             />
           </div>
-
           <div
             ref={rightRef}
-            className="absolute right-[3%] top-[18%] z-[2] w-[30vw] max-w-[112px] will-change-transform"
+            className="absolute right-[4%] top-[4%] z-[2] w-[30vw] max-w-[112px] will-change-transform"
           >
             <FoodFrame
               src="/images/real/solaris-rover.webp"
@@ -145,7 +132,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
       )}
 
       {gyroHint && (
-        <p className="absolute left-0 right-0 top-[52%] z-[4] text-center text-[0.58rem] uppercase tracking-ultra text-faint">
+        <p className="absolute left-0 right-0 top-[58%] z-[4] text-center text-[0.58rem] uppercase tracking-ultra text-faint">
           Tilt to explore
         </p>
       )}
