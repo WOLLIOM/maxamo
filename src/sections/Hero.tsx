@@ -107,10 +107,12 @@ export function Hero() {
           )}
         </div>
 
-        {/* Golden top light — the cinematic key light for the whole scene */}
+        {/* Golden top light — the cinematic key light for the whole scene.
+            Hidden on phones: the mobile hero rides the vivid theme, where a
+            gold wash just looked like a bad blown-out light. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-[60%] max-md:h-[45%]"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-[60%] max-md:hidden"
           style={{
             background:
               "radial-gradient(60% 100% at 50% 0%, rgb(var(--c-gold)/0.35), transparent 70%)",
@@ -118,7 +120,7 @@ export function Hero() {
         />
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-px"
+          className="pointer-events-none absolute inset-x-0 top-0 z-[2] h-px max-md:hidden"
           style={{
             background:
               "linear-gradient(90deg, transparent, rgb(var(--c-gold)/0.9), transparent)",

@@ -3,7 +3,7 @@
 import { Suspense, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { RedStrat, CodeShape } from "@/components/three/SimaxModels";
+import { RealGuitar, CodeShape } from "@/components/three/SimaxModels";
 
 type Tilt = { x: number; y: number };
 
@@ -68,27 +68,33 @@ export function MobileGuitarCanvas({
   variant?: "guitar" | "code";
   tilt?: MutableRefObject<Tilt>;
 }) {
+  const isGuitar = variant === "guitar";
   return (
     <div className={className}>
       <Canvas
-        dpr={1}
+        dpr={[1, 2]}
         frameloop="always"
-        camera={{ position: [0, 0.1, 5.6], fov: 34 }}
+        // Guitar sits a little further back so the full body + neck fit with
+        // margin (no cropping); the code polygon stays closer.
+        camera={{ position: [0, 0.1, isGuitar ? 6.6 : 5.6], fov: 34 }}
         gl={{
           alpha: true,
-          antialias: false,
+          antialias: true,
           powerPreference: "low-power",
           failIfMajorPerformanceCaveat: false,
         }}
         onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       >
         <Suspense fallback={null}>
-          <ambientLight intensity={0.85} />
-          <directionalLight position={[3, 5, 4]} intensity={1.5} color="#f0d8c4" />
-          <directionalLight position={[-4, 2, -3]} intensity={0.4} color="#a82026" />
-          {variant === "guitar" ? (
-            <TiltGroup tilt={tilt} baseRotation={[0, 0, 0]}>
-              <RedStrat scale={1.6} />
+          <ambientLight intensity={0.9} />
+          <directionalLight position={[3, 5, 4]} intensity={1.6} color="#f0d8c4" />
+          <directionalLight position={[-4, 2, -3]} intensity={0.6} color="#8b5cf6" />
+          {isGuitar ? (
+            // The acoustic (Taylor) centrepiece — leaned diagonally like the
+            // desktop hero. RealGuitar already stands it upright (Z=90°); the
+            // small negative Z here adds the diagonal lean.
+            <TiltGroup tilt={tilt} baseRotation={[0, -0.15, -0.22]}>
+              <RealGuitar scale={3.0} />
             </TiltGroup>
           ) : (
             <TiltGroup tilt={tilt} baseRotation={[0.3, 0.5, 0]}>
