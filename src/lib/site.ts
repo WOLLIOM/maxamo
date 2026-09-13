@@ -65,12 +65,20 @@ export const fullNavLinks: NavLink[] = [
   { label: "Contact", href: "/contact" },
 ];
 
+// Consolidated per Simon's feedback: the two TÜBİTAK placements are one
+// award, not two; Waterloo + Newton were the same award under two names
+// (the Waterloo Newtonian Medal); the Grade 9 award was dropped entirely.
 export const awards = [
-  { year: "2024", title: "TÜBİTAK 2024 — 3rd Place (Turkey)", org: "TÜBİTAK" },
-  { year: "2024", title: "TÜBİTAK 2024 — 1st Place (Province)", org: "TÜBİTAK" },
-  { year: "", title: "Waterloo Award", org: "" },
-  { year: "", title: "Newton Award", org: "" },
-  { year: "", title: "Grade 9 Award", org: "" },
+  {
+    year: "2024",
+    title: "TÜBİTAK",
+    org: "1st Place (Province) · 3rd Place (Turkey)",
+  },
+  {
+    year: "",
+    title: "Waterloo Newtonian Medal",
+    org: "University of Waterloo (CEMC)",
+  },
 ];
 
 // Most relevant to the work shown on the site (3D/architecture/design)

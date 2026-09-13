@@ -64,8 +64,11 @@ export function Music() {
         </p>
       </div>
 
+      {/* Spotify-style rows: rounded cards, cover art always visible (not
+          just >=sm), tighter padding — reads as a playlist rather than a
+          plain table of links, especially on phone. */}
       <Reveal delay={1}>
-        <ul className="mt-12 divide-y divide-line border-y border-line">
+        <ul className="mt-12 flex flex-col gap-1">
           {tracks.map((track, i) => {
             const isActive = playingId === track.id;
             return (
@@ -73,27 +76,23 @@ export function Music() {
                 <button
                   type="button"
                   onClick={() => toggle(track.id, track.src)}
-                  className={`group relative flex w-full items-center gap-5 overflow-hidden py-5 text-left transition-all duration-300 hover:bg-surface/60 hover:pl-2 ${
-                    isActive ? "bg-surface/40" : ""
+                  className={`group relative flex w-full items-center gap-3 overflow-hidden rounded-xl px-3 py-2.5 text-left transition-colors duration-300 hover:bg-surface/70 md:gap-4 md:px-4 md:py-3 ${
+                    isActive ? "bg-surface/60" : ""
                   }`}
                 >
-                  {/* progress fill */}
+                  {/* progress fill, subtle like a playback scrubber under the row */}
                   {isActive && (
                     <span
                       aria-hidden
-                      className="pointer-events-none absolute inset-y-0 left-0 bg-ink/[0.04]"
+                      className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-accent"
                       style={{ width: `${progress * 100}%` }}
                     />
                   )}
 
-                  <span className="relative z-10 w-7 shrink-0 text-sm tabular-nums text-faint">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-
-                  {/* generated cover art */}
+                  {/* generated cover art — always shown, bigger + more rounded */}
                   <span
                     aria-hidden
-                    className="relative z-10 hidden h-12 w-12 shrink-0 overflow-hidden rounded-md border border-line sm:block"
+                    className="relative z-10 h-12 w-12 shrink-0 overflow-hidden rounded-lg shadow-sm md:h-14 md:w-14"
                     style={{
                       backgroundImage: `linear-gradient(135deg, ${track.art[0]}, ${track.art[1]})`,
                     }}
@@ -103,24 +102,12 @@ export function Music() {
                     </span>
                   </span>
 
-                  <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line text-ink transition-all duration-300 group-hover:border-ink/40 group-hover:scale-105 group-active:scale-95">
-                    {isActive ? (
-                      // animated equalizer bars while playing
-                      <span className="flex h-3 w-3 items-end justify-between gap-[2px]" aria-hidden>
-                        <span className="w-[2.5px] animate-eq-bar1 rounded-full bg-current" style={{ height: "100%" }} />
-                        <span className="w-[2.5px] animate-eq-bar2 rounded-full bg-current" style={{ height: "60%" }} />
-                        <span className="w-[2.5px] animate-eq-bar3 rounded-full bg-current" style={{ height: "80%" }} />
-                      </span>
-                    ) : (
-                      // play icon
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-                        <path d="M2 1.2 10.5 6 2 10.8V1.2Z" fill="currentColor" />
-                      </svg>
-                    )}
-                  </span>
-
                   <span className="relative z-10 flex-1 min-w-0">
-                    <span className="block truncate text-base font-medium text-ink md:text-lg">
+                    <span
+                      className={`block truncate text-[0.95rem] font-medium md:text-lg ${
+                        isActive ? "text-accent" : "text-ink"
+                      }`}
+                    >
                       {track.title}
                     </span>
                     <span className="block truncate text-sm text-faint">
@@ -128,8 +115,20 @@ export function Music() {
                     </span>
                   </span>
 
-                  <span className="relative z-10 hidden shrink-0 text-xs uppercase tracking-wider text-faint md:block">
-                    {isActive ? "Playing" : "Play"}
+                  <span className="relative z-10 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-ink transition-transform duration-300 group-hover:scale-105 group-active:scale-95 md:h-10 md:w-10">
+                    {isActive ? (
+                      // animated equalizer bars while playing
+                      <span className="flex h-3.5 w-3.5 items-end justify-between gap-[2px] text-accent" aria-hidden>
+                        <span className="w-[2.5px] animate-eq-bar1 rounded-full bg-current" style={{ height: "100%" }} />
+                        <span className="w-[2.5px] animate-eq-bar2 rounded-full bg-current" style={{ height: "60%" }} />
+                        <span className="w-[2.5px] animate-eq-bar3 rounded-full bg-current" style={{ height: "80%" }} />
+                      </span>
+                    ) : (
+                      // play icon
+                      <svg width="14" height="14" viewBox="0 0 12 12" fill="none">
+                        <path d="M2 1.2 10.5 6 2 10.8V1.2Z" fill="currentColor" />
+                      </svg>
+                    )}
                   </span>
                 </button>
               </li>

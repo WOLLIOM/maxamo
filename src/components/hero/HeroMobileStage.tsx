@@ -2,11 +2,13 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
-import { useDeviceTiltRef, useGyroPermissionPrompt, useGyroPermissionButton } from "@/lib/useDeviceTilt";
+import { useGyroPermissionPrompt, useGyroPermissionButton } from "@/lib/useDeviceTilt";
 import { imageSources } from "@/lib/media";
 
-const MobileGuitarCanvas = dynamic(
-  () => import("./MobileGuitarCanvas").then((m) => m.MobileGuitarCanvas),
+// Full 3D scene with guitar, polygon, box, and particles — same as desktop,
+// just adapted for mobile viewport and gyro control.
+const SimaxScene = dynamic(
+  () => import("@/components/three/SimaxScene").then((m) => m.default),
   { ssr: false, loading: () => null },
 );
 
@@ -21,17 +23,13 @@ const MobileGuitarCanvas = dynamic(
 export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: number }) {
   const backRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
-  const leftRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
   const [use3D, setUse3D] = useState(false);
-  const tilt = useDeviceTiltRef(true);
   const progressRef = useRef(scrollProgress);
 
+  // SimaxScene handles gyro internally, but we still need the visible button
+  // for iOS permission flow (requestPermission must come from a real click).
   useGyroPermissionPrompt();
-  // iOS Safari (this is what Simon tested on) requires requestPermission()
-  // to run inside a real click handler on a real button — a generic
-  // window-level tap listener isn't reliably counted as a "user gesture" on
-  // every iOS version. This gives a visible, tappable "Enable tilt" pill.
   const { needsPrompt: needsGyroTap, request: requestGyro } = useGyroPermissionButton();
 
   useEffect(() => {
@@ -46,34 +44,8 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
     progressRef.current = scrollProgress;
   }, [scrollProgress]);
 
-  useEffect(() => {
-    let frame = 0;
-    const apply = () => {
-      const { x, y } = tilt.current;
-      const p = progressRef.current;
-      const scrollLift = p * 40;
-      const scrollFade = 1 - Math.min(1, p * 1.2);
-      // No scroll "zoom" on mobile — Simon didn't want the guitar growing as
-      // you scroll. It just drifts up and fades with the rest of the hero.
-
-      if (heroRef.current) {
-        heroRef.current.style.transform = `translate3d(${y * 18}px, ${x * 14 - scrollLift * 0.85}px, 0) rotate(${y * 2}deg)`;
-        heroRef.current.style.opacity = String(scrollFade);
-      }
-      if (rightRef.current) {
-        rightRef.current.style.transform = `translate3d(${y * 30}px, ${x * 22 - scrollLift}px, 0) rotate(${y * 6}deg)`;
-        rightRef.current.style.opacity = String(scrollFade);
-      }
-      if (leftRef.current) {
-        leftRef.current.style.transform = `translate3d(${y * 26}px, ${x * 18 - scrollLift * 0.9}px, 0) rotate(${-y * 4}deg)`;
-        leftRef.current.style.opacity = String(scrollFade);
-      }
-
-      frame = requestAnimationFrame(apply);
-    };
-    frame = requestAnimationFrame(apply);
-    return () => cancelAnimationFrame(frame);
-  }, [tilt]);
+  // SimaxScene handles its own animations (gyro, scroll-driven depth) — no
+  // manual transform updates needed here.
 
   return (
     <>
@@ -87,41 +59,9 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
       />
 
       {use3D ? (
-        <>
-          {/* ============ MOBILE-ONLY: GUITAR SIZE / POSITION ============
-              Edit the two lines below to resize/reposition the guitar on
-              phones only (desktop is untouched — separate component).
-              - top-[0%]      : distance from top of screen (raise/lower)
-              - w-[98vw]      : width as % of screen width (bigger/smaller)
-              - max-w-[440px] : hard cap so it doesn't get huge on tablets
-              Outer div centres via inset-x-0 + mx-auto (margin-based, not a
-              transform) so it can't be silently dropped like -translate-x-1/2
-              was in production, and can't be clobbered by heroRef's animated
-              transform on the inner div. ================================ */}
-          <div className="absolute inset-x-0 top-[0%] z-[3] mx-auto w-[98vw] max-w-[440px]">
-            <div ref={heroRef} className="relative aspect-[3/4] w-full will-change-transform">
-              <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
-            </div>
-          </div>
-
-          {/* ============ MOBILE-ONLY: RED POLYGON SIZE / POSITION ========
-              - left-[52%] / top-[0%] : position (% of screen)
-              - w-[34vw] / max-w-[150px] : size — bigger fills more of the
-                empty space next to the guitar. ============================ */}
-          <div
-            ref={rightRef}
-            className="absolute left-[54%] top-[calc(env(safe-area-inset-top)+3.2rem)] z-[4] aspect-square w-[32vw] max-w-[140px] will-change-transform"
-          >
-            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
-          </div>
-
-          {/* ============ MOBILE-ONLY: WHITE BOX SIZE / POSITION ==========
-              The silvery wireframe block from the desktop scene — fills the
-              empty space on the left side of the phone hero, mid-height. */}
-          <div className="absolute left-[2%] top-[38%] z-[3] aspect-square w-[26vw] max-w-[118px] will-change-transform">
-            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="box" tilt={tilt} />
-          </div>
-        </>
+        // Full 3D scene: guitar, polygon, box, all objects from desktop.
+        // SimaxScene has built-in gyro support — no need to pass tilt.
+        <SimaxScene progressRef={progressRef} />
       ) : (
         <>
           <div className="absolute inset-x-0 top-[6%] z-[3] mx-auto w-[62vw] max-w-[240px]">

@@ -23,7 +23,7 @@ export function MusicDock() {
   const playing = mounted && music.playing;
 
   return (
-    <div className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] left-4 z-[60] sm:left-5 lg:bottom-7 lg:left-7">
+    <div className="fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] left-4 z-[60] hidden sm:left-5 md:block lg:bottom-7 lg:left-7">
       {open && (
         <div className="glass mb-3 w-[min(88vw,320px)] rounded-2xl p-3">
           <div className="mb-2 flex items-center justify-between px-1">

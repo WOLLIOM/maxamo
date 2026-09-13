@@ -47,6 +47,10 @@ const PIECE_CONFIG = {
   guitar: {
     name: "Guitar",
     position: [0, 0.3, 0.6] as const,
+    // Mobile: nudged left + shrunk a touch so it's centered and fits the
+    // narrower portrait frame instead of feeling off-center/oversized.
+    mobilePosition: [-0.7, 0.3, 0.6] as const,
+    mobileScale: 4.4,
     rotation: [Math.PI / 2.5, 2, Math.PI / -2] as const,
     scale: 5.2,
     speed: 1.7,
@@ -73,6 +77,7 @@ const PIECE_CONFIG = {
   archBlock: {
     name: "Architecture Block",
     position: [-3.8, 1.3, -0.5] as const,
+    mobilePosition: [-2.1, -1.1, -0.5] as const,
     rotation: [0.15, 0.35, 0] as const,
     scale: 1.2,
     speed: 3.35,
@@ -81,6 +86,9 @@ const PIECE_CONFIG = {
   codeShape: {
     name: "Code Shape",
     position: [4.5, -1.4, -0.3] as const,
+    // Mobile: pulled inward from the desktop-only far-right spot so it's
+    // actually inside the narrower portrait frame instead of clipped off.
+    mobilePosition: [2.3, 0.9, -0.3] as const,
     rotation: [0.35, -0.2, 0.15] as const,
     scale: 1.2,
     speed: 1.15,
@@ -98,6 +106,7 @@ const PIECE_CONFIG = {
   noteRed: {
     name: "Music Note (Red)",
     position: [-2.1, -2.1, 0.35] as const,
+    mobilePosition: [1.4, -1.9, 0.35] as const,
     rotation: [0.25, 0.5, -0.1] as const,
     scale: 1.05,
     speed: 1.25,
@@ -511,7 +520,7 @@ function Scene({
       <ParallaxRig gyro={gyro} progressRef={progressRef}>
         {/* Guitar */}
         <Piece
-          position={PIECE_CONFIG.guitar.position}
+          position={lite ? PIECE_CONFIG.guitar.mobilePosition : PIECE_CONFIG.guitar.position}
           rotation={PIECE_CONFIG.guitar.rotation}
           speed={PIECE_CONFIG.guitar.speed}
           scale={1}
@@ -519,7 +528,13 @@ function Scene({
           depth={PIECE_CONFIG.guitar.depth}
           progressRef={progressRef}
         >
-          <RealGuitar scale={PIECE_CONFIG.guitar.modelScale || PIECE_CONFIG.guitar.scale} />
+          <RealGuitar
+            scale={
+              (lite ? PIECE_CONFIG.guitar.mobileScale : undefined) ||
+              PIECE_CONFIG.guitar.modelScale ||
+              PIECE_CONFIG.guitar.scale
+            }
+          />
         </Piece>
 
         {/* Vinyl */}
@@ -548,7 +563,7 @@ function Scene({
 
         {/* Architecture Block */}
         <Piece
-          position={PIECE_CONFIG.archBlock.position}
+          position={lite ? PIECE_CONFIG.archBlock.mobilePosition : PIECE_CONFIG.archBlock.position}
           rotation={PIECE_CONFIG.archBlock.rotation}
           speed={PIECE_CONFIG.archBlock.speed}
           scale={PIECE_CONFIG.archBlock.scale}
@@ -561,7 +576,7 @@ function Scene({
 
         {/* Code Shape */}
         <Piece
-          position={PIECE_CONFIG.codeShape.position}
+          position={lite ? PIECE_CONFIG.codeShape.mobilePosition : PIECE_CONFIG.codeShape.position}
           rotation={PIECE_CONFIG.codeShape.rotation}
           speed={PIECE_CONFIG.codeShape.speed}
           scale={PIECE_CONFIG.codeShape.scale}
@@ -574,7 +589,8 @@ function Scene({
 
         {!lite && (
           <>
-            {/* Music Note (GLB) */}
+            {/* Music Note (GLB) — the heavier of the two note models, kept
+                desktop-only for performance. */}
             <Piece
               position={PIECE_CONFIG.notaGLB.position}
               rotation={PIECE_CONFIG.notaGLB.rotation}
@@ -585,20 +601,21 @@ function Scene({
             >
               <NotaGLB scale={PIECE_CONFIG.notaGLB.modelScale} />
             </Piece>
-
-            {/* Music Note (Red) */}
-            <Piece
-              position={PIECE_CONFIG.noteRed.position}
-              rotation={PIECE_CONFIG.noteRed.rotation}
-              speed={PIECE_CONFIG.noteRed.speed}
-              scale={PIECE_CONFIG.noteRed.scale}
-              depth={PIECE_CONFIG.noteRed.depth}
-              progressRef={progressRef}
-            >
-              <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
-            </Piece>
           </>
         )}
+
+        {/* Music Note (Red) — the lighter procedural note. Simon wanted this
+            visible on mobile too, so it's not gated behind `!lite`. */}
+        <Piece
+          position={lite ? PIECE_CONFIG.noteRed.mobilePosition : PIECE_CONFIG.noteRed.position}
+          rotation={PIECE_CONFIG.noteRed.rotation}
+          speed={PIECE_CONFIG.noteRed.speed}
+          scale={PIECE_CONFIG.noteRed.scale}
+          depth={PIECE_CONFIG.noteRed.depth}
+          progressRef={progressRef}
+        >
+          <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
+        </Piece>
       </ParallaxRig>
 
       {!lite && (
@@ -653,7 +670,10 @@ export default function SimaxScene({
         stencil: false,
         premultipliedAlpha: true,
       }}
-      camera={{ position: [0, 0.2, 8.4], fov: 36 }}
+      // Mobile portrait has a much narrower aspect ratio than desktop, so a
+      // wider FOV (and slightly further-back camera) keeps the repositioned
+      // pieces from clipping at the edges of the frame.
+      camera={{ position: lite ? [0, 0.2, 9.6] : [0, 0.2, 8.4], fov: lite ? 44 : 36 }}
       style={{
         position: "absolute",
         inset: 0,
