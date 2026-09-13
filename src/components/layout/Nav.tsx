@@ -18,7 +18,10 @@ export function Nav() {
     function onScroll() {
       const y = window.scrollY;
       setScrolled(y > 40);
-      setHidden(y > last && y > 300 && !open);
+      // Was 300px -- Simon wanted the bar to actually leave as soon as he
+      // starts scrolling down, like the rest of the page, not sit stuck at
+      // the top until a big scroll distance had built up.
+      setHidden(y > last && y > 60 && !open);
       last = y;
     }
     window.addEventListener("scroll", onScroll, { passive: true });
