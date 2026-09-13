@@ -36,30 +36,6 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   // from the real button — likely why gyro "sometimes" stopped working.
   const { needsPrompt: needsGyroTap, request: requestGyro } = useGyroPermissionButton();
 
-  // Diagnostic-only: visit with ?gyrodebug=1 to see live orientation values.
-  // Tells us whether iOS is actually delivering motion events at all.
-  const [debug, setDebug] = useState(false);
-  const [gyroDbg, setGyroDbg] = useState("waiting for motion…");
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (!new URLSearchParams(window.location.search).has("gyrodebug")) return;
-    setDebug(true);
-    let count = 0;
-    const onOrient = (e: DeviceOrientationEvent) => {
-      count += 1;
-      setGyroDbg(
-        `events:${count} beta:${(e.beta ?? 0).toFixed(1)} gamma:${(e.gamma ?? 0).toFixed(1)} abs:${e.absolute}`,
-      );
-    };
-    window.addEventListener("deviceorientation", onOrient);
-    const onGrant = () => setGyroDbg("granted — waiting for motion…");
-    window.addEventListener("simax-gyro-granted", onGrant);
-    return () => {
-      window.removeEventListener("deviceorientation", onOrient);
-      window.removeEventListener("simax-gyro-granted", onGrant);
-    };
-  }, []);
-
   useEffect(() => {
     // Very low-end phones (few cores, reduced-motion) keep the flat photo;
     // everything else gets the real, live 3D guitar.
@@ -140,11 +116,6 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
       >
         Tap to see something cool
       </button>
-    )}
-    {debug && (
-      <div className="fixed left-2 top-24 z-[999] rounded bg-black/80 px-3 py-2 font-mono text-[0.6rem] text-lime-300">
-        {gyroDbg}
-      </div>
     )}
     </>
   );

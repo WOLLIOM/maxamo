@@ -710,7 +710,12 @@ export default function SimaxScene({
         height: "100%",
         pointerEvents: "auto",
       }}
-      frameloop={lite ? "demand" : "always"}
+      // Always render, including mobile. "demand" mode (the old lite value)
+      // only repaints when R3F invalidates -- but the gyro updates a ref the
+      // render loop reads, which does NOT invalidate, so the scene froze a
+      // moment after mount ("moves for a sec then stops"). Continuous render
+      // is required for gyro to drive the scene; mobile is capped at 3 objects.
+      frameloop="always"
       onCreated={({ gl }) => {
         gl.setClearColor(0x000000, 0);
         gl.domElement.style.pointerEvents = "none";
