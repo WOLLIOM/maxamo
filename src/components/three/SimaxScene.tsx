@@ -110,7 +110,10 @@ const PIECE_CONFIG = {
   noteRed: {
     name: "Music Note (Red)",
     position: [-2.1, -2.1, 0.35] as const,
-    mobilePosition: [1.4, -1.9, 0.35] as const,
+    // Mobile: tucked into the empty space between the box (upper-right) and
+    // the guitar (center), upper-middle area.
+    mobilePosition: [0.2, 1.2, 0.4] as const,
+    mobileScale: 0.9,
     rotation: [0.25, 0.5, -0.1] as const,
     scale: 1.05,
     speed: 1.25,
@@ -631,20 +634,20 @@ function Scene({
           </>
         )}
 
-        {/* Music Note (Red) — desktop only now too. Simon wants mobile
-            capped at guitar + box + polygon (3 pieces max) for perf. */}
-        {!lite && (
-          <Piece
-            position={PIECE_CONFIG.noteRed.position}
-            rotation={PIECE_CONFIG.noteRed.rotation}
-            speed={PIECE_CONFIG.noteRed.speed}
-            scale={PIECE_CONFIG.noteRed.scale}
-            depth={PIECE_CONFIG.noteRed.depth}
-            progressRef={progressRef}
-          >
-            <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
-          </Piece>
-        )}
+        {/* Music Note (Red) — the lighter procedural note. Now on mobile too
+            (Simon asked for it in the gap between the box and the guitar),
+            tucked in via mobilePosition/mobileScale. It's cheap, so mobile is
+            guitar + box + polygon + this small note. */}
+        <Piece
+          position={lite ? PIECE_CONFIG.noteRed.mobilePosition : PIECE_CONFIG.noteRed.position}
+          rotation={PIECE_CONFIG.noteRed.rotation}
+          speed={PIECE_CONFIG.noteRed.speed}
+          scale={lite ? PIECE_CONFIG.noteRed.mobileScale : PIECE_CONFIG.noteRed.scale}
+          depth={PIECE_CONFIG.noteRed.depth}
+          progressRef={progressRef}
+        >
+          <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
+        </Piece>
       </ParallaxRig>
 
       {!lite && (
