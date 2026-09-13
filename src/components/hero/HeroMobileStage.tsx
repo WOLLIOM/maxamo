@@ -114,6 +114,13 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
           >
             <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
           </div>
+
+          {/* ============ MOBILE-ONLY: WHITE BOX SIZE / POSITION ==========
+              The silvery wireframe block from the desktop scene — fills the
+              empty space on the left side of the phone hero, mid-height. */}
+          <div className="absolute left-[2%] top-[38%] z-[3] aspect-square w-[26vw] max-w-[118px] will-change-transform">
+            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="box" tilt={tilt} />
+          </div>
         </>
       ) : (
         <>
@@ -163,7 +170,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
         onClick={requestGyro}
         className="absolute left-1/2 top-[calc(env(safe-area-inset-top)+4rem)] z-[6] -translate-x-1/2 rounded-full border border-white/30 bg-black/50 px-4 py-2 text-[0.62rem] uppercase tracking-wider2 text-white backdrop-blur-sm"
       >
-        Tap to enable tilt
+        Tap to see something cool
       </button>
     )}
     </>
