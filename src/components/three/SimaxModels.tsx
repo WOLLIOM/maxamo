@@ -19,9 +19,26 @@ const INK = "#0f0e10";
  *  ~1MB, down from a 27MB source export). This is the hero centerpiece;
  *  the hand-built `Guitar()` below is kept as a lightweight fallback for
  *  places that don't want to pay for a GLTF load (e.g. tiny mobile chips). */
-export function RealGuitar({ scale = 3.4 }: { scale?: number }) {
+export function RealGuitar({
+  scale = 3.4,
+  recenter = false,
+}: {
+  scale?: number;
+  recenter?: boolean;
+}) {
   const { scene } = useGLTF("/models/taylor-guitar.glb");
-  const cloned = useMemo(() => scene.clone(true), [scene]);
+  // `recenter` shifts the clone so its bounding-box centre sits on the origin,
+  // so a parent group rotates it around its true centre instead of swinging it
+  // off to one side (used by the mobile hero). Desktop keeps the raw origin.
+  const cloned = useMemo(() => {
+    const c = scene.clone(true);
+    if (recenter) {
+      const box = new THREE.Box3().setFromObject(c);
+      const center = box.getCenter(new THREE.Vector3());
+      c.position.sub(center);
+    }
+    return c;
+  }, [scene, recenter]);
   return (
     // The source scan is lying flat (long axis on X, ~0.76m; thickness on Y,
     // ~0.07m) rather than standing. Rotate 90° on Z to stand it upright, with
