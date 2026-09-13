@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 type Tilt = { x: number; y: number };
 
@@ -44,14 +44,25 @@ export function useDeviceTiltRef(active: boolean) {
   return tilt;
 }
 
-/** iOS 13+ needs a user gesture before gyro events fire. */
+type DOE = { requestPermission?: () => Promise<PermissionState> };
+
+/** True on iOS 13+ Safari, where DeviceOrientationEvent needs an explicit
+ *  requestPermission() call from inside a real click handler before any
+ *  'deviceorientation' events fire. False everywhere else (Android, desktop). */
+export function needsGyroPermission() {
+  if (typeof DeviceOrientationEvent === "undefined") return false;
+  return typeof (DeviceOrientationEvent as unknown as DOE).requestPermission === "function";
+}
+
+/** iOS 13+ needs a user gesture before gyro events fire. This still listens
+ *  for ANY tap on the page as a best-effort background trigger, but a
+ *  window-level listener isn't a guaranteed-reliable "real" gesture on every
+ *  iOS/Safari version — pair this with the visible button from
+ *  useGyroPermissionButton() below for a deterministic prompt. */
 export function useGyroPermissionPrompt() {
   useEffect(() => {
-    type DOE = {
-      requestPermission?: () => Promise<PermissionState>;
-    };
+    if (!needsGyroPermission()) return;
     const DOE = DeviceOrientationEvent as unknown as DOE;
-    if (typeof DOE.requestPermission !== "function") return;
 
     let granted = false;
     const ask = () => {
@@ -66,9 +77,6 @@ export function useGyroPermissionPrompt() {
         })
         .catch(() => {});
     };
-    // Retry on every tap (not just the first) — a denied/dismissed prompt
-    // shouldn't permanently lock the visitor out of the tilt effect, and a
-    // tap anywhere on the page (not only the CTA buttons) should trigger it.
     window.addEventListener("pointerdown", ask, { passive: true });
     window.addEventListener("touchstart", ask, { passive: true });
     return () => {
@@ -76,4 +84,31 @@ export function useGyroPermissionPrompt() {
       window.removeEventListener("touchstart", ask);
     };
   }, []);
+}
+
+/** Explicit, visible-button version for iOS: returns { needsPrompt, granted,
+ *  request } so the UI can render a real tappable element. A direct onClick
+ *  on an actual button is the most reliable way to satisfy Safari's "real
+ *  user gesture" requirement — more reliable than a generic window listener. */
+export function useGyroPermissionButton() {
+  const [needsPrompt, setNeedsPrompt] = useState(false);
+  const [granted, setGranted] = useState(false);
+
+  useEffect(() => {
+    setNeedsPrompt(needsGyroPermission());
+  }, []);
+
+  const request = () => {
+    const DOE = DeviceOrientationEvent as unknown as DOE;
+    DOE.requestPermission?.()
+      .then((state) => {
+        if (state === "granted") {
+          setGranted(true);
+          setNeedsPrompt(false);
+        }
+      })
+      .catch(() => {});
+  };
+
+  return { needsPrompt: needsPrompt && !granted, granted, request };
 }

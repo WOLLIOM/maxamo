@@ -92,15 +92,18 @@ export function MobileGuitarCanvas({
           <directionalLight position={[3, 5, 4]} intensity={1.6} color="#f0d8c4" />
           <directionalLight position={[-4, 2, -3]} intensity={0.6} color="#8b5cf6" />
           {isGuitar ? (
-            // The acoustic (Taylor) centrepiece — recentred so it stays in the
-            // middle, soundboard facing the viewer, with just a small tilt.
-            // Calm idle sway (idleAmp) so it doesn't turn edge-on.
+            // ===== MOBILE-ONLY: GUITAR 3D SCALE =====
+            // `scale` here is the actual 3D model size (bigger number = bigger
+            // guitar in the canvas). Combine with the outer div width in
+            // HeroMobileStage.tsx for the final on-screen size.
+            // `baseRotation` = [pitch, yaw, roll] in radians (Math.PI/2 ≈ 90°).
             <TiltGroup tilt={tilt} baseRotation={[0.1, Math.PI / 2, 0]} idleAmp={0.12}>
-              <RealGuitar scale={3.7} recenter />
+              <RealGuitar scale={4.4} recenter />
             </TiltGroup>
           ) : (
+            // ===== MOBILE-ONLY: RED POLYGON 3D SCALE =====
             <TiltGroup tilt={tilt} baseRotation={[0.3, 0.5, 0]}>
-              <group scale={1.6}>
+              <group scale={2.4}>
                 <CodeShape lite />
               </group>
             </TiltGroup>

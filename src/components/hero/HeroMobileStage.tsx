@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type CSSProperties } from "react";
 import dynamic from "next/dynamic";
-import { useDeviceTiltRef, useGyroPermissionPrompt } from "@/lib/useDeviceTilt";
+import { useDeviceTiltRef, useGyroPermissionPrompt, useGyroPermissionButton } from "@/lib/useDeviceTilt";
 import { imageSources } from "@/lib/media";
 
 const MobileGuitarCanvas = dynamic(
@@ -29,6 +29,11 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   const progressRef = useRef(scrollProgress);
 
   useGyroPermissionPrompt();
+  // iOS Safari (this is what Simon tested on) requires requestPermission()
+  // to run inside a real click handler on a real button — a generic
+  // window-level tap listener isn't reliably counted as a "user gesture" on
+  // every iOS version. This gives a visible, tappable "Enable tilt" pill.
+  const { needsPrompt: needsGyroTap, request: requestGyro } = useGyroPermissionButton();
 
   useEffect(() => {
     // Very low-end phones (few cores, reduced-motion) keep the flat photo;
@@ -74,6 +79,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   }, [tilt]);
 
   return (
+    <>
     <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
       {/* No painted background — let the vivid theme's aurora show through so
           the phone hero matches the desktop's colourful top. Just a soft
@@ -85,22 +91,29 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
 
       {use3D ? (
         <>
-          {/* Big centred acoustic guitar — floating, no frame, facing us.
+          {/* ============ MOBILE-ONLY: GUITAR SIZE / POSITION ============
+              Edit the two lines below to resize/reposition the guitar on
+              phones only (desktop is untouched — separate component).
+              - top-[0%]      : distance from top of screen (raise/lower)
+              - w-[98vw]      : width as % of screen width (bigger/smaller)
+              - max-w-[440px] : hard cap so it doesn't get huge on tablets
               Outer div centres via inset-x-0 + mx-auto (margin-based, not a
-              transform) so the JS animation's transform on the inner heroRef
-              can never clobber the centering — a translate-x-1/2 utility here
-              was silently not applying in production. */}
-          <div className="absolute inset-x-0 top-[3%] z-[3] mx-auto w-[92vw] max-w-[400px]">
+              transform) so it can't be silently dropped like -translate-x-1/2
+              was in production, and can't be clobbered by heroRef's animated
+              transform on the inner div. ================================ */}
+          <div className="absolute inset-x-0 top-[0%] z-[3] mx-auto w-[98vw] max-w-[440px]">
             <div ref={heroRef} className="relative aspect-[3/4] w-full will-change-transform">
               <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
             </div>
           </div>
 
-          {/* Red rotating code polygon, floating just above the guitar,
-              slightly right of centre (Simon wanted this kept on mobile). */}
+          {/* ============ MOBILE-ONLY: RED POLYGON SIZE / POSITION ========
+              - left-[52%] / top-[0%] : position (% of screen)
+              - w-[34vw] / max-w-[150px] : size — bigger fills more of the
+                empty space next to the guitar. ============================ */}
           <div
             ref={rightRef}
-            className="absolute left-[56%] top-[1%] z-[4] aspect-square w-[24vw] max-w-[108px] will-change-transform"
+            className="absolute left-[52%] top-[0%] z-[4] aspect-square w-[34vw] max-w-[150px] will-change-transform"
           >
             <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
           </div>
@@ -138,6 +151,20 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
         </p>
       )}
     </div>
+    {needsGyroTap && (
+      // Rendered OUTSIDE the pointer-events-none wrapper above (this whole
+      // decorative layer ignores taps) so this button is actually tappable.
+      // iOS Safari only grants motion-sensor access from inside a real click
+      // handler on a real element — this is that element.
+      <button
+        type="button"
+        onClick={requestGyro}
+        className="absolute left-1/2 top-[46%] z-[6] -translate-x-1/2 rounded-full border border-white/30 bg-black/50 px-4 py-2 text-[0.62rem] uppercase tracking-wider2 text-white backdrop-blur-sm"
+      >
+        Tap to enable tilt
+      </button>
+    )}
+    </>
   );
 }
 
