@@ -34,11 +34,24 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   const backRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
-  // Lazy-init instead of always-false-then-useEffect — resolves the correct
-  // branch (3D vs flat photo) on the first client render, so the flat-photo
-  // fallback never has a chance to flash on screen before switching to 3D.
   const [use3D, setUse3D] = useState(() => computeUse3D());
+  // This is a STATIC EXPORT site — the HTML file itself is pre-rendered at
+  // BUILD time with no device info (window doesn't exist then), so
+  // computeUse3D() always bakes in `false` in the shipped HTML, meaning the
+  // real-photo fallback below was literally part of the static markup the
+  // browser paints immediately, before any JS has even downloaded. No
+  // client-side fix (lazy init, useEffect, etc.) can prevent that first
+  // paint — only NOT including the fallback markup in the static HTML at
+  // all can. `mounted` starts false on both server and client (so hydration
+  // matches, no mismatch warning) and only flips true after JS confirms
+  // we're actually running in the browser — until then we render nothing
+  // extra here, so the "two images" markup never exists in what ships.
+  const [mounted, setMounted] = useState(false);
   const progressRef = useRef(scrollProgress);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // SimaxScene handles gyro internally. Only the EXPLICIT button below asks
   // for iOS permission now — a background any-tap listener used to run
@@ -74,7 +87,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
         className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-bg/90"
       />
 
-      {use3D ? (
+      {!mounted ? null : use3D ? (
         // Full 3D scene: guitar, polygon, box, all objects from desktop.
         // SimaxScene has built-in gyro support — no need to pass tilt.
         <SimaxScene progressRef={progressRef} />
