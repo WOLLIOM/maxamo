@@ -4,17 +4,20 @@ import { useEffect, useRef } from "react";
 
 /**
  * The dot-grid "pixel cursor" tech from the deepseek HTML demo, ported to
- * React and trimmed to the things asked for:
+ * React with Simon's requested features:
  *   1. an arrow made of a trail of heat-dots that bends to point at the
  *      nearest headline (same detection radius/selector as before)
  *   2. a click effect — hold to charge, release for a shockwave of dots;
  *      double-click for a bigger burst
  *   3. a heart zone — hover anything flagged `data-cursor-heart` and the
  *      dot field blooms into a heart shape with a burst of sparks
+ *   4. idle Pac-Man — park the pointer 1.5s and a chomper drifts across,
+ *      dropping food pellets (theme-aware: boxy in blueprint, confetti in vivid)
+ *   5. a box zone — hover `[data-cursor-box]` and the dots stamp a square-ring,
+ *      the heart's geometric counterpart
  *
- * The smiley/mood cursor and its rectangle hover-glow stay exactly where
- * they are in CustomCursor.tsx — this is a separate transparent canvas
- * layered on top that only lights up for the arrow, click, and heart zones.
+ * The smiley/mood cursor and its rectangle hover-glow stay in CustomCursor.tsx
+ * — this is a separate transparent canvas layered on top.
  */
 
 const CELL = 8; // px per grid cell
@@ -504,7 +507,7 @@ export function PixelCursorField() {
       for (let r = 0; r < rows; r++) {
         for (let c = 0; c < cols; c++) {
           const v = heat[r * cols + c];
-          if (v < 0.3 && !(v >= 0.86 && v < 1.02)) continue;
+          if (v < 0.06) continue;
           // Vivid: hue shimmers within a purple→blue band (not full rainbow).
           ctx!.fillStyle = rainbow
             ? `hsl(${230 + ((c * 4 + r * 4 + ns * 30) % 70)} 85% ${58 + v * 12}%)`
