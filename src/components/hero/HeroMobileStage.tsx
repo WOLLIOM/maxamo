@@ -51,12 +51,11 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
 
       const scrollLift = p * 40;
       const scrollFade = 1 - Math.min(1, p * 1.2);
-      // Gentle scroll "zoom" on the guitar — grows as you scroll, echoing the
-      // desktop camera dolly.
-      const scrollZoom = 1 + p * 0.35;
+      // No scroll "zoom" on mobile — Simon didn't want the guitar growing as
+      // you scroll. It just drifts up and fades with the rest of the hero.
 
       if (heroRef.current) {
-        heroRef.current.style.transform = `translate3d(${y * 18}px, ${x * 14 - scrollLift * 0.85}px, 0) scale(${scrollZoom}) rotate(${y * 2}deg)`;
+        heroRef.current.style.transform = `translate3d(${y * 18}px, ${x * 14 - scrollLift * 0.85}px, 0) rotate(${y * 2}deg)`;
         heroRef.current.style.opacity = String(scrollFade);
       }
       if (rightRef.current) {
@@ -86,19 +85,21 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
 
       {use3D ? (
         <>
-          {/* Big centred acoustic guitar — floating, no frame. */}
-          <div
-            ref={heroRef}
-            className="absolute left-1/2 top-[4%] z-[3] aspect-[3/4] w-[88vw] max-w-[380px] -translate-x-1/2 will-change-transform"
-          >
-            <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
+          {/* Big centred acoustic guitar — floating, no frame, facing us.
+              Outer div does the centering (a static -translate-x-1/2 that the
+              JS animation must NOT clobber); the inner heroRef carries the
+              animated transform. */}
+          <div className="absolute left-1/2 top-[3%] z-[3] w-[92vw] max-w-[400px] -translate-x-1/2">
+            <div ref={heroRef} className="relative aspect-[3/4] w-full will-change-transform">
+              <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
+            </div>
           </div>
 
-          {/* Red rotating code polygon, tucked into the space above-right of
-              the guitar (Simon specifically wanted this kept on mobile). */}
+          {/* Red rotating code polygon, floating just above the guitar,
+              slightly right of centre (Simon wanted this kept on mobile). */}
           <div
             ref={rightRef}
-            className="absolute right-[5%] top-[3%] z-[4] aspect-square w-[26vw] max-w-[118px] will-change-transform"
+            className="absolute left-[56%] top-[1%] z-[4] aspect-square w-[24vw] max-w-[108px] will-change-transform"
           >
             <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="code" tilt={tilt} />
           </div>

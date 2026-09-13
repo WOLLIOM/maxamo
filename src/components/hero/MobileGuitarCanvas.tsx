@@ -15,10 +15,12 @@ type Tilt = { x: number; y: number };
 function TiltGroup({
   tilt,
   baseRotation = [0, 0, 0],
+  idleAmp = 0.25,
   children,
 }: {
   tilt?: MutableRefObject<Tilt>;
   baseRotation?: [number, number, number];
+  idleAmp?: number;
   children: React.ReactNode;
 }) {
   const group = useRef<THREE.Group>(null);
@@ -39,9 +41,9 @@ function TiltGroup({
         delta,
       );
     } else {
-      // No gyro available (or permission not granted) — a slow idle spin
-      // keeps the object feeling alive instead of static.
-      group.current.rotation.y = baseRotation[1] + Math.sin(state.clock.elapsedTime * 0.4) * 0.25;
+      // No gyro (or permission not granted) — a gentle idle sway keeps it
+      // alive. Small amplitude for the guitar so it stays facing the viewer.
+      group.current.rotation.y = baseRotation[1] + Math.sin(state.clock.elapsedTime * 0.4) * idleAmp;
     }
   });
 
@@ -90,11 +92,11 @@ export function MobileGuitarCanvas({
           <directionalLight position={[3, 5, 4]} intensity={1.6} color="#f0d8c4" />
           <directionalLight position={[-4, 2, -3]} intensity={0.6} color="#8b5cf6" />
           {isGuitar ? (
-            // The acoustic (Taylor) centrepiece — leaned diagonally like the
-            // desktop hero. RealGuitar already stands it upright (Z=90°); the
-            // small negative Z here adds the diagonal lean.
-            <TiltGroup tilt={tilt} baseRotation={[0, -0.15, -0.22]}>
-              <RealGuitar scale={3.0} />
+            // The acoustic (Taylor) centrepiece — recentred so it stays in the
+            // middle, soundboard facing the viewer, with just a small tilt.
+            // Calm idle sway (idleAmp) so it doesn't turn edge-on.
+            <TiltGroup tilt={tilt} baseRotation={[0.1, Math.PI / 2, 0]} idleAmp={0.12}>
+              <RealGuitar scale={3.7} recenter />
             </TiltGroup>
           ) : (
             <TiltGroup tilt={tilt} baseRotation={[0.3, 0.5, 0]}>
