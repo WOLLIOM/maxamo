@@ -97,7 +97,9 @@ export function MobileGuitarCanvas({
             // guitar in the canvas). Combine with the outer div width in
             // HeroMobileStage.tsx for the final on-screen size.
             // `baseRotation` = [pitch, yaw, roll] in radians (Math.PI/2 ≈ 90°).
-            <TiltGroup tilt={tilt} baseRotation={[0.1, Math.PI / 2, 0]} idleAmp={0.12}>
+            // Small negative Z = a gentle left lean, matching the desktop
+            // hero's guitar (which tilts the same way).
+            <TiltGroup tilt={tilt} baseRotation={[0.1, Math.PI / 2, -0.16]} idleAmp={0.12}>
               <RealGuitar scale={4.4} recenter />
             </TiltGroup>
           ) : (
