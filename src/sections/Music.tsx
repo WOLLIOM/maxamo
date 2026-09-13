@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { Reveal } from "@/components/ui/Reveal";
 import { tracks } from "@/lib/tracks";
-import { PixelCluster } from "@/components/ui/PixelCluster";
 
 /**
  * A real, playable track list of Simon's own recordings — separate from the
@@ -41,7 +40,6 @@ export function Music() {
       data-cursor-note
       className="relative mx-auto max-w-[1400px] scroll-mt-24 px-5 py-24 md:px-10 md:py-36"
     >
-      <PixelCluster seed={5} className="absolute -right-4 top-8 hidden lg:block" />
       <audio
         ref={audioRef}
         preload="none"
