@@ -6,7 +6,6 @@ import { isTouchDevice } from "@/lib/device";
 import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
-import { ScrollComet } from "./ScrollComet";
 
 // Ambient particles are nice but expensive — load after the shell is ready.
 const AmbientCanvas = dynamic(() => import("./AmbientCanvas").then((m) => m.AmbientCanvas), {
@@ -55,7 +54,10 @@ export function ExperienceShell() {
       {ambience && <AmbientCanvas />}
       {/* HalftonePanel side dots now live inside <main> (layout.tsx) so they
           scroll with the content instead of being pinned to the viewport. */}
-      <ScrollComet />
+      {/* ScrollComet removed — Simon hated the yellow meteor-ish streak that
+          slid left/right on scroll (leftover from the old blueprint-hub
+          deployment). Component file kept in case a redesigned version is
+          wanted later, just not mounted. */}
       {/* ReferenceParticleField removed — PixelCursorField (in layout.tsx) is the
           single cursor particle system now; running both was redundant. */}
       <ControlDock />
