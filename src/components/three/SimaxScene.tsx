@@ -302,63 +302,6 @@ function Atmosphere({
   );
 }
 
-/** Subtle floating particles throughout the 3D scene for depth and atmosphere. */
-function FloatingParticles({ lite }: { lite: boolean }) {
-  const particleCount = lite ? 8 : 16;
-  const particles = Array.from({ length: particleCount }, (_, i) => ({
-    id: i,
-    x: (Math.random() - 0.5) * 8,
-    y: (Math.random() - 0.5) * 6,
-    z: (Math.random() - 0.5) * 6,
-    size: Math.random() * 0.08 + 0.02,
-    speed: Math.random() * 0.5 + 0.2,
-    depth: Math.random(),
-  }));
-
-  return (
-    <group>
-      {particles.map((p) => (
-        <FloatingParticle key={p.id} particle={p} />
-      ))}
-    </group>
-  );
-}
-
-function FloatingParticle({
-  particle,
-}: {
-  particle: { id: number; x: number; y: number; z: number; size: number; speed: number; depth: number };
-}) {
-  const mesh = useRef<THREE.Mesh>(null);
-
-  useFrame((_, delta) => {
-    if (!mesh.current) return;
-    // Gentle bobbing motion
-    mesh.current.position.y += Math.sin(Date.now() * 0.001 * particle.speed) * 0.01;
-    mesh.current.position.x += Math.cos(Date.now() * 0.0008 * particle.speed) * 0.01;
-  });
-
-  return (
-    <mesh
-      ref={mesh}
-      position={[particle.x, particle.y, particle.z]}
-      castShadow={false}
-      receiveShadow={false}
-    >
-      <sphereGeometry args={[particle.size, 8, 8]} />
-      <meshBasicMaterial
-        color={new THREE.Color("#c4a260").lerp(
-          new THREE.Color("#a82026"),
-          particle.depth
-        )}
-        transparent
-        opacity={0.4 + particle.depth * 0.3}
-        fog={false}
-      />
-    </mesh>
-  );
-}
-
 /**
  * Scroll-driven depth only — the cluster no longer tilts as a whole
  * toward the cursor. Each object now reacts individually on hover
@@ -683,9 +626,6 @@ function Scene({
           <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
         </Piece>
 
-        {/* Floating depth particles for atmosphere — subtle points that float
-            around the 3D scene to add layering and visual interest. */}
-        <FloatingParticles lite={lite} />
       </ParallaxRig>
 
       {!lite && (
