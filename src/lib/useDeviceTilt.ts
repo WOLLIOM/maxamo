@@ -26,7 +26,19 @@ export function useDeviceTiltRef(active: boolean) {
       target.current.y = Math.max(-1, Math.min(1, dy));
     };
 
-    window.addEventListener("deviceorientation", onOrient, { passive: true });
+    // Same iOS quirk fixed in SimaxScene: a `deviceorientation` listener
+    // registered BEFORE requestPermission() resolves "granted" often never
+    // starts firing, even after the grant. Attach now (covers Android +
+    // already-granted iOS) AND re-attach whenever the permission button
+    // broadcasts a fresh grant, resetting the base pose each time.
+    function attach() {
+      window.removeEventListener("deviceorientation", onOrient);
+      base.current = {};
+      window.addEventListener("deviceorientation", onOrient, { passive: true });
+    }
+    attach();
+    window.addEventListener("simax-gyro-granted", attach);
+
     let frame = 0;
     const tick = () => {
       tilt.current.x += (target.current.x - tilt.current.x) * 0.1;
@@ -37,6 +49,7 @@ export function useDeviceTiltRef(active: boolean) {
 
     return () => {
       window.removeEventListener("deviceorientation", onOrient);
+      window.removeEventListener("simax-gyro-granted", attach);
       cancelAnimationFrame(frame);
     };
   }, [active]);

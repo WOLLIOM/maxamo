@@ -25,11 +25,16 @@ export function PortraitCard() {
   const tilt = useDeviceTiltRef(touch.current);
 
   // On touch devices, drive mx/my from the gyro ref every frame instead of
-  // pointer events (which don't fire meaningfully on touch anyway).
+  // pointer events (which don't fire meaningfully on touch anyway). Gyro
+  // input is amplified (x1.6) before mapping — Simon found the raw signal
+  // too subtle to feel on a small portrait card; this makes a normal wrist
+  // tilt swing further through the same rotation range.
   useAnimationFrame(() => {
     if (!touch.current) return;
-    mx.set((tilt.current.x + 1) / 2);
-    my.set((tilt.current.y + 1) / 2);
+    const ax = Math.max(-1, Math.min(1, tilt.current.x * 1.6));
+    const ay = Math.max(-1, Math.min(1, tilt.current.y * 1.6));
+    mx.set((ax + 1) / 2);
+    my.set((ay + 1) / 2);
   });
 
   const rotX = useSpring(useTransform(my, [0, 1], [8, -8]), {
