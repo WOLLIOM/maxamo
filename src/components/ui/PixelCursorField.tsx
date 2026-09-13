@@ -124,6 +124,16 @@ export function PixelCursorField() {
       shake = 0;
     let wasHeart = false;
     let wasBox = false;
+    // Smoothed arrow angle — raw atan2() jumps instantly on pointer jitter or
+    // a headline-target switch, which read as the arrow twitching/flicking
+    // to a "wrong" spot. Damping it into a lerp fixes that.
+    let smoothAng = 0;
+    let smoothAngInit = false;
+    function lerpAngle(a: number, b: number, t: number) {
+      let d = ((b - a + Math.PI) % (2 * Math.PI)) - Math.PI;
+      if (d < -Math.PI) d += 2 * Math.PI;
+      return a + d * t;
+    }
     // ── idle Pac-Man state ──
     // When the pointer rests for IDLE_DELAY, a chomping circle drifts across
     // the screen leaving a trail of "food" pellets and eating them as it goes.
@@ -478,8 +488,12 @@ export function PixelCursorField() {
           } else {
             const target = nearestHeadline(mx, my);
             if (target) {
-              const ang = Math.atan2(target.cy - my, target.cx - mx);
-              pointArrow(mx, my, ang, ns);
+              const rawAng = Math.atan2(target.cy - my, target.cx - mx);
+              smoothAng = smoothAngInit ? lerpAngle(smoothAng, rawAng, 0.18) : rawAng;
+              smoothAngInit = true;
+              pointArrow(mx, my, smoothAng, ns);
+            } else {
+              smoothAngInit = false;
             }
           }
         }
