@@ -15,7 +15,10 @@ export function GalleryPreview() {
       <SectionHeading kicker="In frame" title="Moments from the work" className="max-w-2xl" />
 
       <div className="mt-12">
-        <GalleryGrid initialFilter="Travel" />
+        {/* Music is the shortest category (2 photos) -- Simon wanted the
+            gallery to default to something short rather than the longer
+            Travel set, to cut down on mobile scroll length. */}
+        <GalleryGrid initialFilter="Music" />
       </div>
 
       {site.social.instagram && (
