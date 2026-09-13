@@ -25,23 +25,28 @@ export function CodeBackdrop() {
 
   // One transform update for the whole group per frame — not per snippet —
   // to keep this cheap on phones. Skips entirely (no-op) on desktop.
+  // Bumped 14/10 -> 40/32: Simon couldn't tell it was moving at all before.
   useAnimationFrame(() => {
     if (!touch.current || !groupRef.current) return;
-    const x = tilt.current.x * 14;
-    const y = tilt.current.y * 10;
+    const x = tilt.current.x * 40;
+    const y = tilt.current.y * 32;
     groupRef.current.style.transform = `translate(${y}px, ${x}px)`;
   });
 
   return (
     <div
       aria-hidden
-      className="pointer-events-none absolute inset-0 overflow-hidden opacity-[0.14]"
+      // Was opacity-[0.14] -- blended into the blueprint theme's own busy
+      // grid-dot background and Simon couldn't spot it at all. Bumped
+      // opacity and switched to a bolder, higher-contrast blue instead of
+      // the theme accent (which is muted in blueprint theme).
+      className="pointer-events-none absolute inset-0 overflow-hidden opacity-40"
     >
       <div ref={groupRef} className="absolute inset-0 will-change-transform">
         {SNIPPETS.map((s) => (
           <span
             key={s.text}
-            className="absolute whitespace-nowrap font-mono text-[0.7rem] text-accent sm:text-xs"
+            className="absolute whitespace-nowrap font-mono text-xs font-medium text-[#6ea8ff] sm:text-sm"
             style={{ top: s.top, left: s.left }}
           >
             {s.text}
