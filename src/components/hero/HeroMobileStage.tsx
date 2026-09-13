@@ -86,10 +86,11 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
       {use3D ? (
         <>
           {/* Big centred acoustic guitar — floating, no frame, facing us.
-              Outer div does the centering (a static -translate-x-1/2 that the
-              JS animation must NOT clobber); the inner heroRef carries the
-              animated transform. */}
-          <div className="absolute left-1/2 top-[3%] z-[3] w-[92vw] max-w-[400px] -translate-x-1/2">
+              Outer div centres via inset-x-0 + mx-auto (margin-based, not a
+              transform) so the JS animation's transform on the inner heroRef
+              can never clobber the centering — a translate-x-1/2 utility here
+              was silently not applying in production. */}
+          <div className="absolute inset-x-0 top-[3%] z-[3] mx-auto w-[92vw] max-w-[400px]">
             <div ref={heroRef} className="relative aspect-[3/4] w-full will-change-transform">
               <MobileGuitarCanvas className="absolute inset-0 h-full w-full" variant="guitar" tilt={tilt} />
             </div>
@@ -106,10 +107,8 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
         </>
       ) : (
         <>
-          <div
-            ref={heroRef}
-            className="absolute left-1/2 top-[6%] z-[3] w-[62vw] max-w-[240px] -translate-x-1/2 will-change-transform"
-          >
+          <div className="absolute inset-x-0 top-[6%] z-[3] mx-auto w-[62vw] max-w-[240px]">
+           <div ref={heroRef} className="will-change-transform">
             <FoodFrame
               src="/images/real/guitar-performance.webp"
               alt="Simon Maxam playing guitar live performance"
@@ -118,6 +117,7 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
               className="aspect-[4/5]"
               objectPosition="center 15%"
             />
+           </div>
           </div>
           <div
             ref={rightRef}
