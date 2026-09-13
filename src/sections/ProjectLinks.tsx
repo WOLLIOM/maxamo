@@ -1,5 +1,6 @@
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
+import { CodeBackdrop } from "@/components/ui/CodeBackdrop";
 
 /**
  * Four editable link-out cards to Simon's own projects/sites.
@@ -21,8 +22,9 @@ export function ProjectLinks() {
       aria-label="More projects"
       data-section="projects"
       data-palette="blue"
-      className="mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32"
+      className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32"
     >
+      <CodeBackdrop />
       <SectionHeading kicker="Elsewhere" title="More things I've built" align="center" />
 
       <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
