@@ -42,12 +42,12 @@ export function Nav() {
       >
         <nav
           aria-label="Primary"
-          className="mx-auto grid max-w-[1400px] grid-cols-[3rem_1fr_auto] items-center gap-2 px-5 py-4 md:px-10 md:py-5 lg:flex lg:justify-between"
+          className="mx-auto grid max-w-[1400px] grid-cols-[3rem_1fr_auto] items-center gap-2 px-5 py-2.5 md:px-10 md:py-5 lg:flex lg:justify-between"
         >
           <button
             onClick={() => setOpen(true)}
             aria-label="Open menu"
-            className="flex h-12 w-12 min-h-12 min-w-12 flex-col items-center justify-center gap-[5px] justify-self-start lg:hidden"
+            className="flex h-11 w-11 min-h-11 min-w-11 flex-col items-center justify-center gap-[5px] justify-self-start lg:hidden"
           >
             <span className="h-px w-6 bg-ink" />
             <span className="h-px w-6 bg-ink" />

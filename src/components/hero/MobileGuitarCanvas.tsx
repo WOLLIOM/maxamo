@@ -3,7 +3,7 @@
 import { Suspense, useRef, type MutableRefObject } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { RealGuitar, CodeShape } from "@/components/three/SimaxModels";
+import { RealGuitar, CodeShape, ArchBlock } from "@/components/three/SimaxModels";
 
 type Tilt = { x: number; y: number };
 
@@ -67,10 +67,11 @@ export function MobileGuitarCanvas({
   tilt,
 }: {
   className?: string;
-  variant?: "guitar" | "code";
+  variant?: "guitar" | "code" | "box";
   tilt?: MutableRefObject<Tilt>;
 }) {
   const isGuitar = variant === "guitar";
+  const isBox = variant === "box";
   return (
     <div className={className}>
       <Canvas
@@ -91,7 +92,7 @@ export function MobileGuitarCanvas({
           <ambientLight intensity={0.9} />
           <directionalLight position={[3, 5, 4]} intensity={1.6} color="#f0d8c4" />
           <directionalLight position={[-4, 2, -3]} intensity={0.6} color="#8b5cf6" />
-          {isGuitar ? (
+          {isGuitar && (
             // ===== MOBILE-ONLY: GUITAR 3D SCALE =====
             // `scale` here is the actual 3D model size (bigger number = bigger
             // guitar in the canvas). Combine with the outer div width in
@@ -102,11 +103,22 @@ export function MobileGuitarCanvas({
             <TiltGroup tilt={tilt} baseRotation={[0.1, Math.PI / 2, -0.16]} idleAmp={0.12}>
               <RealGuitar scale={4.4} recenter />
             </TiltGroup>
-          ) : (
+          )}
+          {variant === "code" && (
             // ===== MOBILE-ONLY: RED POLYGON 3D SCALE =====
             <TiltGroup tilt={tilt} baseRotation={[0.3, 0.5, 0]}>
               <group scale={2.4}>
                 <CodeShape lite />
+              </group>
+            </TiltGroup>
+          )}
+          {isBox && (
+            // ===== MOBILE-ONLY: WHITE BOX (ArchBlock) SCALE/ROTATION =====
+            // The same silvery wireframe-edged block from the desktop scene,
+            // parked in the empty space on the left of the mobile hero.
+            <TiltGroup tilt={tilt} baseRotation={[0.35, -0.4, 0.1]} idleAmp={0.2}>
+              <group scale={1.7}>
+                <ArchBlock lite />
               </group>
             </TiltGroup>
           )}

@@ -195,8 +195,8 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.7 }}
             className="mt-4 max-w-md text-balance text-sm font-medium leading-relaxed text-ink/85 max-md:mt-3 md:mt-7 md:text-base md:text-lg"
           >
-            Hi, I&apos;m Simon Maxam — a developer building modern websites,
-            web apps, and interactive 3D.
+            A developer building modern websites, web apps, and interactive
+            3D.
           </motion.p>
 
           <motion.div
