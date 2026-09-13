@@ -12,6 +12,16 @@ const SimaxScene = dynamic(
   { ssr: false, loading: () => null },
 );
 
+/** Very low-end phones (few cores, reduced-motion) keep the flat photo;
+ *  everything else gets the real, live 3D guitar. Safe to call during SSR
+ *  (matchMedia/navigator don't exist there) — just returns false. */
+function computeUse3D() {
+  if (typeof window === "undefined") return false;
+  const cores = navigator.hardwareConcurrency ?? 4;
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  return cores >= 4 && !reduce;
+}
+
 /**
  * Phone hero — on capable phones, two live 3D objects (the red-cherry
  * guitar centerpiece + a small red wireframe "code" polygon) nudged by the
@@ -24,7 +34,10 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   const backRef = useRef<HTMLDivElement>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const rightRef = useRef<HTMLDivElement>(null);
-  const [use3D, setUse3D] = useState(false);
+  // Lazy-init instead of always-false-then-useEffect — resolves the correct
+  // branch (3D vs flat photo) on the first client render, so the flat-photo
+  // fallback never has a chance to flash on screen before switching to 3D.
+  const [use3D, setUse3D] = useState(() => computeUse3D());
   const progressRef = useRef(scrollProgress);
 
   // SimaxScene handles gyro internally. Only the EXPLICIT button below asks
@@ -37,11 +50,10 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   const { needsPrompt: needsGyroTap, request: requestGyro } = useGyroPermissionButton();
 
   useEffect(() => {
-    // Very low-end phones (few cores, reduced-motion) keep the flat photo;
-    // everything else gets the real, live 3D guitar.
-    const cores = navigator.hardwareConcurrency ?? 4;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setUse3D(cores >= 4 && !reduce);
+    // Confirmation pass on the client (the lazy init above already computed
+    // this correctly on mount; SSR always yields false since matchMedia
+    // doesn't exist there, so this just re-confirms once hydrated).
+    setUse3D(computeUse3D());
   }, []);
 
   useEffect(() => {

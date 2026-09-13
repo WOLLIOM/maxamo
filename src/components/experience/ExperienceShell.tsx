@@ -24,6 +24,14 @@ export function ExperienceShell() {
   const [showCursor, setShowCursor] = useState(false);
 
   useEffect(() => {
+    // Kick off the 3D scene's JS chunk + GLB models (guitar, saturn, note)
+    // as early as possible, in parallel with the loader animation, instead
+    // of waiting for Hero to decide to mount SimaxScene. Both desktop and
+    // mobile import the same module, so one prefetch covers both — this is
+    // why shortening the loader (see Loader.tsx) doesn't mean landing on an
+    // empty/unfinished scene once it dismisses.
+    import("@/components/three/SimaxScene").catch(() => {});
+
     const seen = sessionStorage.getItem("simax-entered");
     if (!seen) {
       setShowLoader(true);
