@@ -31,6 +31,25 @@ const HEART: [number, number][] = [
   [4, 6],
 ];
 
+// A square-ring "box" silhouette — the counterpart to HEART, for sections
+// where a heart doesn't fit the mood (guitar corner, project links). Hover
+// anything marked [data-cursor-box] or [data-cursor="box"] to stamp it.
+const BOX: [number, number][] = (() => {
+  const pts: [number, number][] = [];
+  for (let i = 0; i <= 8; i++) {
+    pts.push([i, 0]);
+    pts.push([i, 8]);
+  }
+  for (let i = 1; i < 8; i++) {
+    pts.push([0, i]);
+    pts.push([8, i]);
+  }
+  return pts;
+})();
+
+// How long the pointer must sit still before the idle Pac-Man wakes up.
+const IDLE_DELAY = 1.5; // seconds
+
 export function PixelCursorField() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -101,6 +120,18 @@ export function PixelCursorField() {
       chy = 0,
       shake = 0;
     let wasHeart = false;
+    let wasBox = false;
+    // ── idle Pac-Man state ──
+    // When the pointer rests for IDLE_DELAY, a chomping circle drifts across
+    // the screen leaving a trail of "food" pellets and eating them as it goes.
+    let lastMove = -9;
+    let pacOn = false,
+      pacx = 0,
+      pacy = 0,
+      pacDir = 1,
+      pacStart = 0,
+      pacAge = 0,
+      PFOOD = 34;
     const waves: { x: number; y: number; t0: number; pow: number }[] = [];
     const hsparks: { x: number; y: number; vx: number; vy: number; life: number }[] = [];
     let animId = 0;
@@ -254,13 +285,13 @@ export function PixelCursorField() {
       }
     }
 
-    function stampHeart(cx: number, cy: number) {
+    function stampShape(cx: number, cy: number, shape: [number, number][]) {
       if (!heat) return;
       const S = 2,
         bc = Math.round(cx / CELL),
         br = Math.round(cy / CELL),
         o = 4 * S;
-      for (const [hx, hy] of HEART) {
+      for (const [hx, hy] of shape) {
         for (let yy = 0; yy < S; yy++) {
           for (let xx = 0; xx < S; xx++) {
             const C = bc + hx * S + xx - o,
@@ -271,6 +302,97 @@ export function PixelCursorField() {
             if (w > heat[id]) heat[id] = w;
           }
         }
+      }
+    }
+
+    function stampHeart(cx: number, cy: number) {
+      stampShape(cx, cy, HEART);
+    }
+
+    function stampBox(cx: number, cy: number) {
+      stampShape(cx, cy, BOX);
+    }
+
+    // ── box zone: hover anything with [data-cursor-box] / [data-cursor="box"] ──
+    function inBoxZone(x: number, y: number) {
+      const el = document.elementFromPoint(x, y);
+      if (!el) return false;
+      return !!el.closest('[data-cursor-box], [data-cursor="box"]');
+    }
+
+    /** Carve a Pac-Man disc (circle minus a wedge mouth) into the heat grid. */
+    function pacman(cx: number, cy: number, rad: number, ang: number, mouth: number, val: number) {
+      if (!heat) return;
+      const c0 = Math.floor((cx - rad) / CELL),
+        c1 = Math.ceil((cx + rad) / CELL),
+        r0 = Math.floor((cy - rad) / CELL),
+        r1 = Math.ceil((cy + rad) / CELL),
+        rr = rad * rad;
+      for (let r = r0; r <= r1; r++) {
+        for (let c = c0; c <= c1; c++) {
+          if (c < 0 || r < 0 || c >= cols || r >= rows) continue;
+          const dx = (c + 0.5) * CELL - cx,
+            dy = (r + 0.5) * CELL - cy;
+          if (dx * dx + dy * dy > rr) continue;
+          const da = Math.abs(
+            ((((Math.atan2(dy, dx) - ang) % (2 * Math.PI)) + 3 * Math.PI) % (2 * Math.PI)) - Math.PI,
+          );
+          if (da < mouth) continue; // the mouth wedge stays empty
+          const id = r * cols + c,
+            v = val + 0.03 * Math.sin(c * 0.7 + r * 0.7 - t * 0.01);
+          if (v > heat[id]) heat[id] = v;
+        }
+      }
+    }
+
+    /** Idle wander: drift the chomper sideways, dropping + eating food pellets.
+     *  Theme-aware — blueprint gets a boxy wanderer to match its geometric
+     *  language, and vivid trails confetti as it eats. */
+    function wander(restx: number, resty: number) {
+      if (!heat) return;
+      const BOXY = currentTheme === "blueprint";
+      if (!pacOn) {
+        pacOn = true;
+        pacDir = restx < W * 0.5 ? 1 : -1;
+        pacx = restx;
+        pacy = resty;
+        pacStart = restx;
+        pacAge = 0;
+        PFOOD = BRUSH * 3.4;
+      }
+      const rad = BRUSH * 3.4;
+      pacAge++;
+      pacx += pacDir * 2.6;
+      if (pacx > W + rad + 12 || pacx < -rad - 12) {
+        pacDir = Math.random() < 0.5 ? 1 : -1;
+        pacy = 70 + Math.random() * (H - 140);
+        pacx = pacDir > 0 ? -rad : W + rad;
+        pacStart = pacx;
+        pacAge = 0;
+      }
+      const ang = pacDir > 0 ? 0 : Math.PI;
+      const pr = Math.round(pacy / CELL);
+      // lay the food trail ahead, and clear the pellets already swallowed
+      for (let k = 1; k <= 80; k++) {
+        const px = pacStart + pacDir * PFOOD * k;
+        if (px < -20 || px > W + 20) continue;
+        if (pacDir * (px - pacx) > rad * 0.7) {
+          const pc = Math.round(px / CELL);
+          if (pc >= 0 && pr >= 0 && pc < cols && pr < rows) {
+            const pid = pr * cols + pc;
+            if (0.72 > heat[pid]) heat[pid] = 0.72;
+          }
+        } else if (currentTheme === "vivid" && Math.abs(pacDir * (px - pacx)) < rad * 0.25) {
+          // vivid: each pellet pops into confetti the moment it's eaten
+          if (Math.random() < 0.06) burstConfetti(px, pacy, 2, 0.35);
+        }
+      }
+      if (BOXY) {
+        // blueprint: a square chomper instead of a round one
+        stampBox(pacx, pacy);
+      } else {
+        const mouth = 0.05 + 0.6 * Math.abs(Math.sin(pacAge * 0.16));
+        pacman(pacx, pacy, rad, ang, mouth, 0.72);
       }
     }
 
@@ -327,21 +449,35 @@ export function PixelCursorField() {
         dep(hp.x, hp.y, 0.45 + 0.45 * hp.life, 1.6);
       }
 
-      // arrow toward nearest headline, unless hovering a heart zone
+      // Zones take priority (heart, then box); otherwise point an arrow at the
+      // nearest headline, and if the pointer has been parked a while, let the
+      // idle Pac-Man take over and wander the screen.
       if (hov && mx > 0) {
         const hz = getHeartZone();
         const inHeart =
           hz && mx >= hz.x && mx <= hz.x + hz.w && my >= hz.y && my <= hz.y + hz.h;
+        const inBox = !inHeart && inBoxZone(mx, my);
         if (inHeart) {
           if (!wasHeart) heartBoom(mx, my);
           stampHeart(mx, my);
           wasHeart = true;
+          wasBox = false;
+        } else if (inBox) {
+          if (!wasBox) heartBoom(mx, my); // same spark burst, different shape
+          stampBox(mx, my);
+          wasBox = true;
+          wasHeart = false;
         } else {
           wasHeart = false;
-          const target = nearestHeadline(mx, my);
-          if (target) {
-            const ang = Math.atan2(target.cy - my, target.cx - mx);
-            pointArrow(mx, my, ang, ns);
+          wasBox = false;
+          if (ns - lastMove > IDLE_DELAY) {
+            wander(mx, my);
+          } else {
+            const target = nearestHeadline(mx, my);
+            if (target) {
+              const ang = Math.atan2(target.cy - my, target.cx - mx);
+              pointArrow(mx, my, ang, ns);
+            }
           }
         }
       }
@@ -458,6 +594,9 @@ export function PixelCursorField() {
       mx = e.clientX;
       my = e.clientY;
       hov = true;
+      // any real movement wakes the field and sends the idle Pac-Man home
+      lastMove = performance.now() / 1000;
+      pacOn = false;
     }
     function onPointerLeave() {
       hov = false;
