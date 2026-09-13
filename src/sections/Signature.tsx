@@ -15,8 +15,8 @@ const featured: {
   {
     name: "SOLARIS",
     desc: "A space-exploration educational game built in Unreal Engine and Blender over two years — planets, environments and interactive systems.",
-    img: "/images/real/solaris-menu.webp",
-    alt: "SOLARIS — the game's main menu",
+    img: "/images/real/solaris-rover.webp",
+    alt: "SOLARIS — lunar rover on the moon's surface, with Earth on the horizon",
     tag: "Unreal Engine · Blender",
     spotlight: true,
   },

@@ -65,8 +65,16 @@ export const metadata: Metadata = {
     googleBot: { index: true, follow: true, "max-image-preview": "large" },
   },
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
-    shortcut: [{ url: "/icon.svg" }],
+    // favicon.ico first: browsers, search crawlers and link-preview tools
+    // that don't support SVG favicons request /favicon.ico by convention —
+    // without a real one, they fall back to a generic globe icon (what
+    // Simon saw next to the Cloudflare label in a link preview). The SVG
+    // stays for browsers that do support it (sharper at every size).
+    icon: [
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    shortcut: [{ url: "/favicon.ico" }],
     apple: [{ url: "/apple-touch-icon.png" }],
   },
   manifest: "/manifest.webmanifest",
