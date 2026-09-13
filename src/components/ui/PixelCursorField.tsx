@@ -193,7 +193,13 @@ export function PixelCursorField() {
     function collectHeadlines() {
       headlineEls = Array.from(
         document.querySelectorAll<HTMLElement>("h1, h2, h3, [data-cursor-arrow]")
-      ).filter((el) => !el.closest("nav, footer"));
+      ).filter(
+        (el) =>
+          !el.closest("nav, footer") &&
+          // About Simon has its own dedicated heart zone (the kid photo) —
+          // the arrow shouldn't also try to point at its heading.
+          !el.closest('[data-section="story"]'),
+      );
     }
     collectHeadlines();
     window.addEventListener("load", collectHeadlines);
