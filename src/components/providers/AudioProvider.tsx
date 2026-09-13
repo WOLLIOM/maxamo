@@ -14,6 +14,13 @@ interface AudioContextValue {
   enabled: boolean;
   toggle: () => void;
   enable: () => void;
+  /** Fade out + pause the ambient track WITHOUT touching the persisted
+   *  on/off preference — used when a real recording (Music section) starts
+   *  playing, so the two don't mix. Pairs with resumeAfterTrack(). */
+  duckForTrack: () => void;
+  /** Resume the ambient track after a duckForTrack(), but only if it was
+   *  actually playing beforehand (and the visitor hasn't since muted it). */
+  resumeAfterTrack: () => void;
 }
 
 const AudioCtx = createContext<AudioContextValue | null>(null);
@@ -27,6 +34,11 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fadeRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const enabledRef = useRef(false);
+  // True while the ambient track has been paused specifically for a
+  // recording (not by the visitor muting it) — resumeAfterTrack() only acts
+  // when this is true, so it can't accidentally un-mute someone who muted
+  // ambient sound on their own.
+  const duckedRef = useRef(false);
   const [enabled, setEnabled] = useState(false);
 
   const setEnabledBoth = useCallback((v: boolean) => {
@@ -93,6 +105,25 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
         .catch(() => setEnabledBoth(false));
     }
   }, [fadeTo, setEnabledBoth]);
+
+  const duckForTrack = useCallback(() => {
+    const el = audioRef.current;
+    if (!el || !enabledRef.current) return; // nothing playing to duck
+    duckedRef.current = true;
+    fadeTo(0, () => {
+      if (audioRef.current) audioRef.current.pause();
+    }, 400); // quick fade — a recording is about to start right after
+  }, [fadeTo]);
+
+  const resumeAfterTrack = useCallback(() => {
+    const el = audioRef.current;
+    if (!el || !duckedRef.current) return;
+    duckedRef.current = false;
+    if (!enabledRef.current) return; // visitor muted ambient in the meantime
+    el.play()
+      .then(() => fadeTo(TARGET_VOLUME, undefined, 1200))
+      .catch(() => {});
+  }, [fadeTo]);
 
   // Create the element and, unless the visitor previously muted, arm the
   // soundtrack to begin on the very first interaction (autoplay-policy safe).
@@ -184,8 +215,8 @@ export function AudioProvider({ children }: { children: React.ReactNode }) {
   }, [fadeTo]);
 
   const value = useMemo(
-    () => ({ enabled, toggle, enable }),
-    [enabled, toggle, enable],
+    () => ({ enabled, toggle, enable, duckForTrack, resumeAfterTrack }),
+    [enabled, toggle, enable, duckForTrack, resumeAfterTrack],
   );
 
   return <AudioCtx.Provider value={value}>{children}</AudioCtx.Provider>;

@@ -10,6 +10,7 @@ import {
   useState,
 } from "react";
 import { tracks } from "@/lib/tracks";
+import { useAudio } from "./AudioProvider";
 
 interface MusicContextValue {
   index: number;
@@ -29,6 +30,11 @@ const MusicCtx = createContext<MusicContextValue | null>(null);
 const STORAGE_KEY = "simax-music-index";
 
 export function MusicProvider({ children }: { children: React.ReactNode }) {
+  const ambient = useAudio();
+  const ambientRef = useRef(ambient);
+  useEffect(() => {
+    ambientRef.current = ambient;
+  }, [ambient]);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
@@ -89,8 +95,19 @@ export function MusicProvider({ children }: { children: React.ReactNode }) {
     const onTime = () => setCurrentTime(el.currentTime);
     const onDur = () => setDuration(el.duration || 0);
     const onEnd = () => nextRef.current();
-    const onPlay = () => setPlaying(true);
-    const onPause = () => setPlaying(false);
+    // Simon: ambient background music and a real recording shouldn't mix —
+    // this mixtape player (MusicDock) has its own play/pause path (play,
+    // togglePlay, next, prev all end up calling el.play()/el.pause()), so
+    // hooking the native events here covers all of them in one place rather
+    // than duplicating duck/resume calls at every call site.
+    const onPlay = () => {
+      setPlaying(true);
+      ambientRef.current.duckForTrack();
+    };
+    const onPause = () => {
+      setPlaying(false);
+      ambientRef.current.resumeAfterTrack();
+    };
 
     el.addEventListener("timeupdate", onTime);
     el.addEventListener("loadedmetadata", onDur);
