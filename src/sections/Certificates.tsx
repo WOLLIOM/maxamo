@@ -129,14 +129,17 @@ export function Certificates() {
   );
   const restCount = rest.reduce((n, b) => n + groups[b].length, 0);
 
-  const renderChip = (i: number, color: string, idx: number) => {
+  // Card layout: the cert NAME leads, big and bold — the scanned certificate
+  // itself is a small proof-of-work thumbnail tucked inside the card rather
+  // than the dominant visual (it used to fill most of the card).
+  const renderChip = (i: number, color: string, idx: number, brand: BrandKey) => {
     const c = certificates[i];
     return (
       <Reveal key={c.title} delay={idx} variant="scale" className="flex-1 basis-[280px]">
         <button
           type="button"
           onClick={() => setActive(i)}
-          className="group relative flex h-full w-full flex-col overflow-hidden rounded-2xl border bg-surface/40 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+          className="group relative flex h-full w-full flex-col gap-4 overflow-hidden rounded-2xl border bg-surface/40 p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 md:p-5"
           style={{ borderColor: `${color}55` }}
         >
           <span
@@ -144,25 +147,29 @@ export function Certificates() {
             className="absolute inset-x-0 top-0 z-10 h-[3px] opacity-80"
             style={{ background: color }}
           />
-          {/* the actual certificate — fills the card, fills the row */}
-          <div className="relative aspect-[7/5] w-full overflow-hidden bg-white">
-            <Image
-              src={c.image}
-              alt={`${c.title} certificate`}
-              fill
-              sizes="(max-width: 768px) 90vw, 400px"
-              className="object-contain p-2 transition-transform duration-300 group-hover:scale-[1.03]"
-            />
+          <div className="flex items-start gap-4">
+            <div className="min-w-0 flex-1">
+              <span className="mb-2 block text-[0.6rem] uppercase tracking-wider2 text-faint">
+                {BRAND[brand].name}
+              </span>
+              <span className="block text-lg font-semibold leading-tight text-ink md:text-xl">
+                {c.shortTitle}
+              </span>
+            </div>
+            {/* the scanned certificate — a small proof-of-work thumbnail */}
+            <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white md:h-[4.5rem] md:w-24">
+              <Image
+                src={c.image}
+                alt={`${c.title} certificate`}
+                fill
+                sizes="96px"
+                className="object-cover transition-transform duration-300 group-hover:scale-[1.06]"
+              />
+            </div>
           </div>
-          <div className="flex flex-col gap-1.5 p-4 md:p-5">
-            <span className="text-base font-semibold leading-snug text-ink md:text-lg">
-              {c.shortTitle}
-            </span>
-            <span className="flex items-center justify-between text-[0.62rem] uppercase tracking-wider2 text-faint">
-              <span>{c.issuer}</span>
-              <span>{c.date}</span>
-            </span>
-          </div>
+          <span className="mt-auto text-[0.62rem] uppercase tracking-wider2 text-faint">
+            {c.date}
+          </span>
         </button>
       </Reveal>
     );
@@ -188,7 +195,7 @@ export function Certificates() {
           </span>
         </div>
         <div className="flex flex-wrap gap-4">
-          {groups[brand].map((i, idx) => renderChip(i, meta.color, idx))}
+          {groups[brand].map((i, idx) => renderChip(i, meta.color, idx, brand))}
         </div>
       </div>
     );
