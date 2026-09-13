@@ -28,20 +28,21 @@ const SimaxScene = dynamic(() => import("@/components/three/SimaxScene"), {
 export function Hero() {
   const ref = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
-  // Lazy-init (not useEffect) so the correct branch renders on the very
-  // FIRST client render instead of always starting false for one tick.
-  // That one tick used to be visible as a flash of the mobile fallback
-  // photos ("two images") before flipping to the 3D scene — Simon didn't
-  // like seeing that page. shouldAutoLoad3D()/isTouchDevice() are already
-  // guarded to return false during SSR, so this is safe.
-  const [mountScene, setMountScene] = useState(() => shouldAutoLoad3D());
-  const [isTouch, setIsTouch] = useState(() => isTouchDevice());
+  // NOTE: deliberately NOT lazy-initialized from shouldAutoLoad3D() here.
+  // This is a static-export site — the HTML is pre-rendered at build time
+  // with no `window`, so a lazy initializer would compute `false` in the
+  // shipped markup but `true` on a capable client's first hydration pass,
+  // which is an actual React hydration mismatch (different component tree:
+  // SimaxScene vs HeroMobileStage). Starting both at `false` here matches
+  // the static HTML exactly, so hydration is clean; the "two images" flash
+  // this used to cause is fixed instead inside HeroMobileStage itself (see
+  // its own `mounted` gate) so that branch renders nothing visible during
+  // this brief false window regardless.
+  const [mountScene, setMountScene] = useState(false);
+  const [isTouch, setIsTouch] = useState(false);
   const [progressLabel, setProgressLabel] = useState(0);
 
   useEffect(() => {
-    // Re-check after mount in case the lazy init ran during SSR (always
-    // false there) — this is now just a confirmation pass on the client,
-    // not the first time these are computed.
     setIsTouch(isTouchDevice());
     setMountScene(shouldAutoLoad3D());
   }, []);
