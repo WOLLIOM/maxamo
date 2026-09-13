@@ -1,16 +1,36 @@
 "use client";
 
 import { useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import {
+  motion,
+  useAnimationFrame,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import { useDeviceTiltRef } from "@/lib/useDeviceTilt";
+import { isTouchDevice } from "@/lib/device";
 
 /**
- * The developer's portrait in a lacquer-framed card that tilts gently toward
- * the cursor (disabled on touch, where pointer position is meaningless).
+ * The developer's portrait in a lacquer-framed card that tilts toward the
+ * cursor on desktop, and toward the phone's own tilt on touch devices (same
+ * gyro hook the hero uses) — Simon asked for the tilt-on-move interaction to
+ * reach beyond the hero into other sections like this one.
  */
 export function PortraitCard() {
   const ref = useRef<HTMLDivElement>(null);
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
+  const touch = useRef(isTouchDevice());
+  const tilt = useDeviceTiltRef(touch.current);
+
+  // On touch devices, drive mx/my from the gyro ref every frame instead of
+  // pointer events (which don't fire meaningfully on touch anyway).
+  useAnimationFrame(() => {
+    if (!touch.current) return;
+    mx.set((tilt.current.x + 1) / 2);
+    my.set((tilt.current.y + 1) / 2);
+  });
 
   const rotX = useSpring(useTransform(my, [0, 1], [8, -8]), {
     stiffness: 150,
