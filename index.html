@@ -1,6 +1,7 @@
 <title>Simon Maxam — Field Notes</title>
 <meta name="description" content="Simon Maxam is a web developer and 3D artist in Calgary, Alberta — building interactive websites and immersive 3D experiences with Three.js, Blender, and Unreal Engine 5." />
 <meta name="author" content="Simon Maxam" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <link rel="canonical" href="https://maxam.vercel.app/" />
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32" />
@@ -257,6 +258,34 @@
   }
   ::selection { background: var(--accent); color: var(--ground); }
   a:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  /* ── Scroll-driven "print process": each section prints in a different
+     reprographic ink (cyanotype blue → sepia diazo → greenprint → graphite
+     → oxblood revision) so the sheet's ink shifts as you scroll instead of
+     staying all-blue. Only --accent/--accent-soft change; --ground/--ink stay
+     from the light/dark theme so contrast is always safe. The #grid-canvas
+     reads --accent live each frame and recolors itself. Accents are mid-tone
+     so they read on both the paper (light) and cyanotype (dark) grounds. ── */
+  body, a, .idx, .sec-head h2, .work-row, .work-row *, header.bar nav a,
+  .titleblock, .titleblock *, .facts, .facts *, .tag, .marquee span,
+  .links a, .theme-btn {
+    transition: color .6s ease, border-color .6s ease, background-color .6s ease;
+  }
+  :root[data-print="sepia"]      { --accent:#b07a2e; --accent-soft:#b07a2e2b; }
+  :root[data-print="greenprint"] { --accent:#3f9e78; --accent-soft:#3f9e782b; }
+  :root[data-print="graphite"]   { --accent:#8a8f98; --accent-soft:#8a8f982b; }
+  :root[data-print="oxblood"]    { --accent:#b04a30; --accent-soft:#b04a302b; }
+
+  /* ── Mobile refinements (now that the viewport meta exists, the breakpoints
+     above finally fire on real phones). Safe-area + tap-target polish. ── */
+  header.bar { padding-top: env(safe-area-inset-top); }
+  footer { padding-bottom: max(28px, env(safe-area-inset-bottom)); }
+  @media (max-width: 560px) {
+    header.bar nav a, .theme-btn { min-height: 40px; display: inline-flex; align-items: center; }
+    .titleblock { font-size: 10.5px; }
+    .idx, .titleblock b { font-size: 11px; }
+    ::selection { background: var(--accent); color: #fff; }
+  }
 </style>
 
 <canvas id="grid-canvas"></canvas>
@@ -563,4 +592,32 @@
   else {
     (function loop(t) { draw(t); requestAnimationFrame(loop); })(0);
   }
+
+  // ── Scroll-driven print process: recolor the sheet's ink per section as it
+  // crosses the viewport middle. Hero + top = default cyanotype (no attribute);
+  // about → sepia, work → greenprint, credentials → graphite, contact →
+  // oxblood. Also syncs the mobile browser chrome (theme-color) to the ink.
+  (function () {
+    var map = { about: "sepia", work: "greenprint", credentials: "graphite", contact: "oxblood" };
+    var chrome = { "": "#23479a", sepia: "#b07a2e", greenprint: "#3f9e78", graphite: "#8a8f98", oxblood: "#b04a30" };
+    var tc = document.querySelector('meta[name="theme-color"]');
+    var current = null;
+    function setPrint(p) {
+      if (p === current) return;
+      current = p;
+      if (p) root.setAttribute("data-print", p); else root.removeAttribute("data-print");
+      if (tc) tc.setAttribute("content", chrome[p] || chrome[""]);
+    }
+    var opts = { rootMargin: "-45% 0px -45% 0px", threshold: 0 };
+    var po = new IntersectionObserver(function (ents) {
+      ents.forEach(function (en) { if (en.isIntersecting) setPrint(map[en.target.id] || ""); });
+    }, opts);
+    document.querySelectorAll("section[id]").forEach(function (s) { po.observe(s); });
+    var hero = document.querySelector(".hero");
+    if (hero) {
+      new IntersectionObserver(function (ents) {
+        ents.forEach(function (en) { if (en.isIntersecting) setPrint(""); });
+      }, opts).observe(hero);
+    }
+  })();
 </script>
