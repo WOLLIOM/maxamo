@@ -305,10 +305,33 @@
     .idx, .titleblock b { font-size: 11px; }
     ::selection { background: var(--accent); color: #fff; }
   }
+
+  /* ── Spatial "floating sheet": foreground marks drift with tilt (--tx/--ty
+     set by the spatial module — pointer on desktop, gyro/touch on phone). ── */
+  .meta-row, .sec-head .idx, .hero .dim { transition: transform .18s ease-out; will-change: transform; }
+  .meta-row      { transform: translate3d(calc(var(--tx,0) * 10px), calc(var(--ty,0) * 8px), 0); }
+  .sec-head .idx { transform: translate3d(calc(var(--tx,0) * 7px),  calc(var(--ty,0) * 6px), 0); display: inline-block; }
+  .hero .dim     { transform: translate3d(calc(var(--tx,0) * 5px),  calc(var(--ty,0) * 4px), 0); }
+  .work-row:hover .title { color: var(--accent); }
+  /* drafting cursor: live coordinate readout trailing the crosshair (desktop) */
+  #xhair .coord { position: absolute; left: 15px; top: 13px; white-space: nowrap;
+    font-family: "Space Mono", monospace; font-size: 10px; letter-spacing: .06em; color: var(--accent); opacity: .85; }
+  /* opt-in spatial (gyro) control — phones only */
+  #spatial-btn { position: fixed; right: 14px; bottom: calc(14px + env(safe-area-inset-bottom));
+    z-index: 40; display: none; align-items: center; gap: 7px; font-family: "Space Mono", monospace;
+    font-size: 11px; letter-spacing: .1em; color: var(--accent); background: var(--panel);
+    border: 1px solid var(--line); border-radius: 999px; padding: 9px 14px; cursor: pointer;
+    transition: color .3s, background .3s, border-color .3s; }
+  #spatial-btn.show { display: inline-flex; }
+  #spatial-btn.on { color: var(--ground); background: var(--accent); border-color: var(--accent); }
+  @media (prefers-reduced-motion: reduce) {
+    .meta-row, .sec-head .idx, .hero .dim { transform: none !important; }
+  }
 </style>
 
 <canvas id="grid-canvas"></canvas>
 <div class="xhair" id="xhair" aria-hidden="true"></div>
+<button id="spatial-btn" aria-label="Enable spatial view"><span aria-hidden="true">◳</span><span class="lbl">SPATIAL</span></button>
 
 <header class="bar">
   <a href="#top" class="tag" style="letter-spacing:.2em;color:var(--ink)">S. MAXAM</a>
@@ -581,14 +604,20 @@
     ctx.clearRect(0, 0, W, H);
     var g = css("--line") || "rgba(120,120,120,.2)";
     var acc = css("--accent") || "#23479a";
+    // Spatial parallax: shift the grid plane by the current tilt so the sheet
+    // feels like it floats above a deeper technical grid (pointer on desktop,
+    // gyro/touch on phone; window.__tilt is set by the spatial module below).
+    var tlt = window.__tilt || { x: 0, y: 0 };
+    var ox = tlt.x * 26 * DPR, oy = tlt.y * 20 * DPR;
+    var s = step * DPR;
     // fine grid
     ctx.strokeStyle = g;
     ctx.lineWidth = 1;
     ctx.globalAlpha = 0.5;
-    for (var x = 0; x < W; x += step * DPR) {
+    for (var x = ((ox % s) + s) % s - s; x < W + s; x += s) {
       ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
     }
-    for (var y = 0; y < H; y += step * DPR) {
+    for (var y = ((oy % s) + s) % s - s; y < H + s; y += s) {
       ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
     }
     // drifting construction lines
@@ -647,5 +676,89 @@
     window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("resize", onScroll, { passive: true });
     apply();
+  })();
+
+  // ── Spatial "floating sheet": tilt source (pointer / gyro / touch) drives the
+  // grid-canvas parallax + foreground marks (--tx/--ty); plus a drafting cursor
+  // coordinate readout and a hover "decode" scramble on technical labels. All
+  // degrade gracefully: no sensor/denied/reduced-motion → static, never broken.
+  (function () {
+    var reduceM = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var lowPower = (navigator.hardwareConcurrency || 8) <= 4;
+    var target = { x: 0, y: 0 }, cur = { x: 0, y: 0 };
+    window.__tilt = cur;
+    function set(nx, ny) { target.x = Math.max(-1, Math.min(1, nx)); target.y = Math.max(-1, Math.min(1, ny)); }
+    var finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+    if (finePointer && !reduceM) {
+      window.addEventListener("pointermove", function (e) {
+        set((e.clientX / innerWidth - 0.5) * 2, (e.clientY / innerHeight - 0.5) * 2);
+      }, { passive: true });
+    }
+    if (!finePointer && !reduceM) {
+      var sx = 0, sy = 0, drag = false;
+      window.addEventListener("touchstart", function (e) { var t = e.touches[0]; sx = t.clientX; sy = t.clientY; drag = true; }, { passive: true });
+      window.addEventListener("touchmove", function (e) { if (!drag) return; var t = e.touches[0]; set((t.clientX - sx) / (innerWidth * 0.5), (t.clientY - sy) / (innerHeight * 0.5)); }, { passive: true });
+      window.addEventListener("touchend", function () { drag = false; set(0, 0); }, { passive: true });
+    }
+
+    var btn = document.getElementById("spatial-btn");
+    function enableGyro() {
+      window.addEventListener("deviceorientation", function (e) {
+        if (e.beta == null && e.gamma == null) return;
+        set((e.gamma || 0) / 30, ((e.beta || 0) - 45) / 30);
+      }, { passive: true });
+      if (btn) { btn.classList.add("on"); var l = btn.querySelector(".lbl"); if (l) l.textContent = "SPATIAL ON"; }
+    }
+    var hasDO = (typeof DeviceOrientationEvent !== "undefined");
+    var needsPerm = hasDO && typeof DeviceOrientationEvent.requestPermission === "function";
+    if (!finePointer && hasDO && !reduceM && btn) {
+      btn.classList.add("show");
+      btn.addEventListener("click", function () {
+        if (needsPerm) { DeviceOrientationEvent.requestPermission().then(function (s) { if (s === "granted") enableGyro(); }).catch(function () {}); }
+        else { enableGyro(); }
+      });
+    }
+
+    if (!reduceM && !lowPower) {
+      (function loop() {
+        cur.x += (target.x - cur.x) * 0.08;
+        cur.y += (target.y - cur.y) * 0.08;
+        root.style.setProperty("--tx", cur.x.toFixed(3));
+        root.style.setProperty("--ty", cur.y.toFixed(3));
+        requestAnimationFrame(loop);
+      })();
+    }
+
+    // drafting cursor coordinate readout (desktop)
+    var xh = document.getElementById("xhair");
+    if (finePointer && xh) {
+      var coord = document.createElement("span"); coord.className = "coord"; xh.appendChild(coord);
+      window.addEventListener("pointermove", function (e) {
+        coord.textContent = "X" + String(e.clientX).padStart(4, "0") + " Y" + String(e.clientY).padStart(4, "0");
+      }, { passive: true });
+    }
+
+    // hover "decode" scramble on technical labels (desktop, respects reduced-motion)
+    if (finePointer && !reduceM) {
+      var GLY = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789/·—#";
+      function scramble(el) {
+        if (el.dataset.busy) return;
+        var fin = el.dataset.txt || el.textContent; el.dataset.txt = fin; el.dataset.busy = "1";
+        var frame = 0, dur = 12;
+        (function tick() {
+          var out = "", reveal = frame / dur * fin.length;
+          for (var i = 0; i < fin.length; i++) {
+            out += (fin[i] === " ") ? " " : (i < reveal ? fin[i] : GLY[(Math.random() * GLY.length) | 0]);
+          }
+          el.textContent = out; frame++;
+          if (frame <= dur) requestAnimationFrame(tick);
+          else { el.textContent = fin; el.dataset.busy = ""; }
+        })();
+      }
+      document.querySelectorAll(".work-row .title, .links a").forEach(function (el) {
+        el.addEventListener("pointerenter", function () { scramble(el); });
+      });
+    }
   })();
 </script>
