@@ -608,16 +608,25 @@
       if (p) root.setAttribute("data-print", p); else root.removeAttribute("data-print");
       if (tc) tc.setAttribute("content", chrome[p] || chrome[""]);
     }
-    var opts = { rootMargin: "-45% 0px -45% 0px", threshold: 0 };
-    var po = new IntersectionObserver(function (ents) {
-      ents.forEach(function (en) { if (en.isIntersecting) setPrint(map[en.target.id] || ""); });
-    }, opts);
-    document.querySelectorAll("section[id]").forEach(function (s) { po.observe(s); });
-    var hero = document.querySelector(".hero");
-    if (hero) {
-      new IntersectionObserver(function (ents) {
-        ents.forEach(function (en) { if (en.isIntersecting) setPrint(""); });
-      }, opts).observe(hero);
+    // Scroll-position based (not %-rootMargin) so it's independent of viewport
+    // height and never has an observer edge case: pick the section whose box
+    // contains the viewport's vertical midpoint. Above the first section (in
+    // the hero) → empty → default cyanotype. rAF-throttled + passive.
+    var secs = [].slice.call(document.querySelectorAll("section[id]"));
+    var ticking = false;
+    function apply() {
+      ticking = false;
+      var mid = window.scrollY + window.innerHeight * 0.5;
+      var p = "";
+      for (var i = 0; i < secs.length; i++) {
+        var el = secs[i], top = el.offsetTop, bot = top + el.offsetHeight;
+        if (mid >= top && mid < bot) { p = map[el.id] || ""; break; }
+      }
+      setPrint(p);
     }
+    function onScroll() { if (!ticking) { ticking = true; requestAnimationFrame(apply); } }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    apply();
   })();
 </script>
