@@ -173,31 +173,8 @@ export function MusicNote({ color = GOLD, scale = 1 }: { color?: string; scale?:
   );
 }
 
-/** Thin vinyl-style disc with grooves — nods to music production / FL Studio. */
-export function VinylDisc({ lite = false }: { lite?: boolean }) {
-  const grooves = useMemo(
-    () => (lite ? [] : Array.from({ length: 8 }).map((_, i) => 0.68 - i * 0.06)),
-    [lite],
-  );
-  return (
-    <group data-cursor="pick">
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.72, 0.72, 0.04, 48]} />
-        <meshPhysicalMaterial color={INK} roughness={0.35} clearcoat={0.6} />
-      </mesh>
-      <mesh position={[0, 0.021, 0]} rotation={[Math.PI / 2, 0, 0]}>
-        <cylinderGeometry args={[0.22, 0.22, 0.001, 32]} />
-        <meshPhysicalMaterial color={CHERRY_RED} roughness={0.3} clearcoat={0.6} />
-      </mesh>
-      {grooves.map((r, i) => (
-        <mesh key={i} position={[0, 0.021, 0]} rotation={[Math.PI / 2, 0, 0]}>
-          <ringGeometry args={[r, r + 0.008, 48]} />
-          <meshBasicMaterial color="#2a2830" side={THREE.DoubleSide} />
-        </mesh>
-      ))}
-    </group>
-  );
-}
+// VinylDisc removed — no longer rendered in the scene (mobile + desktop were
+// trimmed to guitar + box + polygon + note). Deleted to drop dead code.
 
 /** Small ringed planet — nods to SOLARIS / space & game dev. */
 export function Planet({ color = "#5a3a86", ring = GOLD }: { color?: string; ring?: string }) {
@@ -271,17 +248,9 @@ export function CodeShape({ lite = false }: { lite?: boolean }) {
   );
 }
 
-/** Saturn GLB model — loaded from disk instead of procedural. */
-export function SaturnModel({ scale = 1 }: { scale?: number }) {
-  const { scene } = useGLTF("/models/saturn.glb");
-  const cloned = useMemo(() => scene.clone(true), [scene]);
-  return (
-    <group data-cursor="pick" scale={scale}>
-      <primitive object={cloned} />
-    </group>
-  );
-}
-useGLTF.preload("/models/saturn.glb");
+// SaturnModel removed — it was no longer rendered but its module-scope
+// useGLTF.preload() was still force-downloading an 8.9 MB saturn.glb on every
+// desktop load. Both the component and the asset have been deleted.
 
 /** Music note GLB model — loaded from disk instead of procedural. */
 export function NotaGLB({ scale = 1 }: { scale?: number }) {

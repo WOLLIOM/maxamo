@@ -13,11 +13,9 @@ import {
   Guitar,
   RealGuitar,
   MusicNote,
-  VinylDisc,
   Planet,
   ArchBlock,
   CodeShape,
-  SaturnModel,
   NotaGLB,
   GOLD,
 } from "./SimaxModels";
@@ -56,23 +54,6 @@ const PIECE_CONFIG = {
     speed: 1.7,
     depth: 0.6,
     modelScale: undefined, // RealGuitar uses scale prop
-  },
-  vinyl: {
-    name: "Vinyl Disc",
-    position: [-3.5, -1.5, -0.1] as const,
-    rotation: [1.15, 0.5, 0.15] as const,
-    scale: 1,
-    speed: 8.1,
-    depth: 2.1,
-  },
-  saturn: {
-    name: "Saturn",
-    position: [3.5, 0.1, -1.2] as const,
-    rotation: [0.15, -0.55, 0.08] as const,
-    scale: 1,
-    speed: 2.2,
-    depth: 1.4,
-    modelScale: 0.42,
   },
   archBlock: {
     name: "Architecture Block",
