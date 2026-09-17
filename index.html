@@ -266,15 +266,34 @@
      from the light/dark theme so contrast is always safe. The #grid-canvas
      reads --accent live each frame and recolors itself. Accents are mid-tone
      so they read on both the paper (light) and cyanotype (dark) grounds. ── */
-  body, a, .idx, .sec-head h2, .work-row, .work-row *, header.bar nav a,
+  html { transition: background-color .9s ease; }
+  body, a, .idx, .sec-head h2, .work-row, .work-row *, header.bar, header.bar *,
   .titleblock, .titleblock *, .facts, .facts *, .tag, .marquee span,
-  .links a, .theme-btn {
-    transition: color .6s ease, border-color .6s ease, background-color .6s ease;
+  .links a, .theme-btn, #grid-canvas {
+    transition: color .9s ease, border-color .9s ease, background-color .9s ease;
   }
-  :root[data-print="sepia"]      { --accent:#b07a2e; --accent-soft:#b07a2e2b; }
-  :root[data-print="greenprint"] { --accent:#3f9e78; --accent-soft:#3f9e782b; }
-  :root[data-print="graphite"]   { --accent:#8a8f98; --accent-soft:#8a8f982b; }
-  :root[data-print="oxblood"]    { --accent:#b04a30; --accent-soft:#b04a302b; }
+  /* also fade the whole page ground on <html> so the paper itself shifts */
+  html { background: var(--ground); }
+
+  /* LIGHT paper, tinted per process — the whole background shifts, dark ink
+     (#1c1a17) stays readable on every tint. */
+  :root[data-print="sepia"]      { --ground:#efe3cf; --panel:#f6ecd8; --accent:#8f5a1e; --accent-soft:#8f5a1e26; --line:#5a4a2e3a; --muted:#7a6a4f; }
+  :root[data-print="greenprint"] { --ground:#dde8de; --panel:#e9f1e9; --accent:#2f7d59; --accent-soft:#2f7d5926; --line:#3a5a483a; --muted:#5b6f61; }
+  :root[data-print="graphite"]   { --ground:#e6e6ea; --panel:#f0f0f3; --accent:#454a52; --accent-soft:#454a5226; --line:#4b4f5a3a; --muted:#63666e; }
+  :root[data-print="oxblood"]    { --ground:#f1e1db; --panel:#f8e9e3; --accent:#a23b22; --accent-soft:#a23b2226; --line:#5a34283a; --muted:#7e5a50; }
+
+  /* DARK paper, tinted per process (auto-dark users) — light ink stays readable */
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"])[data-print="sepia"]      { --ground:#211a0e; --panel:#2c2213; --accent:#e0a85c; --accent-soft:#e0a85c26; --line:#e0c89a2e; --muted:#c2a577; }
+    :root:not([data-theme="light"])[data-print="greenprint"] { --ground:#0d1f17; --panel:#12291f; --accent:#63d3a2; --accent-soft:#63d3a226; --line:#8fe6c22e; --muted:#7fb79c; }
+    :root:not([data-theme="light"])[data-print="graphite"]   { --ground:#16181d; --panel:#1d2028; --accent:#aab2c0; --accent-soft:#aab2c026; --line:#c0c8d62e; --muted:#8b909c; }
+    :root:not([data-theme="light"])[data-print="oxblood"]    { --ground:#241009; --panel:#301710; --accent:#e58a68; --accent-soft:#e58a6826; --line:#e6a88f2e; --muted:#c08a7a; }
+  }
+  /* DARK paper for users who explicitly toggled dark */
+  :root[data-theme="dark"][data-print="sepia"]      { --ground:#211a0e; --panel:#2c2213; --accent:#e0a85c; --accent-soft:#e0a85c26; --line:#e0c89a2e; --muted:#c2a577; }
+  :root[data-theme="dark"][data-print="greenprint"] { --ground:#0d1f17; --panel:#12291f; --accent:#63d3a2; --accent-soft:#63d3a226; --line:#8fe6c22e; --muted:#7fb79c; }
+  :root[data-theme="dark"][data-print="graphite"]   { --ground:#16181d; --panel:#1d2028; --accent:#aab2c0; --accent-soft:#aab2c026; --line:#c0c8d62e; --muted:#8b909c; }
+  :root[data-theme="dark"][data-print="oxblood"]    { --ground:#241009; --panel:#301710; --accent:#e58a68; --accent-soft:#e58a6826; --line:#e6a88f2e; --muted:#c08a7a; }
 
   /* ── Mobile refinements (now that the viewport meta exists, the breakpoints
      above finally fire on real phones). Safe-area + tap-target polish. ── */
@@ -599,7 +618,7 @@
   // oxblood. Also syncs the mobile browser chrome (theme-color) to the ink.
   (function () {
     var map = { about: "sepia", work: "greenprint", credentials: "graphite", contact: "oxblood" };
-    var chrome = { "": "#23479a", sepia: "#b07a2e", greenprint: "#3f9e78", graphite: "#8a8f98", oxblood: "#b04a30" };
+    var chrome = { "": "#23479a", sepia: "#8f5a1e", greenprint: "#2f7d59", graphite: "#454a52", oxblood: "#a23b22" };
     var tc = document.querySelector('meta[name="theme-color"]');
     var current = null;
     function setPrint(p) {
