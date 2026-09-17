@@ -745,6 +745,9 @@
       function scramble(el) {
         if (el.dataset.busy) return;
         var fin = el.dataset.txt || el.textContent; el.dataset.txt = fin; el.dataset.busy = "1";
+        // Safety net: guarantee the label resolves even if rAF stalls (e.g. the
+        // tab is hidden mid-hover) so text can never get stuck scrambled.
+        setTimeout(function () { el.textContent = fin; el.dataset.busy = ""; }, 700);
         var frame = 0, dur = 12;
         (function tick() {
           var out = "", reveal = frame / dur * fin.length;
