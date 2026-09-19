@@ -6,6 +6,7 @@ import { isTouchDevice } from "@/lib/device";
 import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
+import { GyroBadge } from "@/components/hero/GyroBadge";
 
 // Ambient particles are nice but expensive — load after the shell is ready.
 const AmbientCanvas = dynamic(() => import("./AmbientCanvas").then((m) => m.AmbientCanvas), {
@@ -72,6 +73,9 @@ export function ExperienceShell() {
           single cursor particle system now; running both was redundant. */}
       <ControlDock />
       <MusicDock />
+      {/* Touch-only wireframe cube that drops in past the hero and drifts with
+          the phone's gyro — keeps the 3D/spatial feel alive after scroll. */}
+      <GyroBadge />
       {checked && showLoader && <Loader onDone={handleDone} />}
     </>
   );
