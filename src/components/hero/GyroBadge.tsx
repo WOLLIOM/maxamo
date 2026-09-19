@@ -5,98 +5,109 @@ import { useAnimationFrame } from "framer-motion";
 import { useDeviceTiltRef } from "@/lib/useDeviceTilt";
 import { isTouchDevice } from "@/lib/device";
 
+const SIZE = 92; // px edge length of the cube
+
 /**
- * A small wireframe cube that "drops in" once the visitor scrolls past the
- * hero, pins to the bottom-left corner, and slides / rotates with the phone's
- * gyro (tilt left → it drifts left). Touch-only, pointer-events:none so it
- * never blocks taps or reading; fully static under reduced-motion. It's a
- * quiet "spatial instrument" marker that keeps the 3D feel alive after the
- * hero scene scrolls away.
+ * A real 3D box (six-faced CSS-3D cube) that FALLS in from the top once the
+ * visitor scrolls past the hero, then floats across the screen following the
+ * phone's tilt (tilt left → it travels left, tilt right → right) while
+ * tumbling. It's a physical-feeling object, not a corner logo:
+ *  - travels nearly the full screen width (not pinned to a corner)
+ *  - thin edges + translucent faces so it never hides text
+ *  - pointer-events:none, touch-only, static under reduced-motion
+ *
+ * Simon's brief: "the box floats in 3D, falls as I scroll from the hero, and
+ * goes left/right as I move my phone — not a logo in the corner."
  */
 export function GyroBadge() {
-  const wrapRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
   const cubeRef = useRef<HTMLDivElement>(null);
-  const [enabled, setEnabled] = useState(false); // touch + not reduced-motion
-  const [visible, setVisible] = useState(false); // scrolled past the hero
-  const touch = useRef(false);
+  const [enabled, setEnabled] = useState(false);
+  const [visible, setVisible] = useState(false);
   const tilt = useDeviceTiltRef(enabled);
+  // smoothed physics state so motion feels weighty, not twitchy
+  const pos = useRef({ x: 0, y: 0, rx: -24, ry: 32, fall: 0 });
+  const spin = useRef(0);
 
   useEffect(() => {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    touch.current = isTouchDevice();
-    if (!touch.current || reduce) return;
+    if (!isTouchDevice() || reduce) return;
     setEnabled(true);
-
-    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.7);
+    const onScroll = () => setVisible(window.scrollY > window.innerHeight * 0.6);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Slide toward the tilt direction (tilt.y = left/right, tilt.x = front/back)
-  // and rotate the cube a little so it reads as a 3D object catching the light.
-  useAnimationFrame(() => {
-    if (!enabled || !cubeRef.current) return;
-    const tx = Math.max(-1, Math.min(1, tilt.current.y)) * 26; // horizontal drift
-    const ty = Math.max(-1, Math.min(1, tilt.current.x)) * 18; // vertical drift
-    const ry = tilt.current.y * 34; // yaw
-    const rx = -tilt.current.x * 26; // pitch
-    cubeRef.current.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotateX(${rx}deg) rotateY(${ry}deg)`;
+  useAnimationFrame((_, delta) => {
+    if (!enabled || !boxRef.current || !cubeRef.current) return;
+    const p = pos.current;
+    const dt = Math.min(delta / 16.7, 3);
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+
+    // where the box WANTS to be: x follows tilt across ~85% of the width,
+    // y hangs around 62% down the screen and sways a touch with front/back tilt
+    const tx = Math.max(-1, Math.min(1, tilt.current.y)) * (vw / 2 - SIZE * 0.7);
+    const ty = Math.max(-1, Math.min(1, tilt.current.x)) * 46;
+    // "fall": eases from -height (above screen) to 0 when it becomes visible
+    const fallTarget = visible ? 0 : -(vh * 0.7);
+
+    const k = 1 - Math.pow(0.9, dt); // frame-rate independent easing
+    p.x += (tx - p.x) * k * 0.55;
+    p.y += (ty - p.y) * k * 0.55;
+    p.fall += (fallTarget - p.fall) * (1 - Math.pow(0.93, dt));
+
+    // tumble: slow constant spin + extra rotation in the direction of travel
+    spin.current += 0.35 * dt;
+    const ry = spin.current + (p.x / vw) * 260;
+    const rx = -24 + Math.sin(spin.current * 0.02) * 18 - tilt.current.x * 40;
+
+    boxRef.current.style.transform = `translate3d(${p.x}px, ${p.y + p.fall}px, 0)`;
+    cubeRef.current.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg)`;
   });
 
   if (!enabled) return null;
 
+  const half = SIZE / 2;
+  const face =
+    "absolute inset-0 border border-accent/70 bg-accent/[0.06] backdrop-blur-[0.5px]";
   return (
     <div
-      ref={wrapRef}
       aria-hidden
-      className="pointer-events-none fixed bottom-[calc(1.5rem+env(safe-area-inset-bottom))] left-4 z-40 md:hidden"
+      // centered horizontally, hanging ~62% down; JS supplies the travel.
+      className="pointer-events-none fixed left-1/2 top-[58%] z-30 md:hidden"
       style={{
-        perspective: "420px",
-        opacity: visible ? 0.85 : 0,
-        transform: visible ? "translateY(0)" : "translateY(-28px)",
-        transition: "opacity .6s ease, transform .7s cubic-bezier(.22,1,.36,1)",
+        marginLeft: -half,
+        opacity: visible ? 0.9 : 0,
+        transition: "opacity .5s ease",
+        perspective: "600px",
       }}
     >
-      {/* faint drafting label under the cube */}
-      <div
-        ref={cubeRef}
-        style={{ transformStyle: "preserve-3d", willChange: "transform" }}
-        className="relative h-16 w-16"
-      >
-        <WireCube />
+      <div ref={boxRef} style={{ willChange: "transform" }}>
+        <div
+          ref={cubeRef}
+          style={{
+            width: SIZE,
+            height: SIZE,
+            transformStyle: "preserve-3d",
+            willChange: "transform",
+          }}
+          className="relative"
+        >
+          <div className={face} style={{ transform: `translateZ(${half}px)` }} />
+          <div className={face} style={{ transform: `rotateY(180deg) translateZ(${half}px)` }} />
+          <div className={face} style={{ transform: `rotateY(90deg) translateZ(${half}px)` }} />
+          <div className={face} style={{ transform: `rotateY(-90deg) translateZ(${half}px)` }} />
+          <div className={face} style={{ transform: `rotateX(90deg) translateZ(${half}px)` }} />
+          <div className={face} style={{ transform: `rotateX(-90deg) translateZ(${half}px)` }} />
+          {/* bright core so it reads as a lit object, not just a frame */}
+          <div
+            className="absolute left-1/2 top-1/2 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent"
+            style={{ boxShadow: "0 0 18px 4px rgb(var(--c-accent) / 0.55)" }}
+          />
+        </div>
       </div>
-      <span className="mt-1 block font-mono text-[0.5rem] uppercase tracking-[0.25em] text-accent/70">
-        tilt · 3D
-      </span>
     </div>
-  );
-}
-
-/** Isometric wireframe cube in the theme accent — SVG, crisp at any size. */
-function WireCube() {
-  return (
-    <svg viewBox="0 0 100 100" className="h-full w-full overflow-visible">
-      <g
-        fill="none"
-        stroke="rgb(var(--c-accent))"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-        strokeLinecap="round"
-        opacity="0.9"
-      >
-        {/* back face */}
-        <path d="M32 22 L74 22 L74 64 L32 64 Z" opacity="0.4" />
-        {/* front face */}
-        <path d="M26 36 L68 36 L68 78 L26 78 Z" />
-        {/* connectors */}
-        <line x1="32" y1="22" x2="26" y2="36" />
-        <line x1="74" y1="22" x2="68" y2="36" />
-        <line x1="74" y1="64" x2="68" y2="78" />
-        <line x1="32" y1="64" x2="26" y2="78" />
-      </g>
-      {/* accent node at the front corner */}
-      <circle cx="26" cy="36" r="2.4" fill="rgb(var(--c-accent))" />
-    </svg>
   );
 }
