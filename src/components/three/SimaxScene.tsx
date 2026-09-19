@@ -14,7 +14,6 @@ import {
   RealGuitar,
   MusicNote,
   Planet,
-  RedStrat,
   ArchBlock,
   CodeShape,
   NotaGLB,
@@ -48,8 +47,8 @@ const PIECE_CONFIG = {
     position: [0, 0.3, 0.6] as const,
     // Mobile: nudged left to center it, and BIGGER now that the mobile
     // scene is capped at 3 objects (was too small before).
-    mobilePosition: [-0.6, 0.2, 0.6] as const,
-    mobileScale: 5.6,
+    mobilePosition: [-0.35, 0.95, 0.6] as const,
+    mobileScale: 3.5,
     rotation: [Math.PI / 2.5, 2, Math.PI / -2] as const,
     scale: 5.2,
     speed: 1.7,
@@ -94,8 +93,8 @@ const PIECE_CONFIG = {
     position: [-2.1, -2.1, 0.35] as const,
     // Mobile: tucked into the empty space between the box (upper-right) and
     // the guitar (center), upper-middle area.
-    mobilePosition: [0.2, 1.2, 0.4] as const,
-    mobileScale: 1.3,
+    mobilePosition: [0.45, 1.75, 0.4] as const,
+    mobileScale: 0.8,
     rotation: [0.25, 0.5, -0.1] as const,
     scale: 1.05,
     speed: 1.25,
@@ -183,6 +182,22 @@ function ScrollCamera({
   return null;
 }
 
+/** Soft round sprite so WebGL points render as glowing circles, not squares. */
+function makeDotTexture() {
+  const c = document.createElement("canvas");
+  c.width = c.height = 64;
+  const g = c.getContext("2d")!;
+  const grad = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+  grad.addColorStop(0, "rgba(255,255,255,1)");
+  grad.addColorStop(0.35, "rgba(255,255,255,0.55)");
+  grad.addColorStop(1, "rgba(255,255,255,0)");
+  g.fillStyle = grad;
+  g.fillRect(0, 0, 64, 64);
+  const t = new THREE.CanvasTexture(c);
+  t.needsUpdate = true;
+  return t;
+}
+
 /**
  * Deep-red / gold floating dust motes + soft mist sheets for depth —
  * SIMAX cinematic studio atmosphere, halfway between a stage and a starfield.
@@ -198,6 +213,7 @@ function Atmosphere({
   const mist = useRef<THREE.Mesh>(null);
   const mistMat = useRef<THREE.MeshBasicMaterial>(null);
 
+  const dotTex = useMemo(() => makeDotTexture(), []);
   const positions = useMemo(() => {
     const count = lite ? 80 : 220;
     const arr = new Float32Array(count * 3);
@@ -240,7 +256,9 @@ function Atmosphere({
         </bufferGeometry>
         <pointsMaterial
           color="#c4a260"
-          size={lite ? 0.04 : 0.055}
+          size={lite ? 0.09 : 0.11}
+          map={dotTex}
+          alphaTest={0.01}
           sizeAttenuation
           transparent
           opacity={0.55}
@@ -612,31 +630,16 @@ function Scene({
           <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
         </Piece>
 
-        {/* PHONE-ONLY corner fillers. Simon: the phone hero had empty corners
-            and 99% of visitors are on phones, so fill them with more models.
-            All are cheap (43 KB Strat GLB, procedural planet, small GLB note)
-            and sit at different depths so gyro tilt parallaxes them at
-            different speeds — that's what sells the 3D. Desktop untouched. */}
+        {/* PHONE-ONLY extras. The pixelated red Strat (huge, covered the text)
+            and the off-screen note GLB were removed after Simon's real-phone
+            screenshots. What stays is light + reads as "space": a small tan
+            ringed planet top-left and a tiny purple moon on the right, at
+            different depths so gyro tilt parallaxes them at different speeds.
+            Desktop untouched. */}
         {lite && (
           <>
-            {/* bottom-left: second (red) guitar, self-spinning */}
             <Piece
-              position={[-2.5, -2.0, -0.6]}
-              rotation={[0.2, 0.4, 0.1]}
-              speed={1.3}
-              scale={0.62}
-              depth={1.9}
-              progressRef={progressRef}
-            >
-              <RedStrat scale={3.2} />
-            </Piece>
-
-            {/* top-left: small tan ringed planet — the "Saturn" Simon liked from
-                the older deploy, but procedural (the original saturn.glb was
-                8.9 MB, far too heavy for a phone). Small + low `depth` so it
-                stays calm on scroll instead of flying past the camera. */}
-            <Piece
-              position={[-2.2, 2.3, -1.0]}
+              position={[-1.3, 3.0, -1.0]}
               rotation={[0.35, 0.2, 0.25]}
               speed={0.9}
               scale={0.5}
@@ -645,17 +648,15 @@ function Scene({
             >
               <Planet color="#c98a55" ring="#ecc998" />
             </Piece>
-
-            {/* far-right middle: gold music note (GLB) */}
             <Piece
-              position={[2.5, 0.0, -0.8]}
-              rotation={[0.2, -0.3, 0.1]}
+              position={[1.55, 0.55, -1.4]}
+              rotation={[0.2, 0.3, 0.1]}
               speed={1.2}
-              scale={0.8}
-              depth={1.5}
+              scale={0.24}
+              depth={1.4}
               progressRef={progressRef}
             >
-              <NotaGLB scale={0.85} />
+              <Planet color="#7a55c9" ring="#b9a4f0" />
             </Piece>
           </>
         )}

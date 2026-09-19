@@ -175,14 +175,14 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.15 }}
-            className="mb-6 flex items-center gap-3"
+            className="mb-6 flex items-center gap-3 max-md:hidden"
           >
             <span className="h-px w-10 bg-accent/60" />
             <span className="kicker">Web · Apps · 3D · Code</span>
             <span className="h-px w-10 bg-accent/60" />
           </motion.div>
 
-          <h1 className="font-serif text-[clamp(2.15rem,11vw,3.35rem)] font-light leading-[0.92] text-ink md:text-fluid-hero md:leading-[0.86]">
+          <h1 className="font-serif text-[clamp(3.2rem,19vw,5rem)] font-light leading-[0.92] text-ink md:text-fluid-hero md:leading-[0.86]">
             <OverflowLine delay={0.3}>{site.name}</OverflowLine>
             <span className="sr-only"> — Simon Maxam's Interactive Portfolio</span>
           </h1>
@@ -200,7 +200,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.7 }}
-            className="mt-4 max-w-md text-balance text-sm font-medium leading-relaxed text-ink/85 max-md:mt-3 md:mt-7 md:text-base md:text-lg"
+            className="mt-4 max-w-md text-balance text-sm font-medium leading-relaxed text-ink/85 max-md:hidden md:mt-7 md:text-base md:text-lg"
           >
             A developer building modern websites, web apps, and interactive
             3D.
@@ -232,7 +232,7 @@ export function Hero() {
             </button>
           </motion.div>
 
-          <div className="mt-6 h-9 w-full max-w-md md:mt-8 md:h-10">
+          <div className="mt-6 h-9 w-full max-w-md max-md:hidden md:mt-8 md:h-10">
             <PixelMarquee text="simon maxam — built by hand, run on code   " cell={7} />
           </div>
         </motion.div>
@@ -262,7 +262,7 @@ export function Hero() {
         </motion.div>
 
         {/* Scroll progress indicator */}
-        <div className="pointer-events-none absolute bottom-7 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 sm:bottom-9">
+        <div className="pointer-events-none absolute bottom-7 left-1/2 z-30 flex -translate-x-1/2 flex-col items-center gap-2 max-md:hidden sm:bottom-9">
           <span className="text-[0.58rem] uppercase tracking-ultra text-faint">
             Scroll
           </span>
