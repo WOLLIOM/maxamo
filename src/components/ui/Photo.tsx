@@ -53,8 +53,9 @@ export function Photo({
   const tilt = useDeviceTiltRef(touch.current);
   useAnimationFrame(() => {
     if (!touch.current || !cardRef.current) return;
-    const rx = Math.max(-1, Math.min(1, tilt.current.x * 1.4)) * 7; // pitch
-    const ry = Math.max(-1, Math.min(1, tilt.current.y * 1.4)) * 9; // yaw
+    // Stronger tilt (was 1.4× → ±7/±9°) so photos visibly swing with the phone.
+    const rx = Math.max(-1, Math.min(1, tilt.current.x * 1.8)) * 11; // pitch
+    const ry = Math.max(-1, Math.min(1, tilt.current.y * 1.8)) * 14; // yaw
     cardRef.current.style.transform = `rotateX(${-rx}deg) rotateY(${ry}deg)`;
   });
 
