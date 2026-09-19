@@ -62,6 +62,22 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
   // from the real button — likely why gyro "sometimes" stopped working.
   const { needsPrompt: needsGyroTap, request: requestGyro } = useGyroPermissionButton();
 
+  // After motion is granted, show a brief "tilt your phone" cue so people know
+  // the scene is now live (the button disappears the moment it's granted).
+  const [tiltHint, setTiltHint] = useState(false);
+  useEffect(() => {
+    let t: ReturnType<typeof setTimeout>;
+    const onGrant = () => {
+      setTiltHint(true);
+      t = setTimeout(() => setTiltHint(false), 3200);
+    };
+    window.addEventListener("simax-gyro-granted", onGrant);
+    return () => {
+      window.removeEventListener("simax-gyro-granted", onGrant);
+      clearTimeout(t);
+    };
+  }, []);
+
   useEffect(() => {
     // Confirmation pass on the client (the lazy init above already computed
     // this correctly on mount; SSR always yields false since matchMedia
@@ -137,10 +153,23 @@ export function HeroMobileStage({ scrollProgress = 0 }: { scrollProgress?: numbe
       <button
         type="button"
         onClick={requestGyro}
-        className="absolute left-1/2 top-[calc(env(safe-area-inset-top)+4rem)] z-[6] -translate-x-1/2 rounded-full border border-white/30 bg-black/50 px-4 py-2 text-[0.62rem] uppercase tracking-wider2 text-white backdrop-blur-sm"
+        aria-label="Enable 3D tilt: the scene moves when you move your phone"
+        className="absolute left-1/2 top-[calc(env(safe-area-inset-top)+4.25rem)] z-[6] flex -translate-x-1/2 items-center gap-2.5 rounded-full border border-accent/60 bg-black/55 px-5 py-3 text-[0.68rem] font-medium uppercase tracking-wider2 text-white shadow-[0_0_28px_-4px_rgb(var(--c-accent)/0.65)] backdrop-blur-md active:scale-95"
       >
-        Tap to see something cool
+        <span aria-hidden className="relative flex h-2.5 w-2.5">
+          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent opacity-75" />
+          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent" />
+        </span>
+        Tap to enable 3D tilt
       </button>
+    )}
+    {tiltHint && (
+      <div
+        aria-live="polite"
+        className="pointer-events-none absolute left-1/2 top-[calc(env(safe-area-inset-top)+4.25rem)] z-[6] -translate-x-1/2 rounded-full border border-accent/50 bg-black/55 px-5 py-3 text-[0.68rem] uppercase tracking-wider2 text-white backdrop-blur-md"
+      >
+        Now tilt your phone ↔
+      </div>
     )}
     </>
   );

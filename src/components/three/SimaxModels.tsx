@@ -200,16 +200,6 @@ export function Planet({ color = "#5a3a86", ring = GOLD }: { color?: string; rin
 export function ArchBlock({ lite = false }: { lite?: boolean }) {
   return (
     <group data-cursor="pick">
-      {/* Glow halo behind the box for depth */}
-      <mesh position={[0, 0, -0.05]}>
-        <sphereGeometry args={[0.95, 32, 32]} />
-        <meshBasicMaterial
-          color={GOLD}
-          transparent
-          opacity={lite ? 0.05 : 0.12}
-          fog={false}
-        />
-      </mesh>
       <RoundedBox args={[0.9, 1.2, 0.9]} radius={0.02} smoothness={lite ? 2 : 4} castShadow>
         <meshPhysicalMaterial
           color={SILVER}
