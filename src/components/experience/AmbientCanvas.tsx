@@ -71,6 +71,33 @@ export function AmbientCanvas() {
     const ripples: Ripple[] = [];
     const rockets: Rocket[] = [];
 
+    // Device tilt (phones): smoothed −1..1. Parallaxes the big orbs so tilting
+    // the phone visibly moves the ambient "3D space." Re-attaches the listener
+    // after the iOS permission grant (same simax-gyro-granted pattern as the
+    // 3D scene), otherwise the pre-grant listener never fires on iOS.
+    const tilt = { x: 0, y: 0 };
+    const tiltTarget = { x: 0, y: 0 };
+    let baseBeta: number | null = null;
+    let baseGamma: number | null = null;
+    function onOrient(e: DeviceOrientationEvent) {
+      const beta = e.beta ?? 0;
+      const gamma = e.gamma ?? 0;
+      if (baseBeta === null) { baseBeta = beta; baseGamma = gamma; }
+      // Divide by 16 (not 28) for HIGH sensitivity — Simon wants a small tilt
+      // to move the space a lot, so it's easy to feel on a phone.
+      tiltTarget.x = Math.max(-1, Math.min(1, (gamma - (baseGamma ?? 0)) / 16));
+      tiltTarget.y = Math.max(-1, Math.min(1, (beta - (baseBeta ?? 0)) / 16));
+    }
+    function attachTilt() {
+      window.removeEventListener("deviceorientation", onOrient);
+      baseBeta = null; baseGamma = null;
+      window.addEventListener("deviceorientation", onOrient, { passive: true });
+    }
+    if (mobile && !reduce) {
+      attachTilt();
+      window.addEventListener("simax-gyro-granted", attachTilt);
+    }
+
     function seed() {
       dust.length = rice.length = rockets.length = 0;
       for (let i = 0; i < DUST; i++) {
@@ -78,7 +105,9 @@ export function AmbientCanvas() {
           x: Math.random() * W,
           y: Math.random() * H,
           z: Math.random(),
-          r: 0.4 + Math.random() * 1.4,
+          // Big soft orbs on phones (Simon wants visible circles that parallax
+          // with device tilt) vs. fine dust on desktop.
+          r: mobile ? 7 + Math.random() * 20 : 0.4 + Math.random() * 1.4,
           sx: (Math.random() - 0.5) * 0.12,
           sy: (Math.random() - 0.5) * 0.12,
           ph: Math.random() * Math.PI * 2,
@@ -205,6 +234,10 @@ export function AmbientCanvas() {
       time += 0.016;
       ctx.clearRect(0, 0, W, H);
 
+      // ease device tilt toward its target (smooth, no jitter)
+      tilt.x += (tiltTarget.x - tilt.x) * 0.08;
+      tilt.y += (tiltTarget.y - tilt.y) * 0.08;
+
       // DUST
       for (const d of dust) {
         d.x += d.sx + Math.sin(time * 0.4 + d.ph) * 0.06;
@@ -213,8 +246,12 @@ export function AmbientCanvas() {
         if (d.x > W) d.x = 0;
         if (d.y < 0) d.y = H;
         if (d.y > H) d.y = 0;
-        const dx = d.x - pointer.x;
-        const dy = d.y - pointer.y;
+        // Parallax: nearer/bigger orbs (higher z) shift more with tilt, so
+        // tilting the phone reads as depth in the ambient space.
+        const px = d.x + tilt.x * (18 + d.z * 70);
+        const py = d.y + tilt.y * (14 + d.z * 55);
+        const dx = px - pointer.x;
+        const dy = py - pointer.y;
         const dist = Math.hypot(dx, dy);
         const glow = pointer.active ? Math.max(0, 1 - dist / 190) : 0;
         const base = 0.10 + d.z * 0.16;
@@ -224,9 +261,19 @@ export function AmbientCanvas() {
         const r = Math.round(ir + (ar - ir) * glow);
         const g = Math.round(ig + (ag - ig) * glow);
         const b = Math.round(ib + (ab - ib) * glow);
+        const radius = d.r + glow * 1.1;
+        if (mobile) {
+          // soft glowing orb (radial gradient) — reads as a 3D bokeh circle
+          const grad = ctx.createRadialGradient(px, py, 0, px, py, radius);
+          grad.addColorStop(0, `rgba(${r},${g},${b},${alpha * 0.9})`);
+          grad.addColorStop(0.6, `rgba(${r},${g},${b},${alpha * 0.35})`);
+          grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
+          ctx.fillStyle = grad;
+        } else {
+          ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+        }
         ctx.beginPath();
-        ctx.arc(d.x, d.y, d.r + glow * 1.1, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+        ctx.arc(px, py, radius, 0, Math.PI * 2);
         ctx.fill();
       }
 
@@ -380,6 +427,8 @@ export function AmbientCanvas() {
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerdown", onClick);
+      window.removeEventListener("deviceorientation", onOrient);
+      window.removeEventListener("simax-gyro-granted", attachTilt);
       document.removeEventListener("mouseleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
     };

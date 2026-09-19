@@ -20,8 +20,10 @@ export function useDeviceTiltRef(active: boolean) {
         base.current.beta = beta;
         base.current.gamma = gamma;
       }
-      const dx = (beta - (base.current.beta ?? 0)) / 22;
-      const dy = (gamma - (base.current.gamma ?? 0)) / 22;
+      // /16 (was /22) — higher sensitivity so a small phone tilt drives the
+      // effect more, matching the 3D scene + ambient orbs.
+      const dx = (beta - (base.current.beta ?? 0)) / 16;
+      const dy = (gamma - (base.current.gamma ?? 0)) / 16;
       target.current.x = Math.max(-1, Math.min(1, dx));
       target.current.y = Math.max(-1, Math.min(1, dy));
     };

@@ -306,18 +306,20 @@ function ParallaxRig({
     const damp = 1 - p * 0.35;
     // Only device-tilt (mobile/tablet gyro) nudges the whole cluster now —
     // desktop cursor movement no longer rotates it.
-    const targetX = gyro.current.x * 0.35 * damp;
-    const targetY = gyro.current.y * 0.4 * damp;
+    // Stronger rotation per tilt (was 0.35/0.4 with ±0.35/±0.55 clamps) so the
+    // 3D space visibly swings when the phone moves — Simon wanted more motion.
+    const targetX = gyro.current.x * 0.6 * damp;
+    const targetY = gyro.current.y * 0.7 * damp;
     group.current.rotation.x = THREE.MathUtils.damp(
       group.current.rotation.x,
-      THREE.MathUtils.clamp(targetX, -0.35, 0.35),
-      4,
+      THREE.MathUtils.clamp(targetX, -0.6, 0.6),
+      5,
       delta,
     );
     group.current.rotation.y = THREE.MathUtils.damp(
       group.current.rotation.y,
-      THREE.MathUtils.clamp(targetY, -0.55, 0.55),
-      4,
+      THREE.MathUtils.clamp(targetY, -0.9, 0.9),
+      5,
       delta,
     );
     // Parallax depth: whole cluster drifts toward camera a little on scroll.
@@ -472,8 +474,10 @@ function Scene({
         baseBeta = beta;
         baseGamma = gamma;
       }
-      gyro.current.x = THREE.MathUtils.clamp((beta - (baseBeta ?? 0)) / 28, -1, 1);
-      gyro.current.y = THREE.MathUtils.clamp((gamma - (baseGamma ?? 0)) / 28, -1, 1);
+      // Divide by 16 (was 28) so a small tilt moves the scene a lot — Simon
+      // wants it easy to feel on a phone without big arm movements.
+      gyro.current.x = THREE.MathUtils.clamp((beta - (baseBeta ?? 0)) / 16, -1, 1);
+      gyro.current.y = THREE.MathUtils.clamp((gamma - (baseGamma ?? 0)) / 16, -1, 1);
     }
 
     // (Re)attach the orientation listener. On iOS a listener registered
