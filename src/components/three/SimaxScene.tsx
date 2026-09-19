@@ -14,6 +14,7 @@ import {
   RealGuitar,
   MusicNote,
   Planet,
+  RedStrat,
   ArchBlock,
   CodeShape,
   NotaGLB,
@@ -611,6 +612,53 @@ function Scene({
           <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
         </Piece>
 
+        {/* PHONE-ONLY corner fillers. Simon: the phone hero had empty corners
+            and 99% of visitors are on phones, so fill them with more models.
+            All are cheap (43 KB Strat GLB, procedural planet, small GLB note)
+            and sit at different depths so gyro tilt parallaxes them at
+            different speeds — that's what sells the 3D. Desktop untouched. */}
+        {lite && (
+          <>
+            {/* bottom-left: second (red) guitar, self-spinning */}
+            <Piece
+              position={[-2.5, -2.0, -0.6]}
+              rotation={[0.2, 0.4, 0.1]}
+              speed={1.3}
+              scale={0.62}
+              depth={1.9}
+              progressRef={progressRef}
+            >
+              <RedStrat scale={3.2} />
+            </Piece>
+
+            {/* top-left: small tan ringed planet — the "Saturn" Simon liked from
+                the older deploy, but procedural (the original saturn.glb was
+                8.9 MB, far too heavy for a phone). Small + low `depth` so it
+                stays calm on scroll instead of flying past the camera. */}
+            <Piece
+              position={[-2.2, 2.3, -1.0]}
+              rotation={[0.35, 0.2, 0.25]}
+              speed={0.9}
+              scale={0.5}
+              depth={0.8}
+              progressRef={progressRef}
+            >
+              <Planet color="#c98a55" ring="#ecc998" />
+            </Piece>
+
+            {/* far-right middle: gold music note (GLB) */}
+            <Piece
+              position={[2.5, 0.0, -0.8]}
+              rotation={[0.2, -0.3, 0.1]}
+              speed={1.2}
+              scale={0.8}
+              depth={1.5}
+              progressRef={progressRef}
+            >
+              <NotaGLB scale={0.85} />
+            </Piece>
+          </>
+        )}
       </ParallaxRig>
 
       {!lite && (

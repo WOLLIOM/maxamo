@@ -98,6 +98,19 @@ export function AmbientCanvas() {
       window.addEventListener("simax-gyro-granted", attachTilt);
     }
 
+    // PHONES: particles live in the HERO only (Simon: "only in the hero
+    // section as I'm coming in, not the rest"). Fade the whole layer out as
+    // the visitor scrolls past the hero. Desktop keeps its page-wide dust.
+    function fadeWithHero() {
+      if (!mobile) return;
+      const p = window.scrollY / (window.innerHeight * 0.9);
+      canvas.style.opacity = String(Math.max(0, 1 - p));
+    }
+    if (mobile) {
+      fadeWithHero();
+      window.addEventListener("scroll", fadeWithHero, { passive: true });
+    }
+
     function seed() {
       dust.length = rice.length = rockets.length = 0;
       for (let i = 0; i < DUST; i++) {
@@ -105,9 +118,8 @@ export function AmbientCanvas() {
           x: Math.random() * W,
           y: Math.random() * H,
           z: Math.random(),
-          // Big soft orbs on phones (Simon wants visible circles that parallax
-          // with device tilt) vs. fine dust on desktop.
-          r: mobile ? 7 + Math.random() * 20 : 0.4 + Math.random() * 1.4,
+          // Back to fine dust everywhere — the big-orb experiment looked bad.
+          r: 0.4 + Math.random() * 1.4,
           sx: (Math.random() - 0.5) * 0.12,
           sy: (Math.random() - 0.5) * 0.12,
           ph: Math.random() * Math.PI * 2,
@@ -261,19 +273,9 @@ export function AmbientCanvas() {
         const r = Math.round(ir + (ar - ir) * glow);
         const g = Math.round(ig + (ag - ig) * glow);
         const b = Math.round(ib + (ab - ib) * glow);
-        const radius = d.r + glow * 1.1;
-        if (mobile) {
-          // soft glowing orb (radial gradient) — reads as a 3D bokeh circle
-          const grad = ctx.createRadialGradient(px, py, 0, px, py, radius);
-          grad.addColorStop(0, `rgba(${r},${g},${b},${alpha * 0.9})`);
-          grad.addColorStop(0.6, `rgba(${r},${g},${b},${alpha * 0.35})`);
-          grad.addColorStop(1, `rgba(${r},${g},${b},0)`);
-          ctx.fillStyle = grad;
-        } else {
-          ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
-        }
         ctx.beginPath();
-        ctx.arc(px, py, radius, 0, Math.PI * 2);
+        ctx.arc(px, py, d.r + glow * 1.1, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
         ctx.fill();
       }
 
@@ -429,6 +431,7 @@ export function AmbientCanvas() {
       window.removeEventListener("pointerdown", onClick);
       window.removeEventListener("deviceorientation", onOrient);
       window.removeEventListener("simax-gyro-granted", attachTilt);
+      window.removeEventListener("scroll", fadeWithHero);
       document.removeEventListener("mouseleave", onLeave);
       document.removeEventListener("visibilitychange", onVisibility);
     };
