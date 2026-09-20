@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import * as THREE from "three";
-import { ArchBlock } from "@/components/three/SimaxModels";
 import { useDeviceTiltRef } from "@/lib/useDeviceTilt";
 import { isTouchDevice } from "@/lib/device";
 
@@ -14,7 +13,36 @@ type Refs = {
   tilt: React.MutableRefObject<{ x: number; y: number }>;
 };
 
-/** The real silver ArchBlock (same model as the hero scene / desktop). It spins
+/** Glassy wireframe cube (matches the reference image): translucent faces, gold outer
+ *  edges, violet inner cube and connectors. Same proportions as the desktop ArchBlock. */
+function GlassCube() {
+  const { outer, inner, links } = useMemo(() => {
+    const W = 0.9, H = 1.2, D = 0.9;
+    const outer = new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D));
+    const inner = new THREE.EdgesGeometry(new THREE.BoxGeometry(W * 0.5, H * 0.5, D * 0.5));
+    const pts: THREE.Vector3[] = [];
+    for (const sx of [-1, 1]) for (const sy of [-1, 1]) for (const sz of [-1, 1]) {
+      pts.push(
+        new THREE.Vector3((sx * W) / 2, (sy * H) / 2, (sz * D) / 2),
+        new THREE.Vector3((sx * W) / 4, (sy * H) / 4, (sz * D) / 4),
+      );
+    }
+    return { outer, inner, links: new THREE.BufferGeometry().setFromPoints(pts) };
+  }, []);
+  return (
+    <>
+      <mesh>
+        <boxGeometry args={[0.9, 1.2, 0.9]} />
+        <meshPhysicalMaterial color="#b9a8ff" transparent opacity={0.13} roughness={0.15} metalness={0.3} depthWrite={false} side={THREE.DoubleSide} />
+      </mesh>
+      <lineSegments geometry={outer}><lineBasicMaterial color="#f2c66d" /></lineSegments>
+      <lineSegments geometry={inner}><lineBasicMaterial color="#b9a8ff" /></lineSegments>
+      <lineSegments geometry={links}><lineBasicMaterial color="#8f7bff" transparent opacity={0.7} /></lineSegments>
+    </>
+  );
+}
+
+/** The glass box (same model as the hero scene / desktop). It spins
  *  slowly, rolls with the phone's tilt, and tumbles a bit as it travels. */
 function Box({ q, tilt }: Refs) {
   const g = useRef<THREE.Group>(null);
@@ -32,7 +60,7 @@ function Box({ q, tilt }: Refs) {
   });
   return (
     <group ref={g}>
-      <ArchBlock />
+      <GlassCube />
     </group>
   );
 }
@@ -76,8 +104,8 @@ export function ScrollBox() {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const e = q.current * q.current * (3 - 2 * q.current); // smoothstep
-        // centre of the box: hero spot (upper-right) → docked corner (bottom-right)
-        const sx = vw * 0.8, sy = vh * 0.3;
+        // centre of the box: hero spot (upper-left) → docked corner (bottom-right)
+        const sx = vw * 0.22, sy = vh * 0.25;
         const ex = vw - SIZE * 0.36, ey = vh - SIZE * 0.42 - 8;
         const sway = reduce ? 0 : tilt.current.y * 14 * (0.4 + q.current); // gyro nudges it sideways
         const cx = sx + (ex - sx) * e + sway;

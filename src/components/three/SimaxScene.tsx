@@ -18,6 +18,9 @@ import {
   CodeShape,
   NotaGLB,
   SaturnModel,
+  Rock,
+  OrbitSparkles,
+  OrbitLine,
   GOLD,
 } from "./SimaxModels";
 
@@ -48,8 +51,8 @@ const PIECE_CONFIG = {
     position: [0, 0.3, 0.6] as const,
     // Mobile: nudged left to center it, and BIGGER now that the mobile
     // scene is capped at 3 objects (was too small before).
-    mobilePosition: [-0.1, 1.35, 0.6] as const,
-    mobileScale: 4.3,
+    mobilePosition: [0.2, 1.2, 0.6] as const,
+    mobileScale: 4.4,
     rotation: [Math.PI / 2.5, 2, Math.PI / -2] as const,
     scale: 5.2,
     speed: 1.7,
@@ -73,8 +76,8 @@ const PIECE_CONFIG = {
     // scaled up so the red polygon actually reads clearly instead of
     // getting lost in the scene. Lower-right, balancing the box's
     // upper-right spot and the centered guitar.
-    mobilePosition: [1.3, -0.5, 0.4] as const,
-    mobileScale: 1.35,
+    mobilePosition: [-1.5, -0.55, -0.2] as const,
+    mobileScale: 0.85,
     rotation: [0.35, -0.2, 0.15] as const,
     scale: 1.2,
     speed: 1.15,
@@ -94,8 +97,8 @@ const PIECE_CONFIG = {
     position: [-2.1, -2.1, 0.35] as const,
     // Mobile: tucked into the empty space between the box (upper-right) and
     // the guitar (center), upper-middle area.
-    mobilePosition: [0.6, 2.35, 0.5] as const,
-    mobileScale: 0.75,
+    mobilePosition: [1.25, -1.15, 0.5] as const,
+    mobileScale: 0.85,
     rotation: [0.25, 0.5, -0.1] as const,
     scale: 1.05,
     speed: 1.25,
@@ -634,25 +637,51 @@ function Scene({
           <MusicNote color={PIECE_CONFIG.noteRed.color} scale={PIECE_CONFIG.noteRed.modelScale} />
         </Piece>
 
-        {/* PHONE-ONLY extras. The pixelated red Strat (huge, covered the text)
-            and the off-screen note GLB were removed after Simon's real-phone
-            screenshots. What stays is light + reads as "space": a small tan
-            ringed planet top-left and a tiny purple moon on the right, at
-            different depths so gyro tilt parallaxes them at different speeds.
+        {/* PHONE-ONLY "deep space" set, composed from Simon's reference image:
+            big Saturn top-right, dark rocks in the lower corners, a golden
+            stardust ring + faint orbit lines around the guitar. Everything is
+            procedural or tiny (Saturn is the 121 KB textured GLB). Different
+            `depth` values make gyro tilt parallax each layer at its own speed.
             Desktop untouched. */}
         {lite && (
           <>
-            {/* the real textured Saturn (same GLB as the old desktop scene),
-                small, top-left, low depth so it stays calm on scroll */}
+            {/* Saturn: ring is 11.5 units wide at scale 1, so 0.17 => ~2 units (~50% of screen width, as in the reference) */}
             <Piece
-              position={[-1.3, 1.5, -0.7]}
-              rotation={[0.15, -0.55, 0.08]}
-              speed={0.9}
-              depth={0.8}
+              position={[1.05, 2.55, -0.9]}
+              rotation={[0.2, -0.5, 0.32]}
+              speed={0.8}
+              depth={0.9}
               progressRef={progressRef}
             >
-              <SaturnModel scale={0.3} />
+              <SaturnModel scale={0.17} />
             </Piece>
+
+            {/* rocks — lower-left cluster, lower-right, mid-left, mid-right */}
+            <Piece position={[-1.45, -1.0, 0.1]} speed={1.4} depth={1.6} progressRef={progressRef}>
+              <Rock seed={3} radius={0.2} />
+            </Piece>
+            <Piece position={[-1.0, -1.75, 0.3]} speed={1.1} depth={1.2} progressRef={progressRef}>
+              <Rock seed={7} radius={0.11} />
+            </Piece>
+            <Piece position={[-1.5, -2.35, 0.2]} speed={1.3} depth={1.8} progressRef={progressRef}>
+              <Rock seed={11} radius={0.26} />
+            </Piece>
+            <Piece position={[1.45, -2.55, 0.4]} speed={1.0} depth={2.0} progressRef={progressRef}>
+              <Rock seed={5} radius={0.34} />
+            </Piece>
+            <Piece position={[1.55, -1.85, -0.2]} speed={1.5} depth={1.3} progressRef={progressRef}>
+              <Rock seed={13} radius={0.12} />
+            </Piece>
+            <Piece position={[-1.65, 0.35, -0.3]} speed={1.2} depth={1.0} progressRef={progressRef}>
+              <Rock seed={17} radius={0.09} />
+            </Piece>
+
+            {/* golden stardust ring around the guitar + two faint orbit lines */}
+            <group position={[0.1, 0.9, -0.3]}>
+              <OrbitSparkles count={150} rx={2.0} rz={1.05} tilt={[1.1, 0.2, -0.45]} size={0.085} />
+              <OrbitLine rx={2.15} rz={1.15} tilt={[1.1, 0.2, -0.45]} opacity={0.32} />
+              <OrbitLine rx={2.7} rz={1.5} tilt={[1.05, -0.1, 0.35]} opacity={0.2} color="#f2c66d" />
+            </group>
           </>
         )}
       </ParallaxRig>

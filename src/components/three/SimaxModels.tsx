@@ -262,3 +262,148 @@ export function NotaGLB({ scale = 1 }: { scale?: number }) {
   );
 }
 useGLTF.preload("/models/music-note.glb");
+
+/** Dark faceted asteroid — seeded vertex jitter on a low-poly icosahedron so every
+ *  rock is a different lumpy shape. Cheap (a few dozen triangles), slow tumble. */
+export function Rock({ seed = 1, radius = 0.2 }: { seed?: number; radius?: number }) {
+  const geo = useMemo(() => {
+    const g = new THREE.IcosahedronGeometry(radius, 1);
+    const p = g.attributes.position;
+    let s = seed * 9301 + 49297;
+    const rnd = () => ((s = (s * 9301 + 49297) % 233280) / 233280);
+    // jitter by unique position so shared vertices move together (no cracks)
+    const seen = new Map<string, number>();
+    for (let i = 0; i < p.count; i++) {
+      const key = `${p.getX(i).toFixed(3)},${p.getY(i).toFixed(3)},${p.getZ(i).toFixed(3)}`;
+      let k = seen.get(key);
+      if (k === undefined) {
+        k = 0.72 + rnd() * 0.56;
+        seen.set(key, k);
+      }
+      p.setXYZ(i, p.getX(i) * k, p.getY(i) * k * 0.9, p.getZ(i) * k);
+    }
+    g.computeVertexNormals();
+    return g;
+  }, [seed, radius]);
+  const ref = useRef<THREE.Mesh>(null);
+  useFrame((_, d) => {
+    if (!ref.current) return;
+    ref.current.rotation.x += d * 0.12 * (1 + (seed % 3));
+    ref.current.rotation.y += d * 0.09 * (1 + (seed % 2));
+  });
+  return (
+    <mesh ref={ref} geometry={geo}>
+      <meshStandardMaterial
+        color="#2b2238"
+        roughness={0.85}
+        metalness={0.15}
+        flatShading
+        emissive="#4a2a8a"
+        emissiveIntensity={0.22}
+      />
+    </mesh>
+  );
+}
+
+/** A tilted ring of golden sparkles slowly orbiting — the "stardust ring" around the hero. */
+export function OrbitSparkles({
+  count = 140,
+  rx = 2.3,
+  rz = 1.0,
+  tilt = [1.15, 0.25, -0.5] as [number, number, number],
+  color = "#f2c66d",
+  size = 0.075,
+}: {
+  count?: number;
+  rx?: number;
+  rz?: number;
+  tilt?: [number, number, number];
+  color?: string;
+  size?: number;
+}) {
+  const g = useRef<THREE.Group>(null);
+  const { positions, tex } = useMemo(() => {
+    const arr = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const a = (i / count) * Math.PI * 2 + Math.random() * 0.2;
+      const spread = 0.7 + Math.random() * 0.6; // thickness of the band
+      arr[i * 3] = Math.cos(a) * rx * spread;
+      arr[i * 3 + 1] = (Math.random() - 0.5) * 0.18;
+      arr[i * 3 + 2] = Math.sin(a) * rz * spread;
+    }
+    const c = document.createElement("canvas");
+    c.width = c.height = 32;
+    const x = c.getContext("2d")!;
+    const gr = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+    gr.addColorStop(0, "rgba(255,255,255,1)");
+    gr.addColorStop(0.4, "rgba(255,255,255,0.5)");
+    gr.addColorStop(1, "rgba(255,255,255,0)");
+    x.fillStyle = gr;
+    x.fillRect(0, 0, 32, 32);
+    return { positions: arr, tex: new THREE.CanvasTexture(c) };
+  }, [count, rx, rz]);
+  useFrame((_, d) => {
+    if (g.current) g.current.rotation.y += d * 0.06;
+  });
+  return (
+    <group rotation={tilt}>
+      <group ref={g}>
+        <points>
+          <bufferGeometry>
+            <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+          </bufferGeometry>
+          <pointsMaterial
+            color={color}
+            size={size}
+            map={tex}
+            alphaTest={0.01}
+            transparent
+            opacity={0.9}
+            depthWrite={false}
+            sizeAttenuation
+            blending={THREE.AdditiveBlending}
+          />
+        </points>
+      </group>
+    </group>
+  );
+}
+
+/** A faint elliptical orbit line (the thin rings drawn around the scene). */
+export function OrbitLine({
+  rx = 2.0,
+  rz = 1.2,
+  tilt = [1.2, 0, 0] as [number, number, number],
+  color = "#9b7bff",
+  opacity = 0.35,
+}: {
+  rx?: number;
+  rz?: number;
+  tilt?: [number, number, number];
+  color?: string;
+  opacity?: number;
+}) {
+  const geo = useMemo(() => {
+    const pts: THREE.Vector3[] = [];
+    for (let i = 0; i <= 96; i++) {
+      const a = (i / 96) * Math.PI * 2;
+      pts.push(new THREE.Vector3(Math.cos(a) * rx, 0, Math.sin(a) * rz));
+    }
+    return new THREE.BufferGeometry().setFromPoints(pts);
+  }, [rx, rz]);
+  // <line> in JSX means the SVG element, so build a real THREE.Line and mount it
+  // with <primitive> (types + behaviour are then unambiguous).
+  const obj = useMemo(
+    () =>
+      new THREE.Line(
+        geo,
+        new THREE.LineBasicMaterial({ color, transparent: true, opacity, depthWrite: false }),
+      ),
+    [geo, color, opacity],
+  );
+  return (
+    <group rotation={tilt}>
+      <primitive object={obj} />
+    </group>
+  );
+}
