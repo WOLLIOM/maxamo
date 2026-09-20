@@ -6,6 +6,7 @@ import { isTouchDevice } from "@/lib/device";
 import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
+import { QuickNav } from "@/components/hero/QuickNav";
 
 // Ambient particles are nice but expensive — load after the shell is ready.
 // The real 3D box that comes out of the hero on phones (replaces the flat cube +
@@ -82,6 +83,8 @@ export function ExperienceShell() {
       {/* Phones: the real 3D silver box travels out of the hero as you scroll
           and docks in the corner, reacting to gyro. */}
       <ScrollBox />
+      {/* Phones: fixed four-pill quick-jump bar (T / M / C / G) after the hero. */}
+      <QuickNav variant="dock" />
       {checked && showLoader && <Loader onDone={handleDone} />}
     </>
   );
