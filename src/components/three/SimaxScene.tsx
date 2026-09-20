@@ -573,7 +573,9 @@ function Scene({
             scene for weaker desktops, matching the earlier mobile trim to
             guitar + box + red polygon + small note. */}
 
-        {/* Architecture Block */}
+        {/* Architecture Block — desktop only here. On phones the same box is
+            rendered by <ScrollBox/> so it can travel out of the hero and stay. */}
+        {!lite && (
         <Piece
           position={lite ? PIECE_CONFIG.archBlock.mobilePosition : PIECE_CONFIG.archBlock.position}
           rotation={PIECE_CONFIG.archBlock.rotation}
@@ -585,6 +587,7 @@ function Scene({
         >
           <ArchBlock lite={lite} />
         </Piece>
+        )}
 
         {/* Code Shape */}
         <Piece
@@ -642,13 +645,13 @@ function Scene({
             {/* the real textured Saturn (same GLB as the old desktop scene),
                 small, top-left, low depth so it stays calm on scroll */}
             <Piece
-              position={[-1.2, 2.75, -0.8]}
+              position={[-1.3, 1.5, -0.7]}
               rotation={[0.15, -0.55, 0.08]}
               speed={0.9}
               depth={0.8}
               progressRef={progressRef}
             >
-              <SaturnModel scale={0.25} />
+              <SaturnModel scale={0.3} />
             </Piece>
           </>
         )}

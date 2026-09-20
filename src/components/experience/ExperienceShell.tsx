@@ -6,9 +6,15 @@ import { isTouchDevice } from "@/lib/device";
 import { ControlDock } from "./ControlDock";
 import { MusicDock } from "@/components/music/MusicDock";
 import { Loader } from "./Loader";
-import { GyroBadge } from "@/components/hero/GyroBadge";
 
 // Ambient particles are nice but expensive — load after the shell is ready.
+// The real 3D box that comes out of the hero on phones (replaces the flat cube +
+// Pac-Man). Three.js is already in the hero chunk; load this lazily, client-only.
+const ScrollBox = dynamic(() => import("@/components/hero/ScrollBox").then((m) => m.ScrollBox), {
+  ssr: false,
+  loading: () => null,
+});
+
 const AmbientCanvas = dynamic(() => import("./AmbientCanvas").then((m) => m.AmbientCanvas), {
   ssr: false,
   loading: () => null,
@@ -73,9 +79,9 @@ export function ExperienceShell() {
           single cursor particle system now; running both was redundant. */}
       <ControlDock />
       <MusicDock />
-      {/* Touch-only wireframe cube that drops in past the hero and drifts with
-          the phone's gyro — keeps the 3D/spatial feel alive after scroll. */}
-      <GyroBadge />
+      {/* Phones: the real 3D silver box travels out of the hero as you scroll
+          and docks in the corner, reacting to gyro. */}
+      <ScrollBox />
       {checked && showLoader && <Loader onDone={handleDone} />}
     </>
   );
