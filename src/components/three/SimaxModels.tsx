@@ -238,9 +238,18 @@ export function CodeShape({ lite = false }: { lite?: boolean }) {
   );
 }
 
-// SaturnModel removed — it was no longer rendered but its module-scope
-// useGLTF.preload() was still force-downloading an 8.9 MB saturn.glb on every
-// desktop load. Both the component and the asset have been deleted.
+/** The real textured Saturn GLB (optimized 9.3 MB -> 121 KB with WebP textures +
+ *  meshopt). Phone hero only, and intentionally NOT preloaded at module scope,
+ *  so desktop never downloads it. */
+export function SaturnModel({ scale = 1 }: { scale?: number }) {
+  const { scene } = useGLTF("/models/saturn.glb");
+  const cloned = useMemo(() => scene.clone(true), [scene]);
+  return (
+    <group data-cursor="pick" scale={scale}>
+      <primitive object={cloned} />
+    </group>
+  );
+}
 
 /** Music note GLB model — loaded from disk instead of procedural. */
 export function NotaGLB({ scale = 1 }: { scale?: number }) {

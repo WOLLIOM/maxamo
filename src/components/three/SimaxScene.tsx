@@ -17,6 +17,7 @@ import {
   ArchBlock,
   CodeShape,
   NotaGLB,
+  SaturnModel,
   GOLD,
 } from "./SimaxModels";
 
@@ -638,25 +639,16 @@ function Scene({
             Desktop untouched. */}
         {lite && (
           <>
+            {/* the real textured Saturn (same GLB as the old desktop scene),
+                small, top-left, low depth so it stays calm on scroll */}
             <Piece
-              position={[-1.15, 2.75, -0.8]}
-              rotation={[0.35, 0.2, 0.25]}
+              position={[-1.2, 2.75, -0.8]}
+              rotation={[0.15, -0.55, 0.08]}
               speed={0.9}
-              scale={0.5}
               depth={0.8}
               progressRef={progressRef}
             >
-              <Planet color="#c98a55" ring="#ecc998" />
-            </Piece>
-            <Piece
-              position={[1.35, 0.85, -1.0]}
-              rotation={[0.2, 0.3, 0.1]}
-              speed={1.2}
-              scale={0.24}
-              depth={1.4}
-              progressRef={progressRef}
-            >
-              <Planet color="#7a55c9" ring="#b9a4f0" />
+              <SaturnModel scale={0.25} />
             </Piece>
           </>
         )}
