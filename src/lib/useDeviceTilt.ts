@@ -115,6 +115,22 @@ export function useGyroPermissionButton() {
 
   const request = () => {
     const DOE = DeviceOrientationEvent as unknown as DOE;
+    // Shake-to-jump (ScrollBox) reads `devicemotion`, which iOS gates behind its
+    // own requestPermission(). It must be called inside this same tap gesture, so
+    // fire it here alongside the orientation request (result is best-effort; when
+    // the user grants "Motion & Orientation" once, both start flowing).
+    try {
+      const DME = (typeof DeviceMotionEvent !== "undefined"
+        ? (DeviceMotionEvent as unknown as DOE)
+        : undefined);
+      DME?.requestPermission?.()
+        .then((st) => {
+          if (st === "granted") window.dispatchEvent(new Event("simax-gyro-granted"));
+        })
+        .catch(() => {});
+    } catch {
+      /* ignore */
+    }
     DOE.requestPermission?.()
       .then((state) => {
         if (state === "granted") {
