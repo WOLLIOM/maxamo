@@ -92,7 +92,23 @@ export function Hero() {
       className="relative w-full"
       style={{ height: runway }}
     >
-      <div className="sticky top-0 h-[100svh] min-h-[560px] w-full overflow-hidden">
+      <div
+        className="sticky top-0 h-[100svh] min-h-[560px] w-full overflow-hidden"
+        // PHONES: fade the stage's own bottom edge to transparent. The page paints an
+        // aurora over --c-bg, so a fade to flat --c-bg left a visible straight line
+        // where the stage ends. Masking to transparent lets the real page background
+        // (aurora included) show through -> no seam at all. Desktop is unchanged.
+        style={
+          isTouch
+            ? {
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, #000 0%, #000 88%, rgba(0,0,0,0.75) 92%, rgba(0,0,0,0.4) 96%, rgba(0,0,0,0.12) 99%, transparent 100%)",
+                maskImage:
+                  "linear-gradient(to bottom, #000 0%, #000 88%, rgba(0,0,0,0.75) 92%, rgba(0,0,0,0.4) 96%, rgba(0,0,0,0.12) 99%, transparent 100%)",
+              }
+            : undefined
+        }
+      >
         {/* Clean tonal backdrop behind the WebGL scene — no stock/AI imagery,
             just a quiet graphite gradient so the 3D scene stays the focus. */}
         <div
@@ -149,7 +165,7 @@ export function Hero() {
             horizontal seam. Sits above the scene (z-[3]) but below the text. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[28%]"
+          className="pointer-events-none absolute inset-x-0 bottom-0 z-[3] h-[28%] max-md:hidden"
           style={{
             background:
               "linear-gradient(to bottom, transparent 0%, rgb(var(--c-bg)/0.6) 55%, rgb(var(--c-bg)) 100%)",
@@ -161,7 +177,7 @@ export function Hero() {
             underneath — only the CTA buttons re-enable pointer events. */}
         <motion.div
           style={{ y: contentY, opacity: contentOpacity, scale: contentScale }}
-          className="pointer-events-none relative z-20 mx-auto flex h-full w-full max-w-5xl flex-col items-center px-6 text-center max-md:justify-end max-md:pb-28 max-md:pt-[46vh] md:justify-center"
+          className="pointer-events-none relative z-20 mx-auto flex h-full w-full max-w-5xl flex-col items-center px-6 text-center max-md:justify-end max-md:pb-20 max-md:pt-[46vh] md:justify-center"
         >
           <div
             aria-hidden

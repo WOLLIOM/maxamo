@@ -140,7 +140,7 @@ export function ScrollBox() {
         const e = q.current * q.current * (3 - 2 * q.current); // smoothstep
         // centre of the box: hero spot (upper-left) → docked corner (bottom-right)
         const sx = vw * 0.22, sy = vh * 0.25;
-        const DOCK = 82; // keep the box's floor above the fixed quick-jump bar
+        const DOCK = 58; // keep the box's floor above the fixed quick-jump bar
         const ex = vw - SIZE * 0.36, ey = vh - SIZE * 0.42 - 8 - DOCK;
         let cx: number, cy: number;
 
