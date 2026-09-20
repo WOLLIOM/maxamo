@@ -47,8 +47,8 @@ const PIECE_CONFIG = {
     position: [0, 0.3, 0.6] as const,
     // Mobile: nudged left to center it, and BIGGER now that the mobile
     // scene is capped at 3 objects (was too small before).
-    mobilePosition: [-0.35, 0.95, 0.6] as const,
-    mobileScale: 3.5,
+    mobilePosition: [-0.1, 1.35, 0.6] as const,
+    mobileScale: 4.3,
     rotation: [Math.PI / 2.5, 2, Math.PI / -2] as const,
     scale: 5.2,
     speed: 1.7,
@@ -59,7 +59,7 @@ const PIECE_CONFIG = {
     name: "Architecture Block",
     position: [-3.8, 1.3, -0.5] as const,
     // Mobile: upper-right, nudged a little left + down per Simon's note.
-    mobilePosition: [1.2, 1.9, -0.3] as const,
+    mobilePosition: [1.1, 1.75, -0.3] as const,
     rotation: [0.15, 0.35, 0] as const,
     scale: 1.2,
     speed: 3.35,
@@ -72,8 +72,8 @@ const PIECE_CONFIG = {
     // scaled up so the red polygon actually reads clearly instead of
     // getting lost in the scene. Lower-right, balancing the box's
     // upper-right spot and the centered guitar.
-    mobilePosition: [1.7, -1.9, 0.6] as const,
-    mobileScale: 1.7,
+    mobilePosition: [1.3, -0.5, 0.4] as const,
+    mobileScale: 1.35,
     rotation: [0.35, -0.2, 0.15] as const,
     scale: 1.2,
     speed: 1.15,
@@ -93,8 +93,8 @@ const PIECE_CONFIG = {
     position: [-2.1, -2.1, 0.35] as const,
     // Mobile: tucked into the empty space between the box (upper-right) and
     // the guitar (center), upper-middle area.
-    mobilePosition: [0.45, 1.75, 0.4] as const,
-    mobileScale: 0.8,
+    mobilePosition: [0.6, 2.35, 0.5] as const,
+    mobileScale: 0.75,
     rotation: [0.25, 0.5, -0.1] as const,
     scale: 1.05,
     speed: 1.25,
@@ -639,7 +639,7 @@ function Scene({
         {lite && (
           <>
             <Piece
-              position={[-1.3, 3.0, -1.0]}
+              position={[-1.15, 2.75, -0.8]}
               rotation={[0.35, 0.2, 0.25]}
               speed={0.9}
               scale={0.5}
@@ -649,7 +649,7 @@ function Scene({
               <Planet color="#c98a55" ring="#ecc998" />
             </Piece>
             <Piece
-              position={[1.55, 0.55, -1.4]}
+              position={[1.35, 0.85, -1.0]}
               rotation={[0.2, 0.3, 0.1]}
               speed={1.2}
               scale={0.24}
