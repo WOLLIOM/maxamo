@@ -12,6 +12,7 @@ import {
 import { Magnetic } from "@/components/ui/Magnetic";
 import { PixelMarquee } from "@/components/ui/PixelMarquee";
 import { HeroMobileStage } from "@/components/hero/HeroMobileStage";
+import { QuickNav } from "@/components/hero/QuickNav";
 import { shouldAutoLoad3D, isTouchDevice } from "@/lib/device";
 import { site } from "@/lib/site";
 
@@ -212,9 +213,14 @@ export function Hero() {
             transition={{ duration: 0.9, delay: 0.9 }}
             className="relative z-30 mt-6 flex w-full max-w-sm flex-col items-stretch gap-3 pb-4 pointer-events-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5 md:mt-10 md:pb-0"
           >
+            {/* Phones: the Get-in-touch pill is split into four (T / M / C / G) for
+                one-tap jumps. Desktop keeps the original two buttons below. */}
+            <QuickNav variant="inline" />
+            <div className="contents max-md:hidden">
             <Cta href="/contact" primary magnetic={!isTouch}>
               Get in touch
             </Cta>
+            </div>
             <span
               aria-hidden
               className="hidden h-px w-8 bg-line/80 sm:block"
@@ -223,7 +229,7 @@ export function Hero() {
               type="button"
               onClick={scrollToMusic}
               data-cursor-label="Listen"
-              className="relative z-10 inline-flex w-full min-h-12 items-center justify-center gap-2 rounded-full border border-ink/40 bg-elevated/50 px-9 py-4 text-[0.72rem] uppercase tracking-wider2 text-ink backdrop-blur-sm transition-all duration-500 hover:border-accent hover:bg-elevated/70 hover:text-accent sm:w-auto"
+              className="relative z-10 inline-flex w-full min-h-12 items-center justify-center gap-2 rounded-full border border-ink/40 bg-elevated/50 px-9 py-4 text-[0.72rem] uppercase tracking-wider2 text-ink backdrop-blur-sm transition-all duration-500 hover:border-accent hover:bg-elevated/70 hover:text-accent max-md:hidden sm:w-auto"
             >
               <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                 <path d="M9 17.5a3 3 0 1 1-2-2.83V6l11-2v9.5a3 3 0 1 1-2-2.83V6.29L9 7.77V17.5Z" />
