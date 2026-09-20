@@ -51,7 +51,7 @@ export function AmbientCanvas() {
     const pointer = { x: -9999, y: -9999, px: -9999, py: -9999, active: false };
 
     // ---- entity pools -----------------------------------------------------
-    const DUST = reduce ? 0 : mobile ? 9 : 46;
+    const DUST = reduce ? 0 : mobile ? 34 : 46;
     const RICE = reduce ? 0 : mobile ? 1 : 6;
     // Disabled: the drifting eighth-notes that chased the cursor didn't fit. (0)
     const ROCKETS = 0;
@@ -65,8 +65,8 @@ export function AmbientCanvas() {
       phase: number; hue: number; size: number; turn: number;
     }
 
-    // gold (site gold), warm tan, and soft salmon — the tones in Simon's old build
-    const GOLDS: [number, number, number][] = [[214, 176, 96], [201, 138, 85], [209, 140, 122]];
+    // gold, champagne and warm white — tiny twinkling sparkles (phones), like the reference starfield
+    const GOLDS: [number, number, number][] = [[242, 198, 109], [255, 224, 160], [255, 246, 226]];
     const dust: Dust[] = [];
     const rice: Rice[] = [];
     const petals: Petal[] = [];
@@ -122,7 +122,7 @@ export function AmbientCanvas() {
           z: Math.random(),
           // Phones: a handful of big soft-edged discs (the look Simon liked in
           // the old build); desktop stays fine dust.
-          r: mobile ? 12 + Math.random() * 30 : 0.4 + Math.random() * 1.4,
+          r: mobile ? 0.6 + Math.random() * 1.3 : 0.4 + Math.random() * 1.4,
           c: Math.floor(Math.random() * 3),
           sx: (Math.random() - 0.5) * 0.12,
           sy: (Math.random() - 0.5) * 0.12,
@@ -280,15 +280,10 @@ export function AmbientCanvas() {
         ctx.beginPath();
         ctx.arc(px, py, d.r + glow * 1.1, 0, Math.PI * 2);
         if (mobile) {
-          // gold / tan / salmon palette, mostly opaque (0.42-0.70), feathered rim
+          // tiny golden / warm-white sparkles (starfield look), twinkling gently
           const pal = GOLDS[d.c];
-          const a0 = 0.42 + d.z * 0.28;
-          const rad = d.r;
-          const grad = ctx.createRadialGradient(px, py, rad * 0.05, px, py, rad);
-          grad.addColorStop(0, `rgba(${pal[0]},${pal[1]},${pal[2]},${a0})`);
-          grad.addColorStop(0.82, `rgba(${pal[0]},${pal[1]},${pal[2]},${a0 * 0.92})`);
-          grad.addColorStop(1, `rgba(${pal[0]},${pal[1]},${pal[2]},0)`);
-          ctx.fillStyle = grad;
+          const tw = 0.55 + 0.45 * Math.sin(time * 1.6 + d.ph);
+          ctx.fillStyle = `rgba(${pal[0]},${pal[1]},${pal[2]},${(0.35 + d.z * 0.5) * tw})`;
         } else {
           ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
         }
