@@ -192,7 +192,7 @@ export function Hero() {
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.55 }}
-            className="mt-2 text-[0.72rem] uppercase tracking-wider2 text-accent md:text-sm"
+            className="mt-3 text-[0.9rem] font-medium uppercase tracking-[0.32em] text-accent md:mt-2 md:text-sm md:tracking-wider2"
           >
             By Simon Maxam
           </motion.p>
@@ -207,14 +207,24 @@ export function Hero() {
             3D.
           </motion.p>
 
+          {/* Phones only: ONE short line instead of the long paragraph (desktop keeps it). */}
+          <motion.p
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, delay: 0.7 }}
+            className="mt-4 text-[1.05rem] font-medium tracking-[0.06em] text-ink/90 md:hidden"
+          >
+            Websites <span className="text-accent">·</span> Apps <span className="text-accent">·</span> 3D
+          </motion.p>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.9 }}
-            className="relative z-30 mt-6 flex w-full max-w-sm flex-col items-stretch gap-3 pb-4 pointer-events-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5 md:mt-10 md:pb-0"
+            className="relative z-30 mt-7 flex w-full max-w-sm flex-col items-stretch gap-3 pb-4 pointer-events-auto sm:max-w-none sm:flex-row sm:items-center sm:justify-center sm:gap-5 md:mt-10 md:pb-0"
           >
-            {/* Phones: the Get-in-touch pill is split into four (T / M / C / G) for
-                one-tap jumps. Desktop keeps the original two buttons below. */}
+            {/* Phones: three big frosted-glass pills (M / C / G) for one-tap jumps.
+                Desktop keeps the original two buttons below. */}
             <QuickNav variant="inline" />
             <div className="contents max-md:hidden">
             <Cta href="/contact" primary magnetic={!isTouch}>
