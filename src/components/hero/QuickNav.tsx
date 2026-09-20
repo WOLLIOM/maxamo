@@ -32,19 +32,24 @@ function jumpTo(id: string) {
 }
 
 // Frosted glass: light translucent fill, heavy blur + saturation, hairline light border,
-// soft top highlight. Bigger than before (56px tall, 1.7rem letter).
+// soft top highlight. Deliberately small so it doesn't pull the eye.
 const pill =
-  "relative flex min-h-14 flex-1 flex-col items-center justify-center overflow-hidden rounded-full leading-none text-white transition-all duration-300 active:scale-95 " +
+  "relative flex flex-col items-center justify-center overflow-hidden rounded-full leading-none text-white transition-all duration-300 active:scale-95 " +
   "border border-white/25 bg-white/[0.12] backdrop-blur-xl backdrop-saturate-150 " +
   "shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_8px_24px_-8px_rgba(0,0,0,0.5)]";
 
 export function QuickNav({ variant }: { variant: "inline" | "dock" }) {
   const [active, setActive] = useState<string | null>(null);
   const [shown, setShown] = useState(variant === "inline");
+  const [idle, setIdle] = useState(false); // dock fades back while the visitor isn't scrolling
 
   useEffect(() => {
     if (variant !== "dock") return;
+    let idleTimer: ReturnType<typeof setTimeout>;
     const onScroll = () => {
+      setIdle(false);
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(() => setIdle(true), 1800);
       // dock appears once the hero is mostly gone
       setShown(window.scrollY > window.innerHeight * 0.7);
       // active = the last target section whose top is above ~45% of the viewport
@@ -58,7 +63,10 @@ export function QuickNav({ variant }: { variant: "inline" | "dock" }) {
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      clearTimeout(idleTimer);
+    };
   }, [variant]);
 
   const dock = variant === "dock";
@@ -68,14 +76,14 @@ export function QuickNav({ variant }: { variant: "inline" | "dock" }) {
       aria-label="Quick jump"
       className={
         dock
-          ? "fixed inset-x-3 bottom-[calc(0.7rem+env(safe-area-inset-bottom))] z-40 flex gap-2.5 transition-all duration-500 md:hidden"
-          : "flex w-full gap-2 md:hidden"
+          ? "fixed bottom-[calc(0.7rem+env(safe-area-inset-bottom))] left-1/2 z-40 flex -translate-x-1/2 gap-2 transition-all duration-500 md:hidden"
+          : "flex w-full justify-center gap-2.5 md:hidden"
       }
       style={
         dock
           ? {
-              opacity: shown ? 1 : 0,
-              transform: shown ? "translateY(0)" : "translateY(140%)",
+              opacity: shown ? (idle ? 0.45 : 0.9) : 0,
+              transform: shown ? "translate(-50%, 0)" : "translate(-50%, 140%)",
               pointerEvents: shown ? "auto" : "none",
             }
           : undefined
@@ -84,11 +92,17 @@ export function QuickNav({ variant }: { variant: "inline" | "dock" }) {
       {ITEMS.map((it) => {
         const isActive = dock && active === it.id;
         // glass everywhere; the section you're in lights up with an accent tint + glow
-        const cls = `${pill} ${isActive ? "!border-accent/70 !bg-accent/35 shadow-[0_0_28px_-4px_rgb(var(--c-accent)/0.75)]" : ""}`;
+        const size = dock ? "h-10 w-12" : "h-12 w-[5.25rem]";
+        const cls = `${pill} ${size} ${isActive ? "!border-accent/70 !bg-accent/35 shadow-[0_0_20px_-4px_rgb(var(--c-accent)/0.75)]" : ""}`;
         const inner = (
           <>
-            <span className="font-serif text-[1.75rem] font-medium">{it.letter}</span>
-            <span className="mt-1.5 text-[0.55rem] uppercase tracking-wider2 opacity-80">{it.word}</span>
+            <span className={dock ? "font-serif text-[1.15rem] font-medium" : "font-serif text-[1.3rem] font-medium"}>
+              {it.letter}
+            </span>
+            {/* words only in the hero (first-time context); the dock is letters only */}
+            {!dock && (
+              <span className="mt-1 text-[0.5rem] uppercase tracking-wider2 opacity-75">{it.word}</span>
+            )}
           </>
         );
         return (
