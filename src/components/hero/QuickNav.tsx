@@ -1,12 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 
 /**
- * Four equal pills — the old full-width "Get in touch" button split in four — each
- * a single big capital letter over a tiny word, for one-tap jumps on a phone:
- *   T = Touch (contact page)   M = Music   C = Certificates   G = Guitar chords
+ * Three big frosted-glass pills, each a single capital letter over a tiny word, for
+ * one-tap jumps on a phone:
+ *   M = Music   C = Certificates   G = Guitar chords
+ * (Contact stays in the menu; the separate glass "Get in touch" pill was removed on
+ * phones so these are the only floating actions.) Uses the same lighter, blurred
+ * "glass" look as that pill.
  *
  * `inline`  → lives in the hero in place of the two CTA buttons.
  * `dock`    → fixed to the bottom of the screen after the hero, so the visitor never
@@ -14,10 +16,9 @@ import { useEffect, useState } from "react";
  * Phones only (md:hidden); desktop keeps its original buttons.
  */
 const ITEMS = [
-  { letter: "T", word: "Touch", label: "Get in touch", href: "/contact", id: null },
-  { letter: "M", word: "Music", label: "Jump to Music", href: null, id: "music" },
-  { letter: "C", word: "Certs", label: "Jump to Certificates", href: null, id: "certificates" },
-  { letter: "G", word: "Chords", label: "Jump to Guitar chords", href: null, id: "guitar" },
+  { letter: "M", word: "Music", label: "Jump to Music", id: "music" },
+  { letter: "C", word: "Certs", label: "Jump to Certificates", id: "certificates" },
+  { letter: "G", word: "Chords", label: "Jump to Guitar chords", id: "guitar" },
 ] as const;
 
 function jumpTo(id: string) {
@@ -30,8 +31,12 @@ function jumpTo(id: string) {
   else target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+// Frosted glass: light translucent fill, heavy blur + saturation, hairline light border,
+// soft top highlight. Bigger than before (56px tall, 1.7rem letter).
 const pill =
-  "relative flex min-h-12 flex-1 flex-col items-center justify-center rounded-full leading-none transition-all duration-300 active:scale-95";
+  "relative flex min-h-14 flex-1 flex-col items-center justify-center overflow-hidden rounded-full leading-none text-white transition-all duration-300 active:scale-95 " +
+  "border border-white/25 bg-white/[0.12] backdrop-blur-xl backdrop-saturate-150 " +
+  "shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_8px_24px_-8px_rgba(0,0,0,0.5)]";
 
 export function QuickNav({ variant }: { variant: "inline" | "dock" }) {
   const [active, setActive] = useState<string | null>(null);
@@ -63,7 +68,7 @@ export function QuickNav({ variant }: { variant: "inline" | "dock" }) {
       aria-label="Quick jump"
       className={
         dock
-          ? "fixed inset-x-3 bottom-[calc(0.6rem+env(safe-area-inset-bottom))] z-40 flex gap-2 rounded-full border border-white/10 bg-black/55 p-1.5 backdrop-blur-md transition-all duration-500 md:hidden"
+          ? "fixed inset-x-3 bottom-[calc(0.7rem+env(safe-area-inset-bottom))] z-40 flex gap-2.5 transition-all duration-500 md:hidden"
           : "flex w-full gap-2 md:hidden"
       }
       style={
@@ -77,28 +82,22 @@ export function QuickNav({ variant }: { variant: "inline" | "dock" }) {
       }
     >
       {ITEMS.map((it) => {
-        const isActive = dock && it.id !== null && active === it.id;
-        // inline: same purple pill as the old "Get in touch"; dock: quieter, active glows
-        const cls = dock
-          ? `${pill} ${isActive ? "bg-accent text-bg shadow-lg shadow-accent/30" : "bg-white/[0.06] text-ink"}`
-          : `${pill} ${it.href ? "bg-accent text-bg shadow-lg shadow-accent/20" : "border border-ink/40 bg-elevated/50 text-ink backdrop-blur-sm"}`;
+        const isActive = dock && active === it.id;
+        // glass everywhere; the section you're in lights up with an accent tint + glow
+        const cls = `${pill} ${isActive ? "!border-accent/70 !bg-accent/35 shadow-[0_0_28px_-4px_rgb(var(--c-accent)/0.75)]" : ""}`;
         const inner = (
           <>
-            <span className="font-serif text-[1.35rem] font-medium">{it.letter}</span>
-            <span className="mt-1 text-[0.5rem] uppercase tracking-wider2 opacity-75">{it.word}</span>
+            <span className="font-serif text-[1.75rem] font-medium">{it.letter}</span>
+            <span className="mt-1.5 text-[0.55rem] uppercase tracking-wider2 opacity-80">{it.word}</span>
           </>
         );
-        return it.href ? (
-          <Link key={it.letter} href={it.href} prefetch={false} aria-label={it.label} className={cls}>
-            {inner}
-          </Link>
-        ) : (
+        return (
           <button
             key={it.letter}
             type="button"
             aria-label={it.label}
             aria-current={isActive ? "true" : undefined}
-            onClick={() => jumpTo(it.id!)}
+            onClick={() => jumpTo(it.id)}
             className={cls}
           >
             {inner}

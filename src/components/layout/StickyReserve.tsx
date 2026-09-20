@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 
-/** Compact reserve pill after the visitor starts scrolling (mobile only). */
+/** Compact "Get in touch" glass pill after scrolling. DISABLED (always hidden): Simon wants
+ *  only the M / C / G quick-jump pills floating on phones; contact lives in the menu. */
 export function StickyReserve({ hidden = false }: { hidden?: boolean }) {
   const [show, setShow] = useState(false);
 
@@ -23,7 +24,7 @@ export function StickyReserve({ hidden = false }: { hidden?: boolean }) {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          className="pointer-events-none fixed left-0 right-0 top-[4.25rem] z-[45] flex justify-center px-4 lg:hidden"
+          className="pointer-events-none fixed left-0 right-0 top-[4.25rem] z-[45] hidden justify-center px-4"
         >
           <Link
             href="/contact"
