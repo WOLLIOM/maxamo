@@ -56,7 +56,7 @@ export function AmbientCanvas() {
     // Disabled: the drifting eighth-notes that chased the cursor didn't fit. (0)
     const ROCKETS = 0;
 
-    interface Dust { x: number; y: number; z: number; r: number; sx: number; sy: number; ph: number; }
+    interface Dust { x: number; y: number; z: number; r: number; sx: number; sy: number; ph: number; c: number; }
     interface Rice { x: number; y: number; vx: number; vy: number; a: number; va: number; len: number; }
     interface Petal { x: number; y: number; vx: number; vy: number; a: number; va: number; s: number; life: number; }
     interface Ripple { x: number; y: number; r: number; max: number; a: number; }
@@ -65,6 +65,8 @@ export function AmbientCanvas() {
       phase: number; hue: number; size: number; turn: number;
     }
 
+    // gold (site gold), warm tan, and soft salmon — the tones in Simon's old build
+    const GOLDS: [number, number, number][] = [[214, 176, 96], [201, 138, 85], [209, 140, 122]];
     const dust: Dust[] = [];
     const rice: Rice[] = [];
     const petals: Petal[] = [];
@@ -118,8 +120,10 @@ export function AmbientCanvas() {
           x: Math.random() * W,
           y: Math.random() * H,
           z: Math.random(),
-          // Back to fine dust everywhere — the big-orb experiment looked bad.
-          r: 0.4 + Math.random() * 1.4,
+          // Phones: a handful of big soft-edged discs (the look Simon liked in
+          // the old build); desktop stays fine dust.
+          r: mobile ? 12 + Math.random() * 30 : 0.4 + Math.random() * 1.4,
+          c: Math.floor(Math.random() * 3),
           sx: (Math.random() - 0.5) * 0.12,
           sy: (Math.random() - 0.5) * 0.12,
           ph: Math.random() * Math.PI * 2,
@@ -275,7 +279,19 @@ export function AmbientCanvas() {
         const b = Math.round(ib + (ab - ib) * glow);
         ctx.beginPath();
         ctx.arc(px, py, d.r + glow * 1.1, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+        if (mobile) {
+          // gold / tan / salmon palette, mostly opaque (0.42-0.70), feathered rim
+          const pal = GOLDS[d.c];
+          const a0 = 0.42 + d.z * 0.28;
+          const rad = d.r;
+          const grad = ctx.createRadialGradient(px, py, rad * 0.05, px, py, rad);
+          grad.addColorStop(0, `rgba(${pal[0]},${pal[1]},${pal[2]},${a0})`);
+          grad.addColorStop(0.82, `rgba(${pal[0]},${pal[1]},${pal[2]},${a0 * 0.92})`);
+          grad.addColorStop(1, `rgba(${pal[0]},${pal[1]},${pal[2]},0)`);
+          ctx.fillStyle = grad;
+        } else {
+          ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
+        }
         ctx.fill();
       }
 
