@@ -98,6 +98,16 @@ export const certificates: {
   blurb: string;
 }[] = [
   {
+    title: "Exam Prep: AWS Certified Solutions Architect – Associate",
+    shortTitle: "AWS Solutions Architect Prep",
+    image: "/certificates/aws-solutions-architect-prep.png",
+    issuer: "Amazon Web Services · Coursera",
+    date: "Sep 2026",
+    category: "Development",
+    blurb:
+      "Official AWS exam-prep course for the Solutions Architect – Associate certification — designing resilient, secure, cost-efficient cloud architectures. Verify: coursera.org/verify/0AOUSNI38S38",
+  },
+  {
     title: "Amazon Bedrock Customization, Optimization & Automation",
     shortTitle: "Amazon Bedrock Certificate",
     image: "/certificates/amazon-bedrock.png",
