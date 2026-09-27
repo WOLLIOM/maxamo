@@ -473,18 +473,19 @@ export function PixelCursorField() {
         } else {
           wasHeart = false;
           wasBox = false;
-          if (ns - lastMove > IDLE_DELAY) {
-            wander(mx, my);
+          // The idle Pac-Man (see wander(), below) used to take over here after
+          // IDLE_DELAY. Simon: it read as a stray circle unrelated to the real
+          // cursor, clashing with the rest of the page — removed. wander()/
+          // pacman() are left in place, just unused, in case this comes back
+          // reskinned later.
+          const target = nearestHeadline(mx, my);
+          if (target) {
+            const rawAng = Math.atan2(target.cy - my, target.cx - mx);
+            smoothAng = smoothAngInit ? lerpAngle(smoothAng, rawAng, 0.18) : rawAng;
+            smoothAngInit = true;
+            pointArrow(mx, my, smoothAng, ns);
           } else {
-            const target = nearestHeadline(mx, my);
-            if (target) {
-              const rawAng = Math.atan2(target.cy - my, target.cx - mx);
-              smoothAng = smoothAngInit ? lerpAngle(smoothAng, rawAng, 0.18) : rawAng;
-              smoothAngInit = true;
-              pointArrow(mx, my, smoothAng, ns);
-            } else {
-              smoothAngInit = false;
-            }
+            smoothAngInit = false;
           }
         }
       }

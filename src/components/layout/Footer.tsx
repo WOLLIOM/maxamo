@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { navLinks, site } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
-import { FooterTetris } from "@/components/layout/FooterTetris";
+// FooterTetris kept in the codebase (unused) at Simon's request — swapped for
+// FooterDash, a Geometry-Dash-style runner; see that file for why.
+import { FooterDash } from "@/components/layout/FooterDash";
 
 export function Footer() {
   return (
@@ -109,7 +111,7 @@ export function Footer() {
         </div>
       </div>
 
-      <FooterTetris />
+      <FooterDash />
     </footer>
   );
 }

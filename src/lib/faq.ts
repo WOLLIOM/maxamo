@@ -1,34 +1,35 @@
+// Shortened per Simon's feedback — one line each, same facts, less to read.
 export const faqs = [
   {
     q: "What kind of projects do you take on?",
-    a: "Anything at the intersection of design and technology — interactive websites, game development in Unreal Engine, architectural visualization, and music/creative collaborations. If it combines a few disciplines, I'm probably interested.",
+    a: "Anything where design and technology meet — interactive websites, game development, architectural visualization, and music.",
   },
   {
     q: "What software and tools do you use?",
-    a: "Unreal Engine 5, Blender, Revit, AutoCAD and SketchUp for 3D and architecture; Photoshop, Illustrator, After Effects and FL Studio for design and music; and HTML, CSS, JavaScript, Three.js, Python and Flutter for programming.",
+    a: "Unreal Engine 5, Blender, Revit and CAD for 3D; Photoshop and FL Studio for design and music; Three.js, Python and Flutter for code.",
   },
   {
     q: "How long does a project like SOLARIS take?",
-    a: "SOLARIS, my space-exploration game, took about two years from concept to a playable build. Timelines depend heavily on scope — a website or 3D model can take days to weeks, while a full game or a long-term architecture project takes months.",
+    a: "SOLARIS took about two years. A website or 3D model is usually days to weeks; a full game or a long-term architecture project is months.",
   },
   {
     q: "Do you do freelance or commission work?",
-    a: "I'm open to it, especially for web design, 3D visualization and architectural modeling. Get in touch through the contact page with details about your project and timeline.",
+    a: "Yes, especially web design, 3D visualization and architectural modeling — reach out through the contact page.",
   },
   {
     q: "Where are you based?",
-    a: "Calgary, Alberta, Canada. I'm happy to work remotely with people anywhere.",
+    a: "Calgary, Alberta, Canada. Happy to work remotely.",
   },
   {
     q: "Can I book you for music/guitar performances?",
-    a: "I regularly perform as a volunteer guitarist and I'm open to discussing performance opportunities — reach out through the contact page with details.",
+    a: "I perform as a volunteer guitarist and I'm open to it — reach out through the contact page.",
   },
   {
     q: "What's your background — are you self-taught?",
-    a: "A mix — hands-on project work (SOLARIS, professional architecture work with Frank Architecture and Interiors, 300+ hours of live music performance) alongside formal coursework, including partial IB (ELA 20, Math 20).",
+    a: "A mix of hands-on project work (SOLARIS, Frank Architecture and Interiors, 300+ hours of live performance) and formal coursework.",
   },
   {
     q: "Do you have any certifications?",
-    a: "I hold a Standard First Aid certificate (Calgary, AB), along with academic recognitions including the Waterloo Award, the Newton Award, and results from TÜBİTAK 2024 (3rd place nationally, 1st place provincially).",
+    a: "Standard First Aid, plus academic recognitions — the Waterloo Award, the Newton Award, and TÜBİTAK 2024 (3rd nationally, 1st provincially).",
   },
 ];
