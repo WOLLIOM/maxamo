@@ -128,6 +128,16 @@ export const certificates: {
       "Advanced generative AI on AWS — model fine-tuning, optimization, and automated evaluation with Amazon Bedrock.",
   },
   {
+    title: "Siemens NX Mastery: Advanced Design & Applications",
+    shortTitle: "Siemens NX Mastery",
+    image: "/certificates/siemens-nx-mastery.png",
+    issuer: "Siemens · Coursera",
+    date: "Sep 2026",
+    category: "3D & Design",
+    blurb:
+      "Advanced product design in Siemens NX — parametric modelling, assemblies and engineering applications, taught with Siemens Digital Industries Software. Verify: coursera.org/verify/QZ3ZRADMOH3D",
+  },
+  {
     title: "Google Business Intelligence",
     shortTitle: "Google Business Intelligence",
     image: "/certificates/google-business-intelligence.png",

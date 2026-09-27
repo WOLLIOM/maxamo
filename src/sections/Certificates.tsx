@@ -9,7 +9,7 @@ import { certificates } from "@/lib/site";
 
 /* ---------------------------------------------------------------------------
    Certificates, grouped by ISSUER so the prestige reads instantly:
-   Google · AWS · Adobe · Microsoft · GitHub lead with their brand marks
+   Google · AWS · Adobe · Microsoft · GitHub · Siemens · Revit lead with their brand marks
    (in real brand colors — the pop of colour against the section), and the
    remaining coursework is tucked behind a "show all" toggle.
 --------------------------------------------------------------------------- */
@@ -20,11 +20,13 @@ type BrandKey =
   | "adobe"
   | "microsoft"
   | "github"
+  | "siemens"
+  | "revit"
   | "pmi"
   | "iiba"
   | "linkedin";
 
-const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github"];
+const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github", "siemens", "revit"];
 
 const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = {
   google: { name: "Google", color: "#4285F4", blurb: "Business intelligence & search marketing" },
@@ -32,12 +34,16 @@ const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = 
   adobe: { name: "Adobe", color: "#FA0F00", blurb: "Creative tools — Photoshop, Illustrator, Premiere" },
   microsoft: { name: "Microsoft", color: "#00A4EF", blurb: "Data analysis" },
   github: { name: "GitHub", color: "#8b8b93", blurb: "Project management & collaboration" },
+  siemens: { name: "Siemens", color: "#009999", blurb: "NX — advanced product design & engineering" },
+  revit: { name: "Autodesk Revit", color: "#0696D7", blurb: "Architecture & BIM modelling" },
   pmi: { name: "PMI", color: "#6f7bd6", blurb: "Project management" },
   iiba: { name: "IIBA", color: "#57b894", blurb: "Business analysis" },
   linkedin: { name: "LinkedIn Learning", color: "#7ee0c3", blurb: "Development, 3D & more" },
 };
 
 function brandOf(issuer: string, title: string): BrandKey {
+  if (/Siemens/i.test(issuer) || /Siemens/i.test(title)) return "siemens";
+  if (/Revit/i.test(title)) return "revit";
   if (/Amazon|AWS/i.test(issuer)) return "aws";
   if (/Adobe/i.test(issuer)) return "adobe";
   if (/Microsoft/i.test(issuer)) return "microsoft";
@@ -94,6 +100,36 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
           </svg>
         </span>
       );
+    case "siemens":
+      // Siemens wordmark: heavy caps in Siemens petrol (#009999), wide tracking
+      return (
+        <span
+          className="text-[1.7rem] font-extrabold uppercase leading-none"
+          style={{ color: "#009999", letterSpacing: "0.09em", fontFamily: "var(--font-sans), sans-serif" }}
+        >
+          Siemens
+        </span>
+      );
+    case "revit":
+      // Revit app icon (blue tile, white R) + wordmark, "Autodesk" as the small parent label
+      return (
+        <span className="inline-flex items-center gap-2.5">
+          <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden>
+            <defs>
+              <linearGradient id="revitg" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stopColor="#3ab7f0" />
+                <stop offset="1" stopColor="#0664b8" />
+              </linearGradient>
+            </defs>
+            <rect width="32" height="32" rx="6" fill="url(#revitg)" />
+            <path d="M10 7h7.2c3.4 0 5.6 1.9 5.6 4.9 0 2.3-1.3 3.9-3.4 4.6L23.6 25h-3.9l-3.6-7.2H13.6V25H10V7Zm3.6 3.1v4.7h3.3c1.4 0 2.3-.8 2.3-2.3 0-1.5-.9-2.4-2.3-2.4h-3.3Z" fill="#fff" />
+          </svg>
+          <span className="flex flex-col leading-none">
+            <span className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-faint">Autodesk</span>
+            <span className="mt-0.5 text-2xl font-semibold" style={{ color: "#0696D7" }}>Revit</span>
+          </span>
+        </span>
+      );
     case "github":
       return (
         <span className="inline-flex items-center gap-2.5">
@@ -116,7 +152,7 @@ export function Certificates() {
   // Group certificate indices by brand.
   const groups = useMemo(() => {
     const g: Record<BrandKey, number[]> = {
-      google: [], aws: [], adobe: [], microsoft: [], github: [],
+      google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [],
       pmi: [], iiba: [], linkedin: [],
     };
     certificates.forEach((c, i) => g[brandOf(c.issuer, c.title)].push(i));
@@ -213,7 +249,7 @@ export function Certificates() {
         <SectionHeading
           kicker="Certified"
           title="Certificates"
-          lede="Credentials from Google, Amazon, Adobe, Microsoft and GitHub — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
+          lede="Credentials from Google, Amazon, Adobe, Microsoft, GitHub, Siemens and Autodesk Revit — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
         />
 
         <div className="mt-12 flex flex-col gap-12">
