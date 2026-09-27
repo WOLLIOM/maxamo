@@ -161,6 +161,7 @@ export const certificates: {
     category: "Data & AI",
     tier: 1,
     kind: "professional-certificate",
+    courses: 4,
     plain: "Turn raw data into dashboards and decisions — Google's business-intelligence program.",
     blurb:
       "Google's professional certificate in business intelligence — data pipelines, dashboards, and turning data into decisions.",

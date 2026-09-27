@@ -3,6 +3,7 @@ import { GuitarPlayground } from "@/sections/GuitarPlayground";
 import { Music } from "@/sections/Music";
 import { Awards } from "@/sections/Awards";
 import { Certificates } from "@/sections/Certificates";
+import { PizzaShowcase } from "@/sections/PizzaShowcase";
 import { Story } from "@/sections/Story";
 import { ProcessSpectrum } from "@/sections/ProcessSpectrum";
 import { Signature } from "@/sections/Signature";
@@ -31,6 +32,7 @@ const FEATURE_FLAGS = {
   processSpectrum: false,
   signature: true,
   certificates: true,
+  pizza: true,
   homeExperience: true,
   projectLinks: true,
   testimonials: true,
@@ -54,6 +56,7 @@ export default function HomePage() {
       {FEATURE_FLAGS.awards && <Awards />}
       <Scene theme="mono" />
       {FEATURE_FLAGS.certificates && <Certificates />}
+      {FEATURE_FLAGS.pizza && <PizzaShowcase />}
       {FEATURE_FLAGS.processSpectrum && <ProcessSpectrum />}
       <TextMarquee text="THE ANSWER IS YES WE DO IT · THE ANSWER IS YES WE DO IT ·" />
       {FEATURE_FLAGS.signature && <Signature />}
