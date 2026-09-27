@@ -313,11 +313,15 @@ export function Certificates() {
                     <div className="min-w-0 flex-1">
                       <span className="block text-[0.6rem] uppercase tracking-wider2 text-faint">
                         {BRAND[brandOf(c.issuer, c.title)].name}
-                        {c.courses ? ` · ${c.courses}-course program` : " · Professional Certificate"}
+                        {" · Professional Certificate"}
+                        {c.courses ? ` · ${c.courses} courses` : ""}
                       </span>
                       <span className="mt-2 block text-xl font-semibold leading-tight text-ink md:text-2xl">
                         {c.shortTitle}
                       </span>
+                      {c.plain && (
+                        <span className="mt-2 block text-sm leading-snug text-muted">{c.plain}</span>
+                      )}
                       <span className="mt-3 block text-[0.62rem] uppercase tracking-wider2 text-faint">{c.date}</span>
                     </div>
                     <div className="relative h-24 w-32 shrink-0 self-center overflow-hidden rounded-lg border border-line/60 bg-white md:h-28 md:w-36">

@@ -102,6 +102,8 @@ export const certificates: {
   kind?: "professional-certificate";
   /** How many courses the program contains. */
   courses?: number;
+  /** One plain-English line: what this credential means, for non-technical readers. */
+  plain?: string;
 }[] = [
   {
     title: "AWS Cloud Solutions Architect Professional Certificate",
@@ -113,6 +115,7 @@ export const certificates: {
     tier: 1,
     kind: "professional-certificate",
     courses: 4,
+    plain: "Design and build secure, scalable systems in the cloud on AWS — 4 courses, from the basics to exam prep.",
     blurb:
       "Four-course AWS professional certificate — Cloud Technical Essentials, Architecting Solutions on AWS, Building Data Lakes on AWS, and Solutions Architect exam prep. Verify: coursera.org/verify/professional-cert/EDFO1GX5VLC8",
   },
@@ -158,6 +161,7 @@ export const certificates: {
     category: "Data & AI",
     tier: 1,
     kind: "professional-certificate",
+    plain: "Turn raw data into dashboards and decisions — Google's business-intelligence program.",
     blurb:
       "Google's professional certificate in business intelligence — data pipelines, dashboards, and turning data into decisions.",
   },
