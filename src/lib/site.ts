@@ -194,7 +194,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "3D & Design",
-    tier: 3,
+    tier: 2,
     blurb: "Mechanical, electrical and plumbing modeling fundamentals in Revit 2023.",
   },
   {
@@ -224,7 +224,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
     category: "3D & Design",
-    tier: 3,
+    tier: 2,
     blurb: "Professional certificate covering vector illustration and design in Illustrator 2025.",
   },
   {
@@ -234,7 +234,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
     category: "3D & Design",
-    tier: 3,
+    tier: 2,
     blurb: "Professional certificate covering image editing and compositing in Photoshop 2025.",
   },
   {
@@ -244,7 +244,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
     category: "3D & Design",
-    tier: 3,
+    tier: 2,
     blurb: "Professional certificate covering non-linear video editing in Premiere Pro 2025.",
   },
   {
@@ -324,7 +324,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Data & AI",
-    tier: 3,
+    tier: 2,
     blurb: "Python fundamentals applied to financial analysis.",
   },
   {

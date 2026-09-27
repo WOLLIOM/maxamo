@@ -23,11 +23,12 @@ type BrandKey =
   | "siemens"
   | "revit"
   | "cpp"
+  | "python"
   | "pmi"
   | "iiba"
   | "linkedin";
 
-const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github", "siemens", "revit", "cpp"];
+const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github", "siemens", "revit", "cpp", "python"];
 
 const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = {
   google: { name: "Google", color: "#4285F4", blurb: "Business intelligence & search marketing" },
@@ -38,6 +39,7 @@ const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = 
   siemens: { name: "Siemens", color: "#009999", blurb: "NX — advanced product design & engineering" },
   revit: { name: "Autodesk Revit", color: "#0696D7", blurb: "Architecture & BIM modelling" },
   cpp: { name: "C++", color: "#00599C", blurb: "Systems, game engines & performance code" },
+  python: { name: "Python", color: "#3776AB", blurb: "Data, automation & AI" },
   pmi: { name: "PMI", color: "#6f7bd6", blurb: "Project management" },
   iiba: { name: "IIBA", color: "#57b894", blurb: "Business analysis" },
   linkedin: { name: "LinkedIn Learning", color: "#7ee0c3", blurb: "Development, 3D & more" },
@@ -47,6 +49,7 @@ function brandOf(issuer: string, title: string): BrandKey {
   if (/Siemens/i.test(issuer) || /Siemens/i.test(title)) return "siemens";
   if (/Revit/i.test(title)) return "revit";
   if (/C\+\+/.test(title)) return "cpp";
+  if (/Python/i.test(title)) return "python";
   if (/Amazon|AWS/i.test(issuer)) return "aws";
   if (/Adobe/i.test(issuer)) return "adobe";
   if (/Microsoft/i.test(issuer)) return "microsoft";
@@ -114,18 +117,15 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
         </span>
       );
     case "revit":
-      // Revit app icon (blue tile, white R) + wordmark, "Autodesk" as the small parent label
+      // Official Revit icon + wordmark, "Autodesk" as the small parent label
       return (
         <span className="inline-flex items-center gap-2.5">
-          <svg width="30" height="30" viewBox="0 0 32 32" aria-hidden>
-            <defs>
-              <linearGradient id="revitg" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0" stopColor="#3ab7f0" />
-                <stop offset="1" stopColor="#0664b8" />
-              </linearGradient>
-            </defs>
-            <rect width="32" height="32" rx="6" fill="url(#revitg)" />
-            <path d="M10 7h7.2c3.4 0 5.6 1.9 5.6 4.9 0 2.3-1.3 3.9-3.4 4.6L23.6 25h-3.9l-3.6-7.2H13.6V25H10V7Zm3.6 3.1v4.7h3.3c1.4 0 2.3-.8 2.3-2.3 0-1.5-.9-2.4-2.3-2.4h-3.3Z" fill="#fff" />
+          {/* Official Autodesk Revit mark (supplied by Simon) */}
+          <svg width="32" height="32" viewBox="0 0 512 512" aria-hidden>
+            <path d="M496 479.546H88.278c-13.853 0-25.081-11.23-25.081-25.083v-335.96H496v361.043z" fill="#0b3c8f" />
+            <path d="M94.276 32.454h345.501c13.853 0 25.083 11.23 25.083 25.083v335.96H94.276V32.454z" fill="#1a6afe" />
+            <path d="M16 444.29l78.277-50.794V32.456L16 83.252v361.04z" fill="#699bea" />
+            <path d="M240.203 211.807h30.11a42.521 42.521 0 0025.997-7.142 23.996 23.996 0 009.599-20.397v-14.341a23.829 23.829 0 00-9.599-20.34 42.506 42.506 0 00-25.998-7.2h-30.11v69.42zm113.357 80.675v23.484a38.448 38.448 0 01-15.54 2.914 37.888 37.888 0 01-20.34-5.314 42.454 42.454 0 01-14.914-17.655l-29.653-57.135h-32.91v77.19h-36.168V115.133h67.706a83.462 83.462 0 0151.08 14.456 46.163 46.163 0 0119.255 39.023v16.626a43.643 43.643 0 01-9.37 27.54 61.33 61.33 0 01-25.654 18.97l26.683 51.08a18.052 18.052 0 0017.14 9.769l2.685-.115z" fill="#fff" />
           </svg>
           <span className="flex flex-col leading-none">
             <span className="text-[0.55rem] font-semibold uppercase tracking-[0.2em] text-faint">Autodesk</span>
@@ -143,6 +143,17 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
             <text x="15" y="21.5" textAnchor="middle" fontFamily="Arial, sans-serif" fontWeight="700" fontSize="10.5" fill="#fff">C++</text>
           </svg>
           <span className="text-2xl font-semibold" style={{ color: "#3b9de0" }}>C++</span>
+        </span>
+      );
+    case "python":
+      // Python logo: interlocked blue + yellow snakes (vector), plus wordmark
+      return (
+        <span className="inline-flex items-center gap-2.5">
+          <svg width="30" height="30" viewBox="0 0 128 128" aria-hidden>
+            <path d="M49.33 62h29.159C86.606 62 93 55.132 93 46.981V19.183c0-7.912-6.632-13.856-14.555-15.176-5.014-.835-10.195-1.215-15.187-1.191-4.99.023-9.612.448-13.805 1.191C37.098 6.188 35 10.758 35 19.183V30h29v4H23.776c-8.484 0-15.914 5.108-18.237 14.811-2.681 11.12-2.8 17.919 0 29.53C7.614 86.983 12.569 93 21.054 93H31V79.952C31 70.315 39.428 62 49.33 62zm-1.838-39.11c-3.026 0-5.478-2.479-5.478-5.545 0-3.079 2.451-5.581 5.478-5.581 3.015 0 5.479 2.502 5.479 5.581-.001 3.066-2.465 5.545-5.479 5.545z" fill="#3776AB" />
+            <path d="M122.281 48.811C120.183 40.363 116.178 34 107.682 34H97v12.981C97 57.031 88.206 65 78.489 65H49.33C41.342 65 35 72.326 35 80.326v27.8c0 7.91 6.745 12.564 14.462 14.834 9.242 2.717 17.994 3.208 29.051 0C85.901 120.892 93 116.72 93 108.126V97H64v-4h43.682c8.484 0 11.647-5.776 14.599-14.66 3.047-9.145 2.916-17.799 0-29.529zm-41.955 55.606c3.027 0 5.479 2.479 5.479 5.547 0 3.076-2.451 5.579-5.479 5.579-3.015 0-5.478-2.502-5.478-5.579 0-3.068 2.463-5.547 5.478-5.547z" fill="#FFD43B" />
+          </svg>
+          <span className="text-2xl font-semibold" style={{ color: "#4b8bbe" }}>Python</span>
         </span>
       );
     case "github":
@@ -178,7 +189,7 @@ export function Certificates() {
   const { top, more } = useMemo(() => {
     const mk = () =>
       ({
-        google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [],
+        google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [], python: [],
         pmi: [], iiba: [], linkedin: [],
       }) as Record<BrandKey, number[]>;
     const top = mk();
@@ -283,7 +294,7 @@ export function Certificates() {
         <SectionHeading
           kicker="Certified"
           title="Certificates"
-          lede="Credentials from Google, Amazon, Adobe, Microsoft, GitHub, Siemens, Autodesk Revit and C++ — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
+          lede="Credentials from Google, Amazon, Adobe, Microsoft, GitHub, Siemens, Autodesk Revit, C++ and Python — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
         />
 
         {/* PROFESSIONAL CERTIFICATES — the multi-course programs, in their own box */}
