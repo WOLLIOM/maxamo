@@ -42,7 +42,7 @@ export function Testimonials() {
       aria-label="Guiding principles"
       data-section="philosophy"
       data-palette="gold"
-      className="mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-36"
+      className="mx-auto max-w-[1400px] px-5 py-14 md:px-10 md:py-20"
     >
       <SectionHeading kicker="How I think" title="Guiding principles" align="center" />
 

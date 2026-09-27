@@ -15,6 +15,8 @@ import { useEffect, useRef } from "react";
  *      dropping food pellets (theme-aware: boxy in blueprint, heat trail in vivid)
  *   5. a box zone — hover `[data-cursor-box]` and the dots stamp a square-ring,
  *      the heart's geometric counterpart
+ *   6. a pizza zone — hover `[data-cursor-pizza]` (the Ovenlight section) and the
+ *      dots stamp a pizza-slice triangle instead of the generic pointer/arrow
  *
  * The smiley/mood cursor and its rectangle hover-glow stay in CustomCursor.tsx
  * — this is a separate transparent canvas layered on top.
@@ -47,6 +49,17 @@ const BOX: [number, number][] = (() => {
     pts.push([0, i]);
     pts.push([8, i]);
   }
+  return pts;
+})();
+
+// A filled pizza-slice triangle — the counterpart to HEART/BOX, for the
+// Ovenlight pizza section. Hover anything marked [data-cursor-pizza].
+const PIZZA: [number, number][] = (() => {
+  const pts: [number, number][] = [];
+  const rows: [number, number][] = [[4,4],[3,5],[3,5],[2,6],[2,6],[1,7],[1,7],[0,8]];
+  rows.forEach(([lo, hi], r) => {
+    for (let c = lo; c <= hi; c++) pts.push([c, r]);
+  });
   return pts;
 })();
 
@@ -102,6 +115,7 @@ export function PixelCursorField() {
       shake = 0;
     let wasHeart = false;
     let wasBox = false;
+    let wasPizza = false;
     // Smoothed arrow angle — raw atan2() jumps instantly on pointer jitter or
     // a headline-target switch, which read as the arrow twitching/flicking
     // to a "wrong" spot. Damping it into a lerp fixes that.
@@ -278,6 +292,16 @@ export function PixelCursorField() {
       return { x: r.left, y: r.top, w: r.width, h: r.height };
     }
 
+    // ── pizza zone: hover anything with [data-cursor-pizza] (same shape as the
+    // heart zone — a single element's rect, no per-element hit-testing needed) ──
+    function getPizzaZone() {
+      const el = document.querySelector<HTMLElement>("[data-cursor-pizza]");
+      if (!el) return null;
+      const r = el.getBoundingClientRect();
+      if (r.width <= 0 || r.height <= 0) return null;
+      return { x: r.left, y: r.top, w: r.width, h: r.height };
+    }
+
     function hsh(c: number, r: number) {
       const n = Math.sin(c * 127.1 + r * 311.7) * 43758.5453;
       return n - Math.floor(n);
@@ -317,6 +341,10 @@ export function PixelCursorField() {
 
     function stampBox(cx: number, cy: number) {
       stampShape(cx, cy, BOX);
+    }
+
+    function stampPizza(cx: number, cy: number) {
+      stampShape(cx, cy, PIZZA);
     }
 
     // ── box zone: hover anything with [data-cursor-box] / [data-cursor="box"] ──
@@ -459,33 +487,44 @@ export function PixelCursorField() {
         const hz = getHeartZone();
         const inHeart =
           hz && mx >= hz.x && mx <= hz.x + hz.w && my >= hz.y && my <= hz.y + hz.h;
-        const inBox = !inHeart && inBoxZone(mx, my);
+        const pz = !inHeart ? getPizzaZone() : null;
+        const inPizza = !!pz && mx >= pz.x && mx <= pz.x + pz.w && my >= pz.y && my <= pz.y + pz.h;
+        const inBox = !inHeart && !inPizza && inBoxZone(mx, my);
         if (inHeart) {
           if (!wasHeart) heartBoom(mx, my);
           stampHeart(mx, my);
           wasHeart = true;
+          wasBox = false;
+          wasPizza = false;
+        } else if (inPizza) {
+          if (!wasPizza) heartBoom(mx, my); // same spark burst, pizza-slice shape
+          stampPizza(mx, my);
+          wasPizza = true;
+          wasHeart = false;
           wasBox = false;
         } else if (inBox) {
           if (!wasBox) heartBoom(mx, my); // same spark burst, different shape
           stampBox(mx, my);
           wasBox = true;
           wasHeart = false;
+          wasPizza = false;
         } else {
           wasHeart = false;
           wasBox = false;
-          // The idle Pac-Man (see wander(), below) used to take over here after
-          // IDLE_DELAY. Simon: it read as a stray circle unrelated to the real
-          // cursor, clashing with the rest of the page — removed. wander()/
-          // pacman() are left in place, just unused, in case this comes back
-          // reskinned later.
-          const target = nearestHeadline(mx, my);
-          if (target) {
-            const rawAng = Math.atan2(target.cy - my, target.cx - mx);
-            smoothAng = smoothAngInit ? lerpAngle(smoothAng, rawAng, 0.18) : rawAng;
-            smoothAngInit = true;
-            pointArrow(mx, my, smoothAng, ns);
+          wasPizza = false;
+          // Idle Pac-Man restored — Simon likes it after all.
+          if (ns - lastMove > IDLE_DELAY) {
+            wander(mx, my);
           } else {
-            smoothAngInit = false;
+            const target = nearestHeadline(mx, my);
+            if (target) {
+              const rawAng = Math.atan2(target.cy - my, target.cx - mx);
+              smoothAng = smoothAngInit ? lerpAngle(smoothAng, rawAng, 0.18) : rawAng;
+              smoothAngInit = true;
+              pointArrow(mx, my, smoothAng, ns);
+            } else {
+              smoothAngInit = false;
+            }
           }
         }
       }

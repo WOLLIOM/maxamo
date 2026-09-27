@@ -45,7 +45,7 @@ export function Music() {
       data-section="music"
       data-palette="teal"
       data-cursor-note
-      className="relative mx-auto max-w-[1400px] scroll-mt-24 px-5 py-24 md:px-10 md:py-36"
+      className="relative mx-auto max-w-[1400px] scroll-mt-24 px-5 py-14 md:px-10 md:py-20"
     >
       <audio
         ref={audioRef}

@@ -35,7 +35,7 @@ export function ProcessSpectrum() {
   return (
     <section
       aria-label="How the work breaks down"
-      className="relative mx-auto max-w-[1400px] px-5 py-24 scroll-mt-24 md:px-10 md:py-36"
+      className="relative mx-auto max-w-[1400px] px-5 py-14 scroll-mt-24 md:px-10 md:py-20"
     >
       <div className="relative">
         <svg

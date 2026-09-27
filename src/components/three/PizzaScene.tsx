@@ -27,18 +27,24 @@ function rng(seed: number) {
 
 type Topping = { kind: "pep" | "basil"; r: number; a: number; rot: number };
 
+// A specific, recognisable pizza — Ovenlight's own "Pepperoni" (their #1 seller:
+// "the one you measure all others against") — dense, evenly cupped pepperoni,
+// not a sparse random scatter. Two rings per slice plus an occasional basil fleck.
 function makeToppings(i: number): Topping[] {
   const rand = rng(i + 3);
   const out: Topping[] = [];
   const a0 = i * STEP;
-  const pick = () => a0 + GAP + rand() * (STEP - GAP * 2);
-  out.push({ kind: "pep", r: 0.42 + rand() * 0.2, a: a0 + STEP * 0.5 + (rand() - 0.5) * 0.15, rot: rand() * 6 });
-  out.push({ kind: "pep", r: 0.86 + rand() * 0.18, a: pick(), rot: rand() * 6 });
-  if (i % 2 === 0) out.push({ kind: "basil", r: 0.65 + rand() * 0.3, a: pick(), rot: rand() * 6 });
+  const pick = (spread = 1) => a0 + STEP * 0.5 + (rand() - 0.5) * (STEP - GAP * 2) * spread;
+  out.push({ kind: "pep", r: 0.4 + rand() * 0.12, a: pick(0.7), rot: rand() * 6 });
+  out.push({ kind: "pep", r: 0.72 + rand() * 0.12, a: pick(0.9), rot: rand() * 6 });
+  out.push({ kind: "pep", r: 1.02 + rand() * 0.14, a: pick(0.95), rot: rand() * 6 });
+  if (i % 3 === 0) out.push({ kind: "basil", r: 0.6 + rand() * 0.4, a: pick(), rot: rand() * 6 });
   return out;
 }
 
-const CRUST = "#d9a35b";
+const CRUST = "#c98a45"; // richer, more "baked" dough than the original flat tan
+const CRUST_RIM = "#a9702f"; // toasted outer edge
+const CRUST_HIGHLIGHT = "#e6b876"; // warm sheen on the puffed rim
 const SAUCE = "#b8291b";
 const CHEESE = "#f6dc93";
 const PEP = "#a5271b";
@@ -51,6 +57,16 @@ function Slice({ index, taken, resetKey }: { index: number; taken: React.Mutable
   const toppings = useMemo(() => makeToppings(index), [index]);
   const start = index * STEP + GAP / 2;
   const len = STEP - GAP;
+  // Torus geometries take no rotation prop of their own — lay the ring flat
+  // (its normal from +Z to +Y) then spin it to this slice's start angle,
+  // both applied to the actual vertex data so it lines up with the cylinder
+  // wedges below it, which are angled the same way.
+  const rimGeo = useMemo(() => {
+    const g = new THREE.TorusGeometry(1.28, 0.1, 8, 24, len);
+    g.rotateX(-Math.PI / 2);
+    g.rotateY(start);
+    return g;
+  }, [start, len]);
   const mid = index * STEP + STEP / 2;
   const dx = Math.sin(mid);
   const dz = Math.cos(mid);
@@ -74,6 +90,15 @@ function Slice({ index, taken, resetKey }: { index: number; taken: React.Mutable
       <mesh position={[0, 0.14, 0]}>
         <cylinderGeometry args={[1.42, 1.42, 0.3, 40, 1, false, start, len]} />
         <meshStandardMaterial color={CRUST} roughness={0.85} flatShading />
+      </mesh>
+      {/* toasted outer rim */}
+      <mesh position={[0, 0.15, 0]}>
+        <cylinderGeometry args={[1.42, 1.44, 0.28, 40, 1, false, start, len]} />
+        <meshStandardMaterial color={CRUST_RIM} roughness={0.9} flatShading />
+      </mesh>
+      {/* puffy raised crust edge with a warm sheen — the "crust look" this pizza was missing */}
+      <mesh position={[0, 0.28, 0]} geometry={rimGeo}>
+        <meshStandardMaterial color={CRUST_HIGHLIGHT} roughness={0.6} flatShading />
       </mesh>
       <mesh position={[0, 0.16, 0]}>
         <cylinderGeometry args={[1.22, 1.22, 0.24, 40, 1, false, start, len]} />
@@ -168,7 +193,11 @@ export function PizzaScene({ visible, onTake }: { visible: boolean; onTake: (lef
       frameloop={visible ? "always" : "never"}
       camera={{ position: [0, 0.4, 5.2], fov: 38 }}
       gl={{ alpha: true, antialias: true, powerPreference: "low-power" }}
-      style={{ touchAction: "pan-y", cursor: "pointer" }}
+      // cursor: "none" — an inline style beats the site's own cursor-hiding rule, so
+      // "pointer" here was showing the plain native hand cursor over the pizza while
+      // the rest of the page shows the custom pixel-cursor. This section also has its
+      // own pizza-slice cursor shape (data-cursor-pizza, see PixelCursorField).
+      style={{ touchAction: "pan-y", cursor: "none" }}
       onCreated={({ gl }) => gl.setClearColor(0x000000, 0)}
       onPointerMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();

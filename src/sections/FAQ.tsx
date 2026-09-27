@@ -18,7 +18,7 @@ export function FAQ() {
       data-palette="teal"
       className="border-t border-line/50 bg-surface/20"
     >
-      <div className="mx-auto max-w-3xl px-5 py-24 md:px-10 md:py-32">
+      <div className="mx-auto max-w-3xl px-5 py-14 md:px-10 md:py-20">
         <Reveal>
           <SectionHeading
             kicker="Good to know"

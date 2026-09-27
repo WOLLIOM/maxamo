@@ -41,7 +41,7 @@ export function Signature() {
     <section
       id="work"
       aria-label="Featured work"
-      className="mx-auto max-w-[1400px] px-5 py-24 scroll-mt-24 md:px-10 md:py-36"
+      className="mx-auto max-w-[1400px] px-5 py-14 scroll-mt-24 md:px-10 md:py-20"
     >
       <div className="flex flex-col justify-between gap-8 md:flex-row md:items-end">
         <SectionHeading

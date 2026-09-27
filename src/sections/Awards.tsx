@@ -12,7 +12,7 @@ export function Awards() {
       aria-label="Awards and recognition"
       data-section="awards"
       data-palette="blue"
-      className="border-y border-line/60 bg-surface/30 py-16 md:py-24 scroll-mt-24"
+      className="border-y border-line/60 bg-surface/30 py-12 md:py-16 scroll-mt-24"
     >
       <div className="mx-auto max-w-[1400px] px-5 md:px-10">
         <Reveal>

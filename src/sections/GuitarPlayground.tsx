@@ -200,7 +200,7 @@ export function GuitarPlayground() {
       data-section="guitar"
       data-palette="warm"
       data-cursor="box"
-      className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32"
+      className="relative mx-auto max-w-[1400px] px-5 py-14 md:px-10 md:py-20"
     >
       <WireframeMotif
         size={130}

@@ -23,7 +23,7 @@ export function Experience() {
     <section
       id="experience"
       aria-label="Experience"
-      className="relative border-y border-line/60 bg-surface/30 py-20 md:py-28"
+      className="relative border-y border-line/60 bg-surface/30 py-14 md:py-16"
     >
       <div className="mx-auto max-w-[1400px] px-5 md:px-10">
         <SectionHeading

@@ -22,7 +22,7 @@ export function ProjectLinks() {
       aria-label="More projects"
       data-section="projects"
       data-palette="blue"
-      className="relative mx-auto max-w-[1400px] px-5 py-24 md:px-10 md:py-32"
+      className="relative mx-auto max-w-[1400px] px-5 py-14 md:px-10 md:py-20"
     >
       <CodeBackdrop />
       <SectionHeading kicker="Elsewhere" title="More things I've built" align="center" />
@@ -34,10 +34,13 @@ export function ProjectLinks() {
               href={l.href}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative flex h-full min-h-[160px] flex-col justify-between overflow-hidden rounded-3xl border border-line/60 bg-surface/30 p-6 transition-all duration-500 hover:-translate-y-1.5 hover:border-accent/50"
+              className="group relative flex h-full min-h-[160px] flex-col justify-between overflow-hidden rounded-3xl border border-line bg-surface/85 p-6 backdrop-blur-md transition-all duration-500 hover:-translate-y-1.5 hover:border-accent/60"
             >
+              {/* solid-ish backing so the busy blueprint grid + code snippets behind
+                  this section never bleed through and collide with the card's own
+                  text (Simon: "not even visible") */}
               <div>
-                <h3 className="font-serif text-xl text-ink">{l.label}</h3>
+                <h3 className="font-serif text-2xl text-ink">{l.label}</h3>
                 <p className="mt-2 text-sm text-muted">{l.desc}</p>
               </div>
               <span className="mt-6 inline-flex items-center gap-2 text-[0.68rem] uppercase tracking-wider2 text-accent">

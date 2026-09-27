@@ -42,20 +42,33 @@ export function PizzaShowcase() {
       id="pizza"
       aria-label="Ovenlight pizzeria — 3D pizza demo"
       data-section="pizza"
-      className="relative mx-auto max-w-[1200px] scroll-mt-24 px-5 py-20 md:px-10 md:py-28"
+      className="relative mx-auto max-w-[1200px] scroll-mt-24 px-5 py-14 md:px-10 md:py-16"
     >
       <div className="grid items-center gap-10 md:grid-cols-2 md:gap-16">
         <div>
           <SectionHeading
             kicker="Built for a pizzeria"
             title="Ovenlight"
-            lede="A pizza restaurant site I designed and coded — with a 3D pizza you can spin, tilt and slice. Tap it to pull a slice out."
+            lede="A pizzeria site I designed and built — with a live 3D pizza. Tap a slice."
           />
           <Reveal delay={2}>
-            <ul className="mt-6 space-y-2 text-sm text-muted">
-              <li>· Next.js + Three.js, no video — a real 3D scene</li>
-              <li>· Leans toward your mouse, or your phone when you tilt it</li>
-              <li>· Menu, custom pizza builder and cart on the full site</li>
+            <ul className="mt-6 space-y-3">
+              {[
+                "Real 3D, not a video",
+                "Leans toward your mouse — or your phone's tilt",
+                "Full menu, builder & cart on the live site",
+              ].map((t) => (
+                <li
+                  key={t}
+                  className="group flex items-center gap-3 text-base font-medium text-ink transition-colors duration-300 hover:text-accent"
+                >
+                  <span
+                    aria-hidden
+                    className="h-1.5 w-1.5 shrink-0 rounded-full bg-accent transition-transform duration-300 group-hover:scale-150"
+                  />
+                  {t}
+                </li>
+              ))}
             </ul>
             <a
               href={LIVE_URL}
@@ -71,6 +84,7 @@ export function PizzaShowcase() {
 
         <div
           ref={box}
+          data-cursor-pizza
           className="relative mx-auto aspect-square w-full max-w-[460px] select-none rounded-3xl border border-line/60 bg-surface/30"
         >
           {near && (
