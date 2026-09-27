@@ -96,6 +96,12 @@ export const certificates: {
   date: string;
   category: "3D & Design" | "Development" | "Data & AI" | "Business";
   blurb: string;
+  /** 1 = flagship, 2 = strong, 3 = supporting (hidden behind "Show more"). Best -> worst. */
+  tier: 1 | 2 | 3;
+  /** Multi-course Coursera program (Professional Certificate / Specialization). */
+  kind?: "professional-certificate";
+  /** How many courses the program contains. */
+  courses?: number;
 }[] = [
   {
     title: "AWS Cloud Solutions Architect Professional Certificate",
@@ -104,6 +110,9 @@ export const certificates: {
     issuer: "Amazon Web Services · Coursera",
     date: "Sep 2026",
     category: "Development",
+    tier: 1,
+    kind: "professional-certificate",
+    courses: 4,
     blurb:
       "Four-course AWS professional certificate — Cloud Technical Essentials, Architecting Solutions on AWS, Building Data Lakes on AWS, and Solutions Architect exam prep. Verify: coursera.org/verify/professional-cert/EDFO1GX5VLC8",
   },
@@ -114,6 +123,7 @@ export const certificates: {
     issuer: "Amazon Web Services · Coursera",
     date: "Sep 2026",
     category: "Development",
+    tier: 2,
     blurb:
       "Official AWS exam-prep course for the Solutions Architect – Associate certification — designing resilient, secure, cost-efficient cloud architectures. Verify: coursera.org/verify/0AOUSNI38S38",
   },
@@ -124,6 +134,7 @@ export const certificates: {
     issuer: "Amazon Web Services",
     date: "Sep 2026",
     category: "Data & AI",
+    tier: 1,
     blurb:
       "Advanced generative AI on AWS — model fine-tuning, optimization, and automated evaluation with Amazon Bedrock.",
   },
@@ -134,6 +145,7 @@ export const certificates: {
     issuer: "Siemens · Coursera",
     date: "Sep 2026",
     category: "3D & Design",
+    tier: 2,
     blurb:
       "Advanced product design in Siemens NX — parametric modelling, assemblies and engineering applications, taught with Siemens Digital Industries Software. Verify: coursera.org/verify/QZ3ZRADMOH3D",
   },
@@ -144,6 +156,8 @@ export const certificates: {
     issuer: "Google · Coursera",
     date: "Sep 2026",
     category: "Data & AI",
+    tier: 1,
+    kind: "professional-certificate",
     blurb:
       "Google's professional certificate in business intelligence — data pipelines, dashboards, and turning data into decisions.",
   },
@@ -154,6 +168,7 @@ export const certificates: {
     issuer: "GitHub",
     date: "Aug 2026",
     category: "Development",
+    tier: 2,
     blurb:
       "Managing software projects and collaborating with issues, pull requests and project boards on GitHub.",
   },
@@ -164,6 +179,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "3D & Design",
+    tier: 2,
     blurb:
       "Workflow for taking a Revit architectural model into Unreal Engine for real-time visualization and VR — the pipeline behind the Frank Architecture & Interiors work on this site.",
   },
@@ -174,6 +190,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "3D & Design",
+    tier: 3,
     blurb: "Mechanical, electrical and plumbing modeling fundamentals in Revit 2023.",
   },
   {
@@ -183,6 +200,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "3D & Design",
+    tier: 3,
     blurb: "Lighting fundamentals in Unreal Engine — the same engine SOLARIS is built in.",
   },
   {
@@ -192,6 +210,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "3D & Design",
+    tier: 3,
     blurb: "Core modeling, materials and rendering in Blender 4.0.",
   },
   {
@@ -201,6 +220,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
     category: "3D & Design",
+    tier: 3,
     blurb: "Professional certificate covering vector illustration and design in Illustrator 2025.",
   },
   {
@@ -210,6 +230,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
     category: "3D & Design",
+    tier: 3,
     blurb: "Professional certificate covering image editing and compositing in Photoshop 2025.",
   },
   {
@@ -219,6 +240,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · Adobe",
     date: "Aug 2026",
     category: "3D & Design",
+    tier: 3,
     blurb: "Professional certificate covering non-linear video editing in Premiere Pro 2025.",
   },
   {
@@ -228,6 +250,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Development",
+    tier: 3,
     blurb: "Core front-end fundamentals — the same stack this portfolio site is built on.",
   },
   {
@@ -237,6 +260,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Development",
+    tier: 2,
     blurb: "Advanced C++ — lambdas, modern best practices, deeper language concepts.",
   },
   {
@@ -246,6 +270,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Data & AI",
+    tier: 3,
     blurb: "Core machine learning concepts and how AI systems are trained.",
   },
   {
@@ -255,6 +280,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Data & AI",
+    tier: 3,
     blurb: "How AI agents are applied to cybersecurity monitoring and response.",
   },
   {
@@ -264,6 +290,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Data & AI",
+    tier: 3,
     blurb: "Practical techniques for getting reliable output from large language models.",
   },
   {
@@ -273,6 +300,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · Microsoft",
     date: "Aug 2026",
     category: "Data & AI",
+    tier: 2,
     blurb: "Microsoft/LinkedIn learning path covering data analysis and visualization fundamentals.",
   },
   {
@@ -282,6 +310,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · IIBA",
     date: "Aug 2026",
     category: "Data & AI",
+    tier: 3,
     blurb: "IIBA-endorsed course on applying data analytics to business decisions.",
   },
   {
@@ -291,6 +320,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Data & AI",
+    tier: 3,
     blurb: "Python fundamentals applied to financial analysis.",
   },
   {
@@ -300,6 +330,7 @@ export const certificates: {
     issuer: "Google · Skillshop",
     date: "Aug 2026",
     category: "Business",
+    tier: 2,
     blurb: "Google Ads Search expertise — search campaigns, optimization, and performance measurement.",
   },
   {
@@ -309,6 +340,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Jul 2026",
     category: "Business",
+    tier: 3,
     blurb: "Technical SEO practices for building and structuring a search-friendly website.",
   },
   {
@@ -318,6 +350,7 @@ export const certificates: {
     issuer: "LinkedIn Learning · PMI",
     date: "Aug 2026",
     category: "Business",
+    tier: 3,
     blurb: "PMI-aligned foundations of project management — scope, timeline and delivery.",
   },
   {
@@ -327,6 +360,7 @@ export const certificates: {
     issuer: "LinkedIn Learning",
     date: "Aug 2026",
     category: "Business",
+    tier: 3,
     blurb: "Fundamentals of solution-based, consultative selling.",
   },
 ];

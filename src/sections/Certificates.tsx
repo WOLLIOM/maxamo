@@ -164,21 +164,40 @@ export function Certificates() {
   const [showAll, setShowAll] = useState(false);
   const activeCert = active !== null ? certificates[active] : null;
 
-  // Group certificate indices by brand.
-  const groups = useMemo(() => {
-    const g: Record<BrandKey, number[]> = {
-      google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [],
-      pmi: [], iiba: [], linkedin: [],
-    };
-    certificates.forEach((c, i) => g[brandOf(c.issuer, c.title)].push(i));
-    return g;
+  // Ranked best -> worst by `tier` (see site.ts), then original order.
+  const ranked = useMemo(() => {
+    const idx = certificates.map((_, i) => i);
+    idx.sort((a, b) => certificates[a].tier - certificates[b].tier || a - b);
+    return idx;
   }, []);
 
-  const featured = FEATURED.filter((b) => groups[b].length > 0);
-  const rest = (Object.keys(groups) as BrandKey[]).filter(
-    (b) => !FEATURED.includes(b) && groups[b].length > 0,
-  );
-  const restCount = rest.reduce((n, b) => n + groups[b].length, 0);
+  // Multi-course programs (Professional Certificates) get their own highlighted box.
+  const programs = ranked.filter((i) => certificates[i].kind === "professional-certificate");
+
+  // Everything else grouped by brand: strong ones shown, supporting ones behind "Show more".
+  const { top, more } = useMemo(() => {
+    const mk = () =>
+      ({
+        google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [],
+        pmi: [], iiba: [], linkedin: [],
+      }) as Record<BrandKey, number[]>;
+    const top = mk();
+    const more = mk();
+    ranked.forEach((i) => {
+      const c = certificates[i];
+      if (c.kind === "professional-certificate") return; // shown in the programs box
+      (c.tier <= 2 ? top : more)[brandOf(c.issuer, c.title)].push(i);
+    });
+    return { top, more };
+  }, [ranked]);
+
+  const order = (g: Record<BrandKey, number[]>) => {
+    const all = Object.keys(g) as BrandKey[];
+    return [...FEATURED, ...all.filter((b) => !FEATURED.includes(b))].filter((b) => g[b].length > 0);
+  };
+  const topBrands = order(top);
+  const moreBrands = order(more);
+  const moreCount = moreBrands.reduce((n, b) => n + more[b].length, 0);
 
   // Card layout: the cert NAME leads, big and bold — the scanned certificate
   // itself is a small proof-of-work thumbnail tucked inside the card rather
@@ -226,7 +245,7 @@ export function Certificates() {
     );
   };
 
-  const renderGroup = (brand: BrandKey) => {
+  const renderGroup = (brand: BrandKey, list: number[]) => {
     const meta = BRAND[brand];
     return (
       <div key={brand} className="relative">
@@ -242,11 +261,11 @@ export function Certificates() {
             className="ml-auto rounded-full px-2 py-0.5 text-[0.6rem] font-semibold"
             style={{ background: `${meta.color}22`, color: meta.color }}
           >
-            {groups[brand].length} cert{groups[brand].length > 1 ? "s" : ""}
+            {list.length} cert{list.length > 1 ? "s" : ""}
           </span>
         </div>
         <div className="flex flex-wrap gap-4">
-          {groups[brand].map((i, idx) => renderChip(i, meta.color, idx, brand))}
+          {list.map((i, idx) => renderChip(i, meta.color, idx, brand))}
         </div>
       </div>
     );
@@ -267,18 +286,68 @@ export function Certificates() {
           lede="Credentials from Google, Amazon, Adobe, Microsoft, GitHub, Siemens, Autodesk Revit and C++ — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
         />
 
+        {/* PROFESSIONAL CERTIFICATES — the multi-course programs, in their own box */}
+        {programs.length > 0 && (
+          <div className="relative mt-12 overflow-hidden rounded-3xl border border-accent/40 bg-gradient-to-br from-accent/[0.10] via-surface/40 to-transparent p-5 md:p-7">
+            <div className="mb-5 flex flex-wrap items-center gap-3">
+              <span className="rounded-full bg-accent px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-wider2 text-bg">
+                Professional Certificates
+              </span>
+              <span className="text-xs uppercase tracking-wider2 text-faint">
+                Full multi-course programs, not single classes
+              </span>
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              {programs.map((i) => {
+                const c = certificates[i];
+                const color = BRAND[brandOf(c.issuer, c.title)].color;
+                return (
+                  <button
+                    key={c.title}
+                    type="button"
+                    onClick={() => setActive(i)}
+                    className="group relative flex items-stretch gap-4 overflow-hidden rounded-2xl border bg-bg/40 p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
+                    style={{ borderColor: `${color}66` }}
+                  >
+                    <span aria-hidden className="absolute inset-x-0 top-0 h-[3px]" style={{ background: color }} />
+                    <div className="min-w-0 flex-1">
+                      <span className="block text-[0.6rem] uppercase tracking-wider2 text-faint">
+                        {BRAND[brandOf(c.issuer, c.title)].name}
+                        {c.courses ? ` · ${c.courses}-course program` : " · Professional Certificate"}
+                      </span>
+                      <span className="mt-2 block text-xl font-semibold leading-tight text-ink md:text-2xl">
+                        {c.shortTitle}
+                      </span>
+                      <span className="mt-3 block text-[0.62rem] uppercase tracking-wider2 text-faint">{c.date}</span>
+                    </div>
+                    <div className="relative h-24 w-32 shrink-0 self-center overflow-hidden rounded-lg border border-line/60 bg-white md:h-28 md:w-36">
+                      <Image
+                        src={c.image}
+                        alt={`${c.title} certificate`}
+                        fill
+                        sizes="144px"
+                        className="object-cover transition-transform duration-300 group-hover:scale-[1.06]"
+                      />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="mt-12 flex flex-col gap-12">
-          {featured.map((b) => renderGroup(b))}
+          {topBrands.map((b) => renderGroup(b, top[b]))}
         </div>
 
-        {restCount > 0 && (
+        {moreCount > 0 && (
           <div className="mt-12">
             <button
               type="button"
               onClick={() => setShowAll((s) => !s)}
               className="flex items-center gap-2 rounded-full border border-line px-5 py-2.5 text-xs uppercase tracking-wider2 text-ink transition-colors hover:text-accent"
             >
-              {showAll ? "Hide" : `Show all ${restCount} more`}
+              {showAll ? "Hide" : `Show ${moreCount} more`}
               <span className={`transition-transform ${showAll ? "rotate-180" : ""}`}>↓</span>
             </button>
 
@@ -292,7 +361,7 @@ export function Certificates() {
                   className="overflow-hidden"
                 >
                   <div className="mt-8 flex flex-col gap-12">
-                    {rest.map((b) => renderGroup(b))}
+                    {moreBrands.map((b) => renderGroup(b, more[b]))}
                   </div>
                 </motion.div>
               )}
