@@ -98,6 +98,16 @@ export const certificates: {
   blurb: string;
 }[] = [
   {
+    title: "AWS Cloud Solutions Architect Professional Certificate",
+    shortTitle: "AWS Cloud Solutions Architect",
+    image: "/certificates/aws-cloud-solutions-architect.png",
+    issuer: "Amazon Web Services · Coursera",
+    date: "Sep 2026",
+    category: "Development",
+    blurb:
+      "Four-course AWS professional certificate — Cloud Technical Essentials, Architecting Solutions on AWS, Building Data Lakes on AWS, and Solutions Architect exam prep. Verify: coursera.org/verify/professional-cert/EDFO1GX5VLC8",
+  },
+  {
     title: "Exam Prep: AWS Certified Solutions Architect – Associate",
     shortTitle: "AWS Solutions Architect Prep",
     image: "/certificates/aws-solutions-architect-prep.png",
