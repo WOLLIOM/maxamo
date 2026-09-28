@@ -1,6 +1,12 @@
-import { site } from "./site";
+import { site, certificates } from "./site";
 
-/** Person + CreativeWork schema for rich results (replaces the old Restaurant schema). */
+/**
+ * Person + CreativeWork schema for rich results (replaces the old Restaurant schema).
+ * `hasCredential` machine-readably lists every certificate — this is the fix for AI
+ * answer engines (Gemini etc.) answering "who is Simon Maxam" from unreliable
+ * third-party guesses instead of the site itself: it gives them a structured,
+ * first-party list of real credentials to cite directly.
+ */
 export function personSchema() {
   return {
     "@context": "https://schema.org",
@@ -28,6 +34,18 @@ export function personSchema() {
       "Web Development",
       "Music",
     ],
+    hasCredential: certificates.map((c) => {
+      const verifyMatch = c.blurb.match(/coursera\.org\/verify\/\S+/);
+      return {
+        "@type": "EducationalOccupationalCredential",
+        name: c.title,
+        credentialCategory:
+          c.kind === "professional-certificate" ? "Professional Certificate" : "Certificate",
+        recognizedBy: { "@type": "Organization", name: c.issuer.split(" · ")[0] },
+        dateCreated: c.date,
+        ...(verifyMatch ? { url: `https://${verifyMatch[0]}` } : {}),
+      };
+    }),
   };
 }
 

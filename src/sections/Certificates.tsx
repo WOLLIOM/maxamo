@@ -49,6 +49,10 @@ const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = 
   linkedin: { name: "LinkedIn Learning", color: "#7ee0c3", blurb: "Development, 3D & more" },
 };
 
+function thumbOf(image: string): string {
+  return image.replace(/\.png$/, "-thumb.webp");
+}
+
 function brandOf(issuer: string, title: string): BrandKey {
   // Issuer checks come first: a company's own program (e.g. Google's "IT
   // Automation with Python") must be attributed to that company, not to a
@@ -303,7 +307,7 @@ export function Certificates() {
             {/* the scanned certificate — a small proof-of-work thumbnail */}
             <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white md:h-[4.5rem] md:w-24">
               <Image
-                src={c.image}
+                src={thumbOf(c.image)}
                 alt={`${c.title} certificate`}
                 fill
                 sizes="96px"
@@ -415,7 +419,7 @@ export function Certificates() {
                       </div>
                       <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white shadow-lg md:h-24 md:w-32">
                         <Image
-                          src={c.image}
+                          src={thumbOf(c.image)}
                           alt={`${c.title} certificate`}
                           fill
                           sizes="128px"

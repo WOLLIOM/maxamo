@@ -59,7 +59,9 @@ export function Signature() {
         </Reveal>
       </div>
 
-      <div className="mt-14 grid gap-6 md:grid-cols-3">
+      {/* 2 columns from tablet (md, 768px) so cards keep breathing room; 3 only
+          from lg (1024px) up, where there's actually width for three comfortably. */}
+      <div className="mt-14 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {featured.map((item, i) => (
           <Reveal key={item.name} delay={i}>
             <article
