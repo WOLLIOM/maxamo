@@ -142,6 +142,17 @@ export const certificates: {
       "Advanced generative AI on AWS — model fine-tuning, optimization, and automated evaluation with Amazon Bedrock.",
   },
   {
+    title: "Discover Acting",
+    shortTitle: "Discover Acting",
+    image: "/certificates/discover-acting.png",
+    issuer: "University of London · Royal Central School of Speech and Drama",
+    date: "Sep 2026",
+    category: "Business",
+    tier: 2,
+    blurb:
+      "A course on the fundamentals of acting, taught by the Royal Central School of Speech and Drama through the University of London. Verify: coursera.org/verify/YIL8ET3JS042",
+  },
+  {
     title: "Google IT Automation with Python",
     shortTitle: "Google IT Automation with Python",
     image: "/certificates/google-it-automation-python.png",

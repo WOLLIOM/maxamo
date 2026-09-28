@@ -24,11 +24,12 @@ type BrandKey =
   | "revit"
   | "cpp"
   | "python"
+  | "uol"
   | "pmi"
   | "iiba"
   | "linkedin";
 
-const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github", "siemens", "revit", "cpp", "python"];
+const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github", "siemens", "revit", "cpp", "python", "uol"];
 
 const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = {
   google: { name: "Google", color: "#4285F4", blurb: "Business intelligence & search marketing" },
@@ -40,6 +41,7 @@ const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = 
   revit: { name: "Autodesk Revit", color: "#0696D7", blurb: "Architecture & BIM modelling" },
   cpp: { name: "C++", color: "#00599C", blurb: "Systems, game engines & performance code" },
   python: { name: "Python", color: "#3776AB", blurb: "Data, automation & AI" },
+  uol: { name: "University of London", color: "#c8102e", blurb: "Discover Acting -- Royal Central School of Speech and Drama" },
   pmi: { name: "PMI", color: "#6f7bd6", blurb: "Project management" },
   iiba: { name: "IIBA", color: "#57b894", blurb: "Business analysis" },
   linkedin: { name: "LinkedIn Learning", color: "#7ee0c3", blurb: "Development, 3D & more" },
@@ -50,6 +52,7 @@ function brandOf(issuer: string, title: string): BrandKey {
   if (/Revit/i.test(title)) return "revit";
   if (/C\+\+/.test(title)) return "cpp";
   if (/Python/i.test(title)) return "python";
+  if (/University of London/i.test(issuer)) return "uol";
   if (/Amazon|AWS/i.test(issuer)) return "aws";
   if (/Adobe/i.test(issuer)) return "adobe";
   if (/Microsoft/i.test(issuer)) return "microsoft";
@@ -156,6 +159,27 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
           <span className="text-2xl font-semibold" style={{ color: "#4b8bbe" }}>Python</span>
         </span>
       );
+    case "uol":
+      // Simplified University of London shield (their real crest is more detailed —
+      // send the official SVG, as you did for Revit, to swap in the exact one) +
+      // wordmark in their navy/red.
+      return (
+        <span className="inline-flex items-center gap-2.5">
+          <svg width="28" height="32" viewBox="0 0 28 32" aria-hidden>
+            <path d="M2 2h24v14c0 9-8 13-12 14C10 29 2 25 2 16V2Z" fill="#1d2a5c" />
+            <path d="M5 5h9v11H5z" fill="#fff" />
+            <rect x="6.3" y="6.3" width="6.4" height="1.4" fill="#1d2a5c" />
+            <rect x="6.3" y="8.6" width="6.4" height="1.4" fill="#1d2a5c" />
+            <rect x="6.3" y="10.9" width="6.4" height="1.4" fill="#1d2a5c" />
+            <path d="M15 5h8v18c-2.5 3-5.5 4.6-8 5.3V5Z" fill="#c8102e" />
+            <circle cx="19" cy="14" r="2.6" fill="#fff" />
+          </svg>
+          <span className="flex flex-col leading-none">
+            <span className="text-lg font-bold text-ink">University</span>
+            <span className="text-lg font-bold text-ink -mt-0.5">of London</span>
+          </span>
+        </span>
+      );
     case "github":
       return (
         <span className="inline-flex items-center gap-2.5">
@@ -189,7 +213,7 @@ export function Certificates() {
   const { top, more } = useMemo(() => {
     const mk = () =>
       ({
-        google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [], python: [],
+        google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [], python: [], uol: [],
         pmi: [], iiba: [], linkedin: [],
       }) as Record<BrandKey, number[]>;
     const top = mk();
@@ -294,7 +318,7 @@ export function Certificates() {
         <SectionHeading
           kicker="Certified"
           title="Certificates"
-          lede="Credentials from Google, Amazon, Adobe, Microsoft, GitHub, Siemens, Autodesk Revit, C++ and Python — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
+          lede="Credentials from Google, Amazon, Adobe, Microsoft, GitHub, Siemens, Autodesk Revit, C++, Python and the University of London — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
         />
 
         {/* PROFESSIONAL CERTIFICATES — the multi-course programs, in their own box */}
