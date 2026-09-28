@@ -142,6 +142,20 @@ export const certificates: {
       "Advanced generative AI on AWS — model fine-tuning, optimization, and automated evaluation with Amazon Bedrock.",
   },
   {
+    title: "Google IT Automation with Python",
+    shortTitle: "Google IT Automation with Python",
+    image: "/certificates/google-it-automation-python.png",
+    issuer: "Google · Coursera",
+    date: "Sep 2026",
+    category: "Development",
+    tier: 1,
+    kind: "professional-certificate",
+    courses: 7,
+    plain: "Automate real IT work with Python -- scripting, Git, troubleshooting, and managing systems at scale in the cloud.",
+    blurb:
+      "Seven-course Google professional certificate -- Python for IT automation, Git and GitHub, troubleshooting and debugging, configuration management and the cloud. Verify: coursera.org/verify/professional-cert/0QIV5HER62WL",
+  },
+  {
     title: "Siemens NX Mastery: Advanced Design & Applications",
     shortTitle: "Siemens NX Mastery",
     image: "/certificates/siemens-nx-mastery.png",
