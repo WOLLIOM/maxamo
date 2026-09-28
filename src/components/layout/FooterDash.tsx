@@ -92,6 +92,7 @@ export function FooterDash() {
     let speed = 260; // px/s, ramps up slowly with score
     let obstacles: Obstacle[] = [];
     let spawnTimer = 0;
+    let worldX = 0; // scroll accumulator for the decorative cave ceiling
     let score = 0;
     let level = 0;
     let lastLevel = 0;
@@ -127,6 +128,7 @@ export function FooterDash() {
       speed = 260;
       obstacles = [];
       spawnTimer = 1.1;
+      worldX = 0;
       score = 0;
       level = 0;
       lastLevel = 0;
@@ -153,10 +155,29 @@ export function FooterDash() {
       }
     }
 
-    function spawn() {
+    // Obstacle patterns, not just one shape at a time — more variety as levels climb.
+    // Single spike/block stay the baseline; from level 1 up, twin spikes and
+    // spike-gap-spike clusters start appearing (a wider or trickier hazard needing
+    // better timing, without needing a new jump/gravity mechanic).
+    function spawnAt(x0: number) {
       const spike = Math.random() < 0.6;
       const h = spike ? 24 + Math.random() * 10 : 26 + Math.random() * 18;
-      obstacles.push({ x: W + 20, w: spike ? h * 0.9 : 22 + Math.random() * 14, h, kind: spike ? "spike" : "block" });
+      obstacles.push({ x: x0, w: spike ? h * 0.85 : 22 + Math.random() * 14, h, kind: spike ? "spike" : "block" });
+      return spike ? h * 0.85 : 22 + Math.random() * 14;
+    }
+    function spawn() {
+      const roll = Math.random();
+      if (level >= 1 && roll < 0.22) {
+        // twin spikes, close together — one wider jump instead of two small ones
+        const w1 = spawnAt(W + 20);
+        spawnAt(W + 20 + w1 + 6);
+      } else if (level >= 2 && roll < 0.4) {
+        // spike, gap, spike — rewards a well-timed jump landing between them
+        const w1 = spawnAt(W + 20);
+        spawnAt(W + 20 + w1 + 46);
+      } else {
+        spawnAt(W + 20);
+      }
     }
 
     function tick(dt: number) {
@@ -170,11 +191,12 @@ export function FooterDash() {
           grounded = true;
         }
       }
-      speed = Math.min(560, speed + dt * 6);
+      speed = Math.min(640, speed + dt * 7.5); // faster ramp, higher top speed
+      worldX += speed * dt;
       spawnTimer -= dt;
       if (spawnTimer <= 0) {
         spawn();
-        spawnTimer = Math.max(0.62, 1.35 - score * 0.015);
+        spawnTimer = Math.max(0.5, 1.3 - score * 0.02);
       }
       const px = W * 0.18;
       for (let i = obstacles.length - 1; i >= 0; i--) {
@@ -215,11 +237,41 @@ export function FooterDash() {
       if (themeMix > 1) themeMix = 1;
     }
 
+    // Deterministic pseudo-random per tile index, so stalactites don't reshuffle
+    // every frame — a cave ceiling, purely decorative (no collision), for the
+    // "going into a cave" look. Positioned with a modulo scroll so it's a fixed,
+    // cheap array regardless of how long a run goes.
+    function tileRand(i: number) {
+      const s = Math.sin(i * 12.9898) * 43758.5453;
+      return s - Math.floor(s);
+    }
+    function drawCave(th: ReturnType<typeof theme>) {
+      const TILE = 70;
+      const first = Math.floor(worldX / TILE) - 1;
+      const last = Math.floor((worldX + W) / TILE) + 1;
+      ctx!.fillStyle = th.ground;
+      ctx!.globalAlpha = 0.55;
+      for (let i = first; i <= last; i++) {
+        const x = i * TILE - worldX;
+        const r = tileRand(i);
+        const len = 10 + r * 22;
+        const w = 16 + tileRand(i + 0.5) * 14;
+        ctx!.beginPath();
+        ctx!.moveTo(x, 0);
+        ctx!.lineTo(x + w / 2, len);
+        ctx!.lineTo(x + w, 0);
+        ctx!.closePath();
+        ctx!.fill();
+      }
+      ctx!.globalAlpha = 1;
+    }
+
     function draw() {
       const th = theme();
       ctx!.clearRect(0, 0, W, H);
       ctx!.fillStyle = th.bg;
       ctx!.fillRect(0, 0, W, H);
+      drawCave(th);
       ctx!.fillStyle = th.ground;
       ctx!.fillRect(0, ground, W, H - ground);
       ctx!.strokeStyle = th.accent;
