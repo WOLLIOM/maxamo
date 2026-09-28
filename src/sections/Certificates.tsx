@@ -50,10 +50,11 @@ const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = 
 };
 
 function brandOf(issuer: string, title: string): BrandKey {
+  // Issuer checks come first: a company's own program (e.g. Google's "IT
+  // Automation with Python") must be attributed to that company, not to a
+  // technology name that happens to appear in its title. Title-based checks
+  // below only catch plain LinkedIn Learning courses about that technology.
   if (/Siemens/i.test(issuer) || /Siemens/i.test(title)) return "siemens";
-  if (/Revit/i.test(title)) return "revit";
-  if (/C\+\+/.test(title)) return "cpp";
-  if (/Python/i.test(title)) return "python";
   if (/University of London/i.test(issuer)) return "uol";
   if (/IBM/i.test(issuer)) return "ibm";
   if (/Amazon|AWS/i.test(issuer)) return "aws";
@@ -61,6 +62,9 @@ function brandOf(issuer: string, title: string): BrandKey {
   if (/Microsoft/i.test(issuer)) return "microsoft";
   if (/Google/i.test(issuer)) return "google";
   if (/GitHub/i.test(issuer) || /GitHub/i.test(title)) return "github";
+  if (/Revit/i.test(title)) return "revit";
+  if (/C\+\+/.test(title)) return "cpp";
+  if (/Python/i.test(title)) return "python";
   if (/PMI/i.test(issuer)) return "pmi";
   if (/IIBA/i.test(issuer)) return "iiba";
   return "linkedin";
@@ -356,53 +360,75 @@ export function Certificates() {
           lede="Credentials from Google, Amazon, Adobe, Microsoft, IBM, GitHub, Siemens, Autodesk Revit, C++, Python and the University of London — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
         />
 
-        {/* PROFESSIONAL CERTIFICATES — the multi-course programs, in their own box */}
+        {/* PROFESSIONAL CERTIFICATES — the multi-course programs, in their own box.
+            Neutral outer shell; each card carries its own issuer's colour and logo
+            so they read as distinct, premium credentials rather than one flat block. */}
         {programs.length > 0 && (
-          <div className="relative mt-12 overflow-hidden rounded-3xl border border-accent/40 bg-gradient-to-br from-accent/[0.10] via-surface/40 to-transparent p-5 md:p-7">
-            <div className="mb-5 flex flex-wrap items-center gap-3">
-              <span className="rounded-full bg-accent px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-wider2 text-bg">
+          <div className="relative mt-12 overflow-hidden rounded-3xl border border-line bg-surface/30 p-5 md:p-7">
+            <div className="mb-6 flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-ink/20 bg-ink px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-wider2 text-bg">
                 Professional Certificates
               </span>
               <span className="text-xs uppercase tracking-wider2 text-faint">
                 Full multi-course programs, not single classes
               </span>
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-5 md:grid-cols-2">
               {programs.map((i) => {
                 const c = certificates[i];
-                const color = BRAND[brandOf(c.issuer, c.title)].color;
+                const brand = brandOf(c.issuer, c.title);
+                const color = BRAND[brand].color;
                 return (
                   <button
                     key={c.title}
                     type="button"
                     onClick={() => setActive(i)}
-                    className="group relative flex items-stretch gap-4 overflow-hidden rounded-2xl border bg-bg/40 p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1"
-                    style={{ borderColor: `${color}66` }}
+                    className="group relative flex flex-col overflow-hidden rounded-2xl border bg-bg/60 p-5 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5"
+                    style={{
+                      borderColor: `${color}55`,
+                      boxShadow: "0 0 0 0 transparent",
+                    }}
+                    onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 16px 40px -12px ${color}55`)}
+                    onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 0 0 0 transparent")}
                   >
+                    {/* per-issuer glow, top-right — this is where each card gets its own vibe */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full opacity-25 blur-3xl transition-opacity duration-300 group-hover:opacity-40"
+                      style={{ background: color }}
+                    />
                     <span aria-hidden className="absolute inset-x-0 top-0 h-[3px]" style={{ background: color }} />
-                    <div className="min-w-0 flex-1">
-                      <span className="block text-[0.6rem] uppercase tracking-wider2 text-faint">
-                        {BRAND[brandOf(c.issuer, c.title)].name}
-                        {" · Professional Certificate"}
-                        {c.courses ? ` · ${c.courses} courses` : ""}
-                      </span>
-                      <span className="mt-2 block text-xl font-semibold leading-tight text-ink md:text-2xl">
-                        {c.shortTitle}
-                      </span>
-                      {c.plain && (
-                        <span className="mt-2 block text-sm leading-snug text-muted">{c.plain}</span>
-                      )}
-                      <span className="mt-3 block text-[0.62rem] uppercase tracking-wider2 text-faint">{c.date}</span>
+
+                    <div className="relative flex items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1 scale-[0.62] origin-left opacity-90">
+                          <BrandLogo brand={brand} />
+                        </div>
+                        <span className="block text-[0.6rem] uppercase tracking-wider2 text-faint">
+                          {BRAND[brand].name}
+                          {" · Professional Certificate"}
+                          {c.courses ? ` · ${c.courses} courses` : ""}
+                        </span>
+                        <span className="mt-2 block text-xl font-semibold leading-tight text-ink md:text-2xl">
+                          {c.shortTitle}
+                        </span>
+                      </div>
+                      <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white shadow-lg md:h-24 md:w-32">
+                        <Image
+                          src={c.image}
+                          alt={`${c.title} certificate`}
+                          fill
+                          sizes="128px"
+                          className="object-cover transition-transform duration-300 group-hover:scale-[1.06]"
+                        />
+                      </div>
                     </div>
-                    <div className="relative h-24 w-32 shrink-0 self-center overflow-hidden rounded-lg border border-line/60 bg-white md:h-28 md:w-36">
-                      <Image
-                        src={c.image}
-                        alt={`${c.title} certificate`}
-                        fill
-                        sizes="144px"
-                        className="object-cover transition-transform duration-300 group-hover:scale-[1.06]"
-                      />
-                    </div>
+                    {c.plain && (
+                      <span className="relative mt-3 block text-sm leading-snug text-muted">{c.plain}</span>
+                    )}
+                    <span className="relative mt-4 block text-[0.62rem] uppercase tracking-wider2 text-faint">
+                      {c.date}
+                    </span>
                   </button>
                 );
               })}
