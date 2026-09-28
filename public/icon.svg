@@ -1,4 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <rect width="64" height="64" rx="14" fill="#0d0c0e"/>
-  <text x="32" y="41" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="26" fill="#c4a260">SM</text>
+  <g transform="translate(32,33) scale(1.55)" fill="none" stroke="#c4a260">
+    <path d="M0 -14 12 -7v14L0 14l-12 -7v-14Z" stroke-width="1.5" stroke-linejoin="round"/>
+    <path d="M0 -14v14M0 14V0M-12 -7l12 7M12 -7l-12 7M-12 7l12 -7M12 7l-12 -7" stroke-width="0.9" opacity="0.55"/>
+    <circle cx="0" cy="0" r="2.1" fill="#c4a260" stroke="none"/>
+  </g>
 </svg>

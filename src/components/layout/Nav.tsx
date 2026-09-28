@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { navLinks, site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { FlipLinkLabel } from "@/components/ui/FlipLink";
+import { Logomark } from "@/components/ui/Logomark";
 import { StickyReserve } from "./StickyReserve";
 
 export function Nav() {
@@ -61,6 +62,7 @@ export function Nav() {
             className="group flex items-baseline justify-center gap-2 justify-self-center lg:justify-start"
             aria-label={`${site.name} home`}
           >
+            <Logomark className="h-6 w-6 text-accent transition-transform duration-500 group-hover:rotate-[18deg] md:h-7 md:w-7" />
             <span className="font-serif text-2xl tracking-tight text-ink transition-colors group-hover:text-accent">
               {site.name}
             </span>

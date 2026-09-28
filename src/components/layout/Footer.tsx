@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { navLinks, site } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
+import { Logomark } from "@/components/ui/Logomark";
 // FooterTetris kept in the codebase (unused) at Simon's request — swapped for
 // FooterDash, a Geometry-Dash-style runner; see that file for why.
 import { FooterDash } from "@/components/layout/FooterDash";
@@ -12,7 +13,8 @@ export function Footer() {
         <div className="grid gap-12 md:grid-cols-[1.4fr_1fr_1fr]">
           <Reveal>
             <div>
-              <div className="flex items-baseline gap-3">
+              <div className="flex items-center gap-3">
+                <Logomark className="h-8 w-8 text-accent" />
                 <span className="font-serif text-4xl text-ink">{site.name}</span>
               </div>
               <p className="mt-5 max-w-sm text-sm leading-relaxed text-muted">
