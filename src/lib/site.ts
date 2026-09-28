@@ -142,6 +142,20 @@ export const certificates: {
       "Advanced generative AI on AWS — model fine-tuning, optimization, and automated evaluation with Amazon Bedrock.",
   },
   {
+    title: "IBM AI Engineering",
+    shortTitle: "IBM AI Engineering",
+    image: "/certificates/ibm-ai-engineering.png",
+    issuer: "IBM · Coursera",
+    date: "Sep 2026",
+    category: "Data & AI",
+    tier: 1,
+    kind: "professional-certificate",
+    courses: 13,
+    plain: "Build, fine-tune and deploy deep learning models and LLMs -- Keras, PyTorch, TensorFlow, LangChain and RAG.",
+    blurb:
+      "Thirteen-course IBM professional certificate -- supervised and unsupervised learning, deep learning and neural networks with Keras/PyTorch/TensorFlow, and generative AI engineering with LangChain, Hugging Face and RAG. Verify: coursera.org/verify/professional-cert/SHJ5AYORN2HX",
+  },
+  {
     title: "Discover Acting",
     shortTitle: "Discover Acting",
     image: "/certificates/discover-acting.png",

@@ -25,11 +25,12 @@ type BrandKey =
   | "cpp"
   | "python"
   | "uol"
+  | "ibm"
   | "pmi"
   | "iiba"
   | "linkedin";
 
-const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github", "siemens", "revit", "cpp", "python", "uol"];
+const FEATURED: BrandKey[] = ["google", "aws", "adobe", "microsoft", "github", "siemens", "revit", "cpp", "python", "uol", "ibm"];
 
 const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = {
   google: { name: "Google", color: "#4285F4", blurb: "Business intelligence & search marketing" },
@@ -42,6 +43,7 @@ const BRAND: Record<BrandKey, { name: string; color: string; blurb: string }> = 
   cpp: { name: "C++", color: "#00599C", blurb: "Systems, game engines & performance code" },
   python: { name: "Python", color: "#3776AB", blurb: "Data, automation & AI" },
   uol: { name: "University of London", color: "#c8102e", blurb: "Discover Acting -- Royal Central School of Speech and Drama" },
+  ibm: { name: "IBM", color: "#0f62fe", blurb: "Deep learning, LLMs & generative AI engineering" },
   pmi: { name: "PMI", color: "#6f7bd6", blurb: "Project management" },
   iiba: { name: "IIBA", color: "#57b894", blurb: "Business analysis" },
   linkedin: { name: "LinkedIn Learning", color: "#7ee0c3", blurb: "Development, 3D & more" },
@@ -53,6 +55,7 @@ function brandOf(issuer: string, title: string): BrandKey {
   if (/C\+\+/.test(title)) return "cpp";
   if (/Python/i.test(title)) return "python";
   if (/University of London/i.test(issuer)) return "uol";
+  if (/IBM/i.test(issuer)) return "ibm";
   if (/Amazon|AWS/i.test(issuer)) return "aws";
   if (/Adobe/i.test(issuer)) return "adobe";
   if (/Microsoft/i.test(issuer)) return "microsoft";
@@ -204,6 +207,14 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
           </span>
         </span>
       );
+    case "ibm":
+      // Plain bold wordmark in IBM blue -- safer than guessing the exact
+      // 8-bar striped logo, which is easy to get subtly wrong.
+      return (
+        <span className="text-3xl font-black tracking-tight" style={{ color: "#0f62fe" }}>
+          IBM
+        </span>
+      );
     case "github":
       return (
         <span className="inline-flex items-center gap-2.5">
@@ -237,7 +248,7 @@ export function Certificates() {
   const { top, more } = useMemo(() => {
     const mk = () =>
       ({
-        google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [], python: [], uol: [],
+        google: [], aws: [], adobe: [], microsoft: [], github: [], siemens: [], revit: [], cpp: [], python: [], uol: [], ibm: [],
         pmi: [], iiba: [], linkedin: [],
       }) as Record<BrandKey, number[]>;
     const top = mk();
@@ -342,7 +353,7 @@ export function Certificates() {
         <SectionHeading
           kicker="Certified"
           title="Certificates"
-          lede="Credentials from Google, Amazon, Adobe, Microsoft, GitHub, Siemens, Autodesk Revit, C++, Python and the University of London — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
+          lede="Credentials from Google, Amazon, Adobe, Microsoft, IBM, GitHub, Siemens, Autodesk Revit, C++, Python and the University of London — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
         />
 
         {/* PROFESSIONAL CERTIFICATES — the multi-course programs, in their own box */}
