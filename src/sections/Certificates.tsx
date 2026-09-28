@@ -160,19 +160,43 @@ function BrandLogo({ brand }: { brand: BrandKey }) {
         </span>
       );
     case "uol":
-      // Simplified University of London shield (their real crest is more detailed —
-      // send the official SVG, as you did for Revit, to swap in the exact one) +
-      // wordmark in their navy/red.
+      // University of London crest (from Simon's reference image): open book on blue,
+      // red cross on white, crowned Tudor rose + star in a gold sunburst at the centre.
       return (
         <span className="inline-flex items-center gap-2.5">
-          <svg width="28" height="32" viewBox="0 0 28 32" aria-hidden>
-            <path d="M2 2h24v14c0 9-8 13-12 14C10 29 2 25 2 16V2Z" fill="#1d2a5c" />
-            <path d="M5 5h9v11H5z" fill="#fff" />
-            <rect x="6.3" y="6.3" width="6.4" height="1.4" fill="#1d2a5c" />
-            <rect x="6.3" y="8.6" width="6.4" height="1.4" fill="#1d2a5c" />
-            <rect x="6.3" y="10.9" width="6.4" height="1.4" fill="#1d2a5c" />
-            <path d="M15 5h8v18c-2.5 3-5.5 4.6-8 5.3V5Z" fill="#c8102e" />
-            <circle cx="19" cy="14" r="2.6" fill="#fff" />
+          <svg width="30" height="39" viewBox="0 0 100 130" aria-hidden>
+            <defs>
+              <clipPath id="uol-shield"><path d="M2 2h96v55c0 42-38 62-48 68C40 119 2 99 2 57V2Z" /></clipPath>
+            </defs>
+            <g clipPath="url(#uol-shield)">
+              <rect x="0" y="0" width="100" height="130" fill="#fff" />
+              <rect x="0" y="0" width="100" height="26" fill="#1b3f8f" />
+              <rect x="44" y="26" width="12" height="104" fill="#d81f2a" />
+              <rect x="0" y="48" width="100" height="18" fill="#d81f2a" />
+              <g transform="translate(50,26)">
+                <rect x="-15" y="4" width="30" height="10" rx="2" fill="#fff" stroke="#1b3f8f" strokeWidth="1.5" />
+                <line x1="-11" y1="6" x2="-11" y2="12" stroke="#1b3f8f" strokeWidth="0.7" />
+                <line x1="-7" y1="6" x2="-7" y2="12.5" stroke="#1b3f8f" strokeWidth="0.7" />
+                <line x1="-3" y1="6" x2="-3" y2="13" stroke="#1b3f8f" strokeWidth="0.7" />
+                <line x1="3" y1="6" x2="3" y2="13" stroke="#1b3f8f" strokeWidth="0.7" />
+                <line x1="7" y1="6" x2="7" y2="12.5" stroke="#1b3f8f" strokeWidth="0.7" />
+                <line x1="11" y1="6" x2="11" y2="12" stroke="#1b3f8f" strokeWidth="0.7" />
+                <path d="M-15 6 l-6 2 6 2Z" fill="#f2a13a" />
+                <path d="M15 6 l6 2-6 2Z" fill="#f2a13a" />
+              </g>
+              <g transform="translate(50,57)">
+                <g stroke="#f2a13a" strokeWidth="1.2">
+                  <line x1="0" y1="-18" x2="0" y2="18" />
+                  <line x1="-18" y1="0" x2="18" y2="0" />
+                  <line x1="-13" y1="-13" x2="13" y2="13" />
+                  <line x1="13" y1="-13" x2="-13" y2="13" />
+                </g>
+                <circle cx="0" cy="0" r="9" fill="#d81f2a" />
+                <circle cx="0" cy="0" r="6.4" fill="#fff" />
+                <circle cx="0" cy="0" r="2.6" fill="#f2a13a" />
+              </g>
+            </g>
+            <path d="M2 2h96v55c0 42-38 62-48 68C40 119 2 99 2 57V2Z" fill="none" stroke="#000" strokeWidth="2.5" />
           </svg>
           <span className="flex flex-col leading-none">
             <span className="text-lg font-bold text-ink">University</span>
