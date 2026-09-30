@@ -11,14 +11,19 @@ import { SectionHeading } from "@/components/ui/SectionHeading";
  * to live inside the footer (FooterDash.tsx is left in the codebase, unused, same
  * as FooterTetris before it).
  *
- * Two edits were made to the source file itself (see public/geometry-dash.html):
+ * Edits made to the source file itself (see public/geometry-dash.html):
  *   1. its 4 built-in colour themes now use the SITE's real theme colours (vivid /
- *      mono / blueprint / golden hour) instead of arbitrary purple/cyan/matrix ones.
+ *      mono / blueprint / golden hour) instead of arbitrary purple/cyan/matrix ones,
+ *      and default to golden hour (orange) — where this section sits on the page.
  *   2. it auto-syncs to whichever theme is currently active on the site (reads
  *      the parent document's data-theme on load, and re-applies on the site's own
  *      "themechange" event) since this loads same-origin via <iframe> — so the
  *      game never looks mismatched against the section around it the way the old
  *      blue-on-orange screenshot did.
+ *   3. its own SIMAX-branded header bar (a duplicate of this site's real nav, with
+ *      its own theme dropdown and sound toggle) and its bottom controls footer are
+ *      hidden — Simon wanted only the actual game engine, not a second nav wrapped
+ *      around it. The controls hint moved down into this component instead.
  */
 export function GeometryDashSection() {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -60,6 +65,9 @@ export function GeometryDashSection() {
           />
         )}
       </div>
+      <p className="mx-auto mt-4 max-w-[1100px] text-center text-[0.68rem] uppercase tracking-wider2 text-faint">
+        Space / Up / Click = Jump · Z = Checkpoint · X = Remove checkpoint
+      </p>
     </section>
   );
 }

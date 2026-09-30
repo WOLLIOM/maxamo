@@ -116,7 +116,7 @@
     <canvas id="bg-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
 
     <!-- Top SIMAX Global Header Bar -->
-    <header class="w-full max-w-6xl flex justify-between items-center z-10 py-2 px-4 glass-pill mb-4">
+    <header class="w-full max-w-6xl flex justify-between items-center z-10 py-2 px-4 glass-pill mb-4" style="display:none">
         <div class="flex items-center space-x-3">
             <div class="w-8 h-8 rounded-lg border border-purple-400/40 flex items-center justify-center bg-purple-950/40 shadow-lg shadow-purple-500/20">
                 <span class="font-cinzel text-xs font-bold text-purple-300">S</span>
@@ -137,8 +137,8 @@
             <!-- Theme Selector Dropdown Button -->
             <div class="relative group">
                 <button id="btn-theme-menu" class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-slate-200 flex items-center space-x-2 transition">
-                    <span class="w-2.5 h-2.5 rounded-full animate-pulse" id="theme-indicator-dot" style="background:#8b5cf6"></span>
-                    <span id="lbl-active-theme">SIMAX VIVID</span>
+                    <span class="w-2.5 h-2.5 rounded-full animate-pulse" id="theme-indicator-dot" style="background:#d65630"></span>
+                    <span id="lbl-active-theme">GOLDEN HOUR</span>
                     <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
                 <div id="theme-dropdown" class="absolute right-0 mt-2 w-48 glass-panel rounded-2xl p-2 hidden z-50 shadow-2xl flex-col space-y-1">
@@ -169,7 +169,7 @@
         </div>
     </header>
 
-    <main id="game" class="relative w-full max-w-5xl aspect-[16/9] glass-panel rounded-3xl overflow-hidden z-10 flex flex-col shadow-2xl border border-white/10">
+    <main id="game" class="relative w-full max-w-5xl aspect-[16/9] glass-panel rounded-3xl overflow-hidden z-10 flex flex-col shadow-2xl border border-white/10 mt-2">
         
         <!-- Top In-Game HUD Header -->
         <div id="hud-header" class="w-full bg-black/40 border-b border-white/10 px-4 py-2.5 flex justify-between items-center z-20 backdrop-blur-md">
@@ -366,7 +366,7 @@
         </div>
     </main>
 
-    <footer class="w-full max-w-6xl flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 font-mono z-10 mt-3 px-2 gap-2">
+    <footer class="w-full max-w-6xl flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 font-mono z-10 mt-3 px-2 gap-2" style="display:none">
         <div>CONTROLS: <span class="text-slate-300">SPACE / UP / CLICK</span> = JUMP · <span class="text-slate-300">Z</span> = CHECKPOINT · <span class="text-slate-300">X</span> = REMOVE CHECKPOINT</div>
         <div>SIMAX INTERACTIVE PORTFOLIO ENGINE</div>
     </footer>
@@ -435,7 +435,7 @@
             }
         };
 
-        let currentThemeKey = 'vivid';
+        let currentThemeKey = 'evening';
 
         class BackgroundCanvas {
             constructor() {
@@ -1433,13 +1433,13 @@
                 const t = window.parent.document.documentElement.getAttribute('data-theme');
                 if (t && EngineConfig.THEMES[t]) return t;
             } catch (e) { /* cross-origin or standalone — fall back below */ }
-            return 'vivid';
+            return 'evening';
         }
         try {
             applyTheme(siteThemeKey());
             window.parent.addEventListener('themechange', () => applyTheme(siteThemeKey()));
         } catch (e) {
-            applyTheme('vivid');
+            applyTheme('evening');
         }
 
         window.onload = () => {
