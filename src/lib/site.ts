@@ -368,16 +368,6 @@ export const certificates: {
     blurb: "Python fundamentals applied to financial analysis.",
   },
   {
-    title: "Google Ads Search Professional Certification",
-    shortTitle: "Google Ads Search Certificate",
-    image: "/certificates/google-ads-search.png",
-    issuer: "Google · Skillshop",
-    date: "Aug 2026",
-    category: "Business",
-    tier: 2,
-    blurb: "Google Ads Search expertise — search campaigns, optimization, and performance measurement.",
-  },
-  {
     title: "Advanced SEO: Developing an SEO-Friendly Website",
     shortTitle: "SEO Certificate",
     image: "/certificates/advanced-seo.png",

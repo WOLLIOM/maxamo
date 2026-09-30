@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Reveal } from "@/components/ui/Reveal";
 import { SectionHeading } from "@/components/ui/SectionHeading";
 import { certificates } from "@/lib/site";
+import { TiltCard } from "@/components/ui/TiltCard";
+import { useGyroPermissionButton } from "@/lib/useDeviceTilt";
 
 /* ---------------------------------------------------------------------------
    Certificates, grouped by ISSUER so the prestige reads instantly:
@@ -241,6 +243,7 @@ export function Certificates() {
   const [active, setActive] = useState<number | null>(null);
   const [showAll, setShowAll] = useState(false);
   const activeCert = active !== null ? certificates[active] : null;
+  const { needsPrompt: needsGyroTap, request: requestGyro } = useGyroPermissionButton();
 
   // Ranked best -> worst by `tier` (see site.ts), then original order.
   const ranked = useMemo(() => {
@@ -277,6 +280,16 @@ export function Certificates() {
   const moreBrands = order(more);
   const moreCount = moreBrands.reduce((n, b) => n + more[b].length, 0);
 
+  // Issuer logo wall: every featured brand with its total credential count.
+  const wall = FEATURED.map((b) => ({
+    brand: b,
+    n: certificates.filter((c) => brandOf(c.issuer, c.title) === b).length,
+  })).filter((w) => w.n > 0);
+  const verifyUrl = (blurb: string) => {
+    const m = blurb.match(/coursera\.org\/verify\/\S+/);
+    return m ? `https://${m[0].replace(/[.)]+$/, "")}` : null;
+  };
+
   // Card layout: the cert NAME leads, big and bold — the scanned certificate
   // itself is a small proof-of-work thumbnail tucked inside the card rather
   // than the dominant visual (it used to fill most of the card).
@@ -284,10 +297,12 @@ export function Certificates() {
     const c = certificates[i];
     return (
       <Reveal key={c.title} delay={idx} variant="scale" className="flex-1 basis-[280px]">
-        <button
-          type="button"
+        <TiltCard
+          as="button"
+          glow={color}
+          max={8}
           onClick={() => setActive(i)}
-          className="group relative flex h-full w-full flex-col gap-4 overflow-hidden rounded-2xl border bg-surface/40 p-4 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 md:p-5"
+          className="group flex h-full w-full cursor-pointer flex-col gap-4 overflow-hidden rounded-2xl border bg-surface/40 p-4 text-left backdrop-blur-sm md:p-5"
           style={{ borderColor: `${color}55` }}
         >
           <span
@@ -318,7 +333,7 @@ export function Certificates() {
           <span className="mt-auto text-[0.62rem] uppercase tracking-wider2 text-faint">
             {c.date}
           </span>
-        </button>
+        </TiltCard>
       </Reveal>
     );
   };
@@ -361,8 +376,57 @@ export function Certificates() {
         <SectionHeading
           kicker="Certified"
           title="Certificates"
-          lede="Credentials from Google, Amazon, Adobe, Microsoft, IBM, GitHub, Siemens, Autodesk Revit, C++, Python and the University of London — plus focused coursework across 3D, code and data. Tap any card to see the certificate."
+          lede="Simon Maxam's verified credentials from Google, Amazon Web Services, IBM, Microsoft, Adobe, GitHub, Siemens, Autodesk and the University of London. Tap any card to see the certificate."
         />
+
+        <Reveal delay={1}>
+          <dl className="mt-8 grid grid-cols-3 gap-4 border-y border-line/60 py-6 md:max-w-xl">
+            {[
+              { k: "Certificates", v: `${certificates.length}` },
+              { k: "Professional programs", v: `${programs.length}` },
+              { k: "Issuers", v: `${wall.length}` },
+            ].map((x) => (
+              <div key={x.k}>
+                <dt className="text-[0.6rem] uppercase tracking-wider2 text-faint">{x.k}</dt>
+                <dd className="mt-1 font-serif text-3xl text-ink md:text-4xl">{x.v}</dd>
+              </div>
+            ))}
+          </dl>
+        </Reveal>
+
+        {/* Issuer logo wall: the big names, at a glance */}
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+          {wall.slice(0, 10).map((w, i) => (
+            <Reveal key={w.brand} delay={i % 5} variant="scale">
+              <TiltCard
+                glow={BRAND[w.brand].color}
+                max={12}
+                className="flex h-20 items-center justify-between gap-3 rounded-2xl border bg-surface/40 px-4 backdrop-blur-sm"
+                style={{ borderColor: `${BRAND[w.brand].color}44` }}
+              >
+                <div className="origin-left scale-[0.8]">
+                  <BrandLogo brand={w.brand} />
+                </div>
+                <span
+                  className="rounded-full px-2 py-0.5 text-[0.6rem] font-semibold"
+                  style={{ background: `${BRAND[w.brand].color}22`, color: BRAND[w.brand].color }}
+                >
+                  {w.n}
+                </span>
+              </TiltCard>
+            </Reveal>
+          ))}
+        </div>
+
+        {needsGyroTap && (
+          <button
+            type="button"
+            onClick={requestGyro}
+            className="mt-5 rounded-full border border-line px-4 py-2 text-[0.62rem] uppercase tracking-wider2 text-ink"
+          >
+            Tap to enable tilt
+          </button>
+        )}
 
         {/* PROFESSIONAL CERTIFICATES — the multi-course programs, in their own box.
             Neutral outer shell; each card carries its own issuer's colour and logo
@@ -383,17 +447,14 @@ export function Certificates() {
                 const brand = brandOf(c.issuer, c.title);
                 const color = BRAND[brand].color;
                 return (
-                  <button
+                  <TiltCard
                     key={c.title}
-                    type="button"
+                    as="button"
+                    glow={color}
+                    max={7}
                     onClick={() => setActive(i)}
-                    className="group relative flex flex-col overflow-hidden rounded-2xl border bg-bg/60 p-5 text-left backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5"
-                    style={{
-                      borderColor: `${color}55`,
-                      boxShadow: "0 0 0 0 transparent",
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.boxShadow = `0 16px 40px -12px ${color}55`)}
-                    onMouseLeave={(e) => (e.currentTarget.style.boxShadow = "0 0 0 0 transparent")}
+                    className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border bg-bg/60 p-5 text-left backdrop-blur-sm"
+                    style={{ borderColor: `${color}66`, boxShadow: `0 18px 50px -24px ${color}88` }}
                   >
                     {/* per-issuer glow, top-right — this is where each card gets its own vibe */}
                     <span
@@ -405,7 +466,7 @@ export function Certificates() {
 
                     <div className="relative flex items-start justify-between gap-4">
                       <div className="min-w-0 flex-1">
-                        <div className="mb-1 scale-[0.62] origin-left opacity-90">
+                        <div className="mb-2 origin-left scale-[0.9]">
                           <BrandLogo brand={brand} />
                         </div>
                         <span className="block text-[0.6rem] uppercase tracking-wider2 text-faint">
@@ -417,12 +478,12 @@ export function Certificates() {
                           {c.shortTitle}
                         </span>
                       </div>
-                      <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white shadow-lg md:h-24 md:w-32">
+                      <div className="relative h-24 w-32 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white shadow-lg md:h-28 md:w-40">
                         <Image
                           src={thumbOf(c.image)}
                           alt={`${c.title} certificate`}
                           fill
-                          sizes="128px"
+                          sizes="160px"
                           className="object-cover transition-transform duration-300 group-hover:scale-[1.06]"
                         />
                       </div>
@@ -431,9 +492,9 @@ export function Certificates() {
                       <span className="relative mt-3 block text-sm leading-snug text-muted">{c.plain}</span>
                     )}
                     <span className="relative mt-4 block text-[0.62rem] uppercase tracking-wider2 text-faint">
-                      {c.date}
+                      Issued to Simon Maxam · {c.date}
                     </span>
-                  </button>
+                  </TiltCard>
                 );
               })}
             </div>
@@ -526,7 +587,19 @@ export function Certificates() {
                   {activeCert.issuer} - {activeCert.date}
                 </p>
 
-                <p className="mt-4 text-sm leading-relaxed text-muted">{activeCert.blurb}</p>
+                <p className="mt-4 text-sm leading-relaxed text-muted">
+                  {activeCert.blurb.replace(/\s*Verify: \S+$/, "")}
+                </p>
+                {verifyUrl(activeCert.blurb) && (
+                  <a
+                    href={verifyUrl(activeCert.blurb)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-4 inline-block rounded-full border border-line px-4 py-2 text-[0.62rem] uppercase tracking-wider2 text-ink transition-colors hover:text-accent"
+                  >
+                    Verify on Coursera ↗
+                  </a>
+                )}
               </div>
             </motion.div>
           </motion.div>

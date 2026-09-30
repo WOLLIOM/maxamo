@@ -122,8 +122,8 @@ export default function AboutPage() {
           <Reveal delay={1}>
             <div className="flex flex-col gap-6 text-base leading-relaxed text-muted md:text-lg">
               <p>
-                I&apos;m <strong className="text-ink">Simon Maxam</strong>, born{" "}
-                June 9, 2010, and based in{" "}
+                I&apos;m <strong className="text-ink">Simon Maxam</strong>, a
+                developer, 3D artist and musician based in{" "}
                 <strong className="text-ink">Calgary, Alberta, Canada</strong>. I&apos;m
                 a multidisciplinary creator with a passion for combining
                 technology, creativity, architecture, game development, web

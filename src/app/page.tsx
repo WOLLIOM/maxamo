@@ -52,10 +52,10 @@ export default function HomePage() {
       <Scene theme="vivid" />
       <Hero />
       {FEATURE_FLAGS.story && <Story />}
-      {FEATURE_FLAGS.gallery && <GalleryPreview />}
-      {FEATURE_FLAGS.awards && <Awards />}
       <Scene theme="mono" />
       {FEATURE_FLAGS.certificates && <Certificates />}
+      {FEATURE_FLAGS.gallery && <GalleryPreview />}
+      {FEATURE_FLAGS.awards && <Awards />}
       {FEATURE_FLAGS.pizza && <PizzaShowcase />}
       {FEATURE_FLAGS.processSpectrum && <ProcessSpectrum />}
       <TextMarquee text="THE ANSWER IS YES WE DO IT · THE ANSWER IS YES WE DO IT ·" />
