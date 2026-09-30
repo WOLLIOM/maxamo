@@ -52,15 +52,18 @@ export function GeometryDashSection() {
         align="center"
         lede="A full game engine, built for this site — physics, a level editor, its own soundtrack. Matches whatever theme you're currently on."
       />
-      <div
-        ref={boxRef}
-        className="relative mx-auto mt-10 aspect-[16/9] w-full max-w-[1100px] overflow-hidden rounded-3xl border border-line/60 bg-black shadow-2xl"
-      >
+      {/* No border/shadow/rounded card here on purpose — Simon's feedback was that a
+          framed box with its own mismatched background read as "a YouTube video
+          embedded in the page," not part of it. The iframe's own background is the
+          live theme colour (see geometry-dash.html), so it now blends straight into
+          this section instead of sitting in a visible container. */}
+      <div ref={boxRef} className="relative mx-auto mt-10 aspect-[16/9] w-full max-w-[1100px] overflow-hidden">
         {near && (
           <iframe
             src="/geometry-dash.html"
             title="Geometry Dash"
             className="absolute inset-0 h-full w-full"
+            style={{ border: "none", background: "transparent" }}
             loading="lazy"
           />
         )}

@@ -38,11 +38,11 @@
             --color-grid: rgba(168, 85, 247, 0.15);
         }
 
+        html, body { height: 100%; margin: 0; overflow: hidden; }
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-dark);
             color: #f8fafc;
-            overflow-x: hidden;
             user-select: none;
             -webkit-user-select: none;
         }
@@ -111,7 +111,7 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="min-h-screen w-full flex flex-col items-center justify-between p-3 sm:p-6 relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-950/40 via-[#0a0814] to-[#04030a]">
+<body class="h-full w-full flex flex-col items-center justify-center relative overflow-hidden">
 
     <canvas id="bg-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
 
@@ -169,7 +169,7 @@
         </div>
     </header>
 
-    <main id="game" class="relative w-full max-w-5xl aspect-[16/9] glass-panel rounded-3xl overflow-hidden z-10 flex flex-col shadow-2xl border border-white/10 mt-2">
+    <main id="game" class="relative w-full h-full max-w-5xl aspect-[16/9] overflow-hidden z-10 flex flex-col">
         
         <!-- Top In-Game HUD Header -->
         <div id="hud-header" class="w-full bg-black/40 border-b border-white/10 px-4 py-2.5 flex justify-between items-center z-20 backdrop-blur-md">
