@@ -13,6 +13,7 @@ import { GalleryPreview } from "@/sections/GalleryPreview";
 import { Testimonials } from "@/sections/Testimonials";
 import { Newsletter } from "@/sections/Newsletter";
 import { FAQ } from "@/sections/FAQ";
+import { GeometryDashSection } from "@/sections/GeometryDashSection";
 import { TextMarquee } from "@/components/ui/TextMarquee";
 import { PixelMarquee } from "@/components/ui/PixelMarquee";
 import { ScrollThemer } from "@/components/experience/ScrollThemer";
@@ -76,6 +77,7 @@ export default function HomePage() {
       <Scene theme="evening" />
       {FEATURE_FLAGS.newsletter && <Newsletter />}
       {FEATURE_FLAGS.faq && <FAQ />}
+      <GeometryDashSection />
     </>
   );
 }

@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geometry Dash — SIMAX Interactive Portfolio Edition</title>
+
+    <!-- Google Fonts: Cinzel for SIMAX serif header, Inter for sleek modern UI -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN for Glassmorphism & Layout styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['Cinzel', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --bg-dark: #0a0814;
+            --bg-accent: #170d2b;
+            --color-primary: #a855f7;
+            --color-secondary: #00f3ff;
+            --color-highlight: #f43f5e;
+            --color-block: #1e1138;
+            --color-ground: #120924;
+            --color-grid: rgba(168, 85, 247, 0.15);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: #f8fafc;
+            overflow-x: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .font-cinzel { font-family: 'Cinzel', serif; }
+
+        /* SIMAX Glassmorphism & Pill UI Elements */
+        .glass-panel {
+            background: rgba(15, 12, 29, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 9999px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-pill:hover {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--color-primary);
+            box-shadow: 0 0 20px rgba(168, 85, 247, 0.35);
+            transform: translateY(-2px);
+        }
+
+        .btn-glow-primary {
+            background: linear-gradient(135deg, var(--color-primary), #7c3aed);
+            border-radius: 9999px;
+            box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+            transition: all 0.25s ease;
+        }
+
+        .btn-glow-primary:hover {
+            box-shadow: 0 0 35px rgba(168, 85, 247, 0.7);
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .btn-glow-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 9999px;
+            transition: all 0.25s ease;
+        }
+
+        .btn-glow-secondary:hover {
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* Neon Glow Effects */
+        .text-glow {
+            text-shadow: 0 0 15px var(--color-primary), 0 0 30px var(--color-primary);
+        }
+
+        .text-glow-cyan {
+            text-shadow: 0 0 15px #00f3ff, 0 0 30px #00f3ff;
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="min-h-screen w-full flex flex-col items-center justify-between p-3 sm:p-6 relative bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-950/40 via-[#0a0814] to-[#04030a]">
+
+    <canvas id="bg-canvas" class="fixed inset-0 w-full h-full pointer-events-none z-0 opacity-40"></canvas>
+
+    <!-- Top SIMAX Global Header Bar -->
+    <header class="w-full max-w-6xl flex justify-between items-center z-10 py-2 px-4 glass-pill mb-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 rounded-lg border border-purple-400/40 flex items-center justify-center bg-purple-950/40 shadow-lg shadow-purple-500/20">
+                <span class="font-cinzel text-xs font-bold text-purple-300">S</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="font-cinzel tracking-[0.2em] font-bold text-sm sm:text-base text-slate-100">SIMAX</span>
+                <span class="text-[9px] tracking-[0.25em] text-purple-400/80 uppercase font-mono">WEB · APPS · 3D · CODE</span>
+            </div>
+        </div>
+
+        <nav class="hidden md:flex items-center space-x-6 text-xs tracking-widest text-slate-300 font-mono">
+            <a href="#game" class="hover:text-purple-400 transition">GEOMETRY DASH</a>
+            <a href="#editor" class="hover:text-cyan-400 transition">LEVEL BUILDER</a>
+            <a href="#themes" class="hover:text-pink-400 transition">THEMES</a>
+        </nav>
+
+        <div class="flex items-center space-x-3">
+            <!-- Theme Selector Dropdown Button -->
+            <div class="relative group">
+                <button id="btn-theme-menu" class="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono text-slate-200 flex items-center space-x-2 transition">
+                    <span class="w-2.5 h-2.5 rounded-full animate-pulse" id="theme-indicator-dot" style="background:#8b5cf6"></span>
+                    <span id="lbl-active-theme">SIMAX VIVID</span>
+                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                </button>
+                <div id="theme-dropdown" class="absolute right-0 mt-2 w-48 glass-panel rounded-2xl p-2 hidden z-50 shadow-2xl flex-col space-y-1">
+                    <button class="btn-select-theme w-full text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-200 hover:bg-white/10 transition flex items-center space-x-2" data-theme="vivid">
+                        <span class="w-3 h-3 rounded-full" style="background:#8b5cf6"></span>
+                        <span>SIMAX VIVID</span>
+                    </button>
+                    <button class="btn-select-theme w-full text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-200 hover:bg-white/10 transition flex items-center space-x-2" data-theme="mono">
+                        <span class="w-3 h-3 rounded-full" style="background:#ececf0"></span>
+                        <span>MONOCHROME</span>
+                    </button>
+                    <button class="btn-select-theme w-full text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-200 hover:bg-white/10 transition flex items-center space-x-2" data-theme="blueprint">
+                        <span class="w-3 h-3 rounded-full" style="background:#7aa5ff"></span>
+                        <span>BLUEPRINT</span>
+                    </button>
+                    <button class="btn-select-theme w-full text-left px-3 py-2 rounded-xl text-xs font-mono text-slate-200 hover:bg-white/10 transition flex items-center space-x-2" data-theme="evening">
+                        <span class="w-3 h-3 rounded-full" style="background:#d65630"></span>
+                        <span>GOLDEN HOUR</span>
+                    </button>
+                    <p class="px-3 pt-1.5 text-[9px] font-mono text-slate-500 leading-snug border-t border-white/10 mt-1">Auto-matches the site theme as you scroll — pick one here to preview it.</p>
+                </div>
+            </div>
+
+            <button id="btn-global-audio" class="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-purple-300 transition">
+                <svg id="icon-sound-on" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                <svg id="icon-sound-off" class="w-4 h-4 hidden text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15zM17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <main id="game" class="relative w-full max-w-5xl aspect-[16/9] glass-panel rounded-3xl overflow-hidden z-10 flex flex-col shadow-2xl border border-white/10">
+        
+        <!-- Top In-Game HUD Header -->
+        <div id="hud-header" class="w-full bg-black/40 border-b border-white/10 px-4 py-2.5 flex justify-between items-center z-20 backdrop-blur-md">
+            <div class="flex items-center space-x-3">
+                <span id="hud-level-title" class="font-cinzel text-purple-300 font-bold text-xs sm:text-sm tracking-widest">SIMAX VIVID</span>
+                <span id="hud-attempt" class="text-[10px] sm:text-xs text-pink-400 font-mono bg-pink-950/40 px-2.5 py-1 rounded-full border border-pink-500/30">ATTEMPT 1</span>
+                <span id="hud-practice-tag" class="hidden text-[10px] text-amber-300 font-bold font-mono bg-amber-950/40 px-2.5 py-1 rounded-full border border-amber-500/30 animate-pulse">PRACTICE</span>
+            </div>
+
+            <!-- Level Progress Bar -->
+            <div class="flex-1 max-w-xs sm:max-w-md mx-4 flex items-center space-x-3">
+                <div class="w-full bg-slate-900/80 h-2.5 rounded-full overflow-hidden border border-white/10 relative">
+                    <div id="hud-progress-fill" class="bg-gradient-to-r from-purple-500 via-cyan-400 to-pink-500 h-full w-0% transition-all duration-75"></div>
+                </div>
+                <span id="hud-progress-text" class="text-xs font-mono text-cyan-300 w-9 text-right font-bold">0%</span>
+            </div>
+
+            <!-- Practice & Pause Controls -->
+            <div class="flex items-center space-x-2">
+                <button id="btn-toggle-practice" class="px-3 py-1 rounded-full bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-mono font-semibold transition">PRACTICE (Z)</button>
+                <button id="btn-pause-game" class="p-1.5 rounded-full bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10 transition">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9v6m4-6v6m7-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Canvas Game viewport -->
+        <div class="relative flex-1 w-full h-full bg-black overflow-hidden">
+            <canvas id="gameCanvas" class="w-full h-full block touch-none cursor-pointer"></canvas>
+
+            <!-- Screen 1: Main Menu Overlay -->
+            <div id="screen-main-menu" class="absolute inset-0 bg-[#0a0814]/85 backdrop-blur-xl flex flex-col items-center justify-center p-6 z-30">
+                <span class="text-xs font-mono tracking-[0.4em] text-purple-400 uppercase mb-2">INTERACTIVE PORTFOLIO ENGINE</span>
+                <h1 class="font-cinzel text-4xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-slate-100 via-purple-200 to-cyan-300 mb-2 tracking-wider text-center">
+                    GEOMETRY DASH
+                </h1>
+                <p class="text-slate-400 text-xs sm:text-sm font-sans mb-8 max-w-md text-center">
+                    A high-performance 2D engine built for the SIMAX ecosystem. Custom physics, level builder, and AI JSON loader.
+                </p>
+
+                <div class="flex flex-col sm:flex-row gap-4 w-full max-w-md mb-6">
+                    <button id="btn-menu-play" class="btn-glow-primary flex-1 py-3.5 px-6 font-cinzel font-bold text-sm tracking-widest text-white flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4 text-cyan-300" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                        <span>PLAY LEVELS</span>
+                    </button>
+                    <button id="btn-menu-skins" class="btn-glow-secondary flex-1 py-3.5 px-6 font-cinzel font-bold text-sm tracking-widest text-slate-200 hover:text-cyan-300">
+                        CUBE SKINS
+                    </button>
+                </div>
+
+                <div class="flex gap-4 w-full max-w-md">
+                    <button id="btn-menu-editor" class="btn-glow-secondary w-full py-3 px-6 font-mono text-xs text-purple-300 hover:border-purple-400 flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        <span>LEVEL EDITOR & CLAUDE JSON</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Screen 2: Level Select -->
+            <div id="screen-level-select" class="absolute inset-0 bg-[#0a0814]/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 z-30 hidden">
+                <h2 class="font-cinzel text-2xl sm:text-3xl font-bold text-slate-100 mb-6 tracking-widest">SELECT TRACK</h2>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full max-w-3xl mb-8">
+                    <!-- Level 1 Card -->
+                    <div class="level-card glass-panel rounded-2xl p-5 flex flex-col items-center text-center hover:border-purple-400/60 transition cursor-pointer group" data-level="0">
+                        <div class="w-12 h-12 rounded-full bg-purple-500/20 text-purple-300 flex items-center justify-center font-bold text-lg mb-3 font-cinzel group-hover:scale-110 transition">01</div>
+                        <h3 class="font-cinzel font-bold text-sm text-slate-100 mb-1">SIMAX VIVID</h3>
+                        <p class="text-[11px] text-slate-400 font-mono">Speed: 1.0x · Easy</p>
+                    </div>
+
+                    <!-- Level 2 Card -->
+                    <div class="level-card glass-panel rounded-2xl p-5 flex flex-col items-center text-center hover:border-cyan-400/60 transition cursor-pointer group" data-level="1">
+                        <div class="w-12 h-12 rounded-full bg-cyan-500/20 text-cyan-300 flex items-center justify-center font-bold text-lg mb-3 font-cinzel group-hover:scale-110 transition">02</div>
+                        <h3 class="font-cinzel font-bold text-sm text-slate-100 mb-1">CYBER PURSUIT</h3>
+                        <p class="text-[11px] text-slate-400 font-mono">Speed: 1.25x · Normal</p>
+                    </div>
+
+                    <!-- Level 3 Card -->
+                    <div class="level-card glass-panel rounded-2xl p-5 flex flex-col items-center text-center hover:border-pink-400/60 transition cursor-pointer group" data-level="2">
+                        <div class="w-12 h-12 rounded-full bg-pink-500/20 text-pink-300 flex items-center justify-center font-bold text-lg mb-3 font-cinzel group-hover:scale-110 transition">03</div>
+                        <h3 class="font-cinzel font-bold text-sm text-slate-100 mb-1">SYNTH WAVE RUN</h3>
+                        <p class="text-[11px] text-slate-400 font-mono">Speed: 1.4x · Hard</p>
+                    </div>
+                </div>
+
+                <button id="btn-back-levels" class="glass-pill px-8 py-2.5 text-xs font-mono text-slate-300">
+                    RETURN TO MENU
+                </button>
+            </div>
+
+            <!-- Screen 3: Skin Customizer -->
+            <div id="screen-skins" class="absolute inset-0 bg-[#0a0814]/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 z-30 hidden">
+                <h2 class="font-cinzel text-2xl font-bold text-purple-300 mb-6 tracking-widest">CUBE CUSTOMIZER</h2>
+                
+                <div class="flex flex-col sm:flex-row items-center gap-8 mb-8 glass-panel p-6 rounded-3xl border border-white/10">
+                    <div class="w-28 h-28 bg-black/60 rounded-2xl border border-purple-500/30 flex items-center justify-center p-3 shadow-inner">
+                        <canvas id="skinCanvas" width="80" height="80" class="block"></canvas>
+                    </div>
+
+                    <div class="flex flex-col gap-4">
+                        <div>
+                            <label class="block text-[11px] font-mono text-purple-300 mb-2">PRIMARY NEON</label>
+                            <div class="flex gap-2.5">
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#00f3ff] border-2 border-white/80 transition transform hover:scale-110" data-type="primary" data-color="#00f3ff"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#a855f7] transition transform hover:scale-110" data-type="primary" data-color="#a855f7"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#f43f5e] transition transform hover:scale-110" data-type="primary" data-color="#f43f5e"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#10b981] transition transform hover:scale-110" data-type="primary" data-color="#10b981"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#f59e0b] transition transform hover:scale-110" data-type="primary" data-color="#f59e0b"></button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-mono text-cyan-300 mb-2">ACCENT CORE</label>
+                            <div class="flex gap-2.5">
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#ffe600] border-2 border-white/80 transition transform hover:scale-110" data-type="accent" data-color="#ffe600"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#00f3ff] transition transform hover:scale-110" data-type="accent" data-color="#00f3ff"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#f43f5e] transition transform hover:scale-110" data-type="accent" data-color="#f43f5e"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#ffffff] transition transform hover:scale-110" data-type="accent" data-color="#ffffff"></button>
+                                <button class="btn-color w-7 h-7 rounded-full bg-[#a855f7] transition transform hover:scale-110" data-type="accent" data-color="#a855f7"></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="btn-back-skins" class="glass-pill px-8 py-2.5 text-xs font-mono text-slate-300">
+                    SAVE & RETURN
+                </button>
+            </div>
+
+            <!-- Screen 4: Pause Overlay -->
+            <div id="screen-pause" class="absolute inset-0 bg-[#0a0814]/80 backdrop-blur-md flex flex-col items-center justify-center p-6 z-30 hidden">
+                <h2 class="font-cinzel text-3xl font-bold text-amber-300 mb-8 tracking-widest">PAUSED</h2>
+                
+                <div class="flex flex-col gap-3 w-56">
+                    <button id="btn-pause-resume" class="btn-glow-primary py-3 text-xs font-mono font-bold text-white">RESUME</button>
+                    <button id="btn-pause-restart" class="glass-pill py-3 text-xs font-mono text-slate-200 hover:border-pink-500">RESTART TRACK</button>
+                    <button id="btn-pause-menu" class="glass-pill py-3 text-xs font-mono text-slate-400 hover:text-white">MAIN MENU</button>
+                </div>
+            </div>
+
+            <!-- Screen 5: Victory Overlay -->
+            <div id="screen-victory" class="absolute inset-0 bg-[#0a0814]/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 z-30 hidden">
+                <span class="text-xs font-mono tracking-[0.3em] text-cyan-400 mb-2">TRACK COMPLETED</span>
+                <h2 class="font-cinzel text-3xl sm:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-purple-300 to-emerald-400 mb-2 animate-bounce">
+                    VICTORY!
+                </h2>
+                <p id="victory-stats-text" class="font-mono text-xs text-slate-400 mb-8">COMPLETED IN 1 ATTEMPT</p>
+
+                <div class="flex gap-4">
+                    <button id="btn-victory-replay" class="glass-pill px-6 py-3 text-xs font-mono text-slate-200 hover:border-cyan-400">PLAY AGAIN</button>
+                    <button id="btn-victory-menu" class="btn-glow-primary px-6 py-3 text-xs font-mono font-bold text-white">MAIN MENU</button>
+                </div>
+            </div>
+
+            <!-- Editor Bottom Toolbar Bar -->
+            <div id="editor-bar" class="absolute bottom-0 left-0 right-0 bg-[#0d091e]/95 border-t border-white/10 p-3 z-30 hidden flex flex-col gap-2">
+                <div class="flex justify-between items-center overflow-x-auto no-scrollbar gap-3">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-[10px] font-mono text-purple-400 font-bold uppercase mr-1">TOOLS:</span>
+                        <button class="btn-tool px-3 py-1.5 bg-purple-500/20 border border-purple-400 rounded-lg text-xs font-mono text-purple-300" data-tool="block">BLOCK</button>
+                        <button class="btn-tool px-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-xs font-mono text-slate-300" data-tool="spike">SPIKE</button>
+                        <button class="btn-tool px-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-xs font-mono text-slate-300" data-tool="pad">PAD</button>
+                        <button class="btn-tool px-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-xs font-mono text-slate-300" data-tool="orb">ORB</button>
+                        <button class="btn-tool px-3 py-1.5 bg-slate-800/80 border border-slate-700 rounded-lg text-xs font-mono text-slate-300" data-tool="finish">FINISH</button>
+                        <button class="btn-tool px-3 py-1.5 bg-red-900/30 border border-red-500/40 rounded-lg text-xs font-mono text-red-300" data-tool="erase">ERASE</button>
+                    </div>
+
+                    <div class="flex items-center space-x-2">
+                        <button id="btn-editor-play" class="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400 rounded-lg text-xs font-mono font-bold text-emerald-300">TEST</button>
+                        <button id="btn-editor-json" class="px-3 py-1.5 bg-purple-600/30 hover:bg-purple-600/40 border border-purple-400 rounded-lg text-xs font-mono font-bold text-purple-300">JSON CODE</button>
+                        <button id="btn-editor-clear" class="px-3 py-1.5 bg-red-600/20 hover:bg-red-600/30 border border-red-500/30 rounded-lg text-xs font-mono text-red-300">CLEAR</button>
+                        <button id="btn-editor-exit" class="px-3 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-xs font-mono text-slate-300">EXIT</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal: Level JSON Export/Import for Claude AI -->
+            <div id="modal-json" class="absolute inset-0 bg-[#0a0814]/90 backdrop-blur-xl flex flex-col items-center justify-center p-6 z-40 hidden">
+                <div class="glass-panel rounded-3xl p-6 w-full max-w-xl flex flex-col gap-4 border border-white/10">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-cinzel font-bold text-purple-300 text-lg">CLAUDE AI LEVEL JSON</h3>
+                        <span class="text-[10px] font-mono text-cyan-400 bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-500/30">READ/WRITE</span>
+                    </div>
+                    <p class="text-xs text-slate-400">Copy this map structure to send to Claude, or paste Claude's generated level JSON below to import instantly:</p>
+                    <textarea id="json-textarea" class="w-full h-44 bg-black/80 text-emerald-400 font-mono text-xs p-3 rounded-2xl border border-slate-800 focus:outline-none focus:border-purple-500 no-scrollbar"></textarea>
+                    
+                    <div class="flex justify-end space-x-3">
+                        <button id="btn-json-load" class="btn-glow-primary px-5 py-2 text-xs font-mono text-white">LOAD MAP</button>
+                        <button id="btn-json-close" class="glass-pill px-5 py-2 text-xs font-mono text-slate-300">CLOSE</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="w-full max-w-6xl flex flex-col sm:flex-row justify-between items-center text-[11px] text-slate-500 font-mono z-10 mt-3 px-2 gap-2">
+        <div>CONTROLS: <span class="text-slate-300">SPACE / UP / CLICK</span> = JUMP · <span class="text-slate-300">Z</span> = CHECKPOINT · <span class="text-slate-300">X</span> = REMOVE CHECKPOINT</div>
+        <div>SIMAX INTERACTIVE PORTFOLIO ENGINE</div>
+    </footer>
+
+    <script>
+        const EngineConfig = {
+            INTERNAL_WIDTH: 1280,
+            INTERNAL_HEIGHT: 720,
+            TILE_SIZE: 60,
+            GROUND_HEIGHT: 140,
+            get GROUND_Y() { return this.INTERNAL_HEIGHT - this.GROUND_HEIGHT; },
+            
+            // Physics Engine Constants
+            GRAVITY: 1.2,
+            JUMP_FORCE: -20.0,
+            PAD_JUMP_FORCE: -26.0,
+            ORB_JUMP_FORCE: -19.0,
+            PLAYER_SIZE: 50,
+
+            // Themes matching SIMAX Aesthetic
+            THEMES: {
+                vivid: {
+                    name: 'SIMAX VIVID',
+                    bgDark: '#0e0c18',
+                    bgAccent: '#181428',
+                    primary: '#8b5cf6',
+                    secondary: '#ec4899',
+                    highlight: '#22d3ee',
+                    block: '#221c36',
+                    ground: '#181428',
+                    grid: 'rgba(139, 92, 246, 0.15)'
+                },
+                mono: {
+                    name: 'MONOCHROME',
+                    bgDark: '#09090b',
+                    bgAccent: '#141416',
+                    primary: '#ececf0',
+                    secondary: '#c6c6cc',
+                    highlight: '#d4d4d8',
+                    block: '#1e1e21',
+                    ground: '#141416',
+                    grid: 'rgba(236, 236, 240, 0.15)'
+                },
+                blueprint: {
+                    name: 'BLUEPRINT',
+                    bgDark: '#0b1c3a',
+                    bgAccent: '#10264c',
+                    primary: '#7aa5ff',
+                    secondary: '#96beff',
+                    highlight: '#82c8e6',
+                    block: '#163260',
+                    ground: '#10264c',
+                    grid: 'rgba(122, 165, 255, 0.15)'
+                },
+                evening: {
+                    name: 'GOLDEN HOUR',
+                    bgDark: '#1a0f13',
+                    bgAccent: '#251519',
+                    primary: '#d65630',
+                    secondary: '#e88c5a',
+                    highlight: '#dca862',
+                    block: '#311d21',
+                    ground: '#251519',
+                    grid: 'rgba(214, 86, 48, 0.15)'
+                }
+            }
+        };
+
+        let currentThemeKey = 'vivid';
+
+        class BackgroundCanvas {
+            constructor() {
+                this.canvas = document.getElementById('bg-canvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.angle = 0;
+                this.resize();
+                window.addEventListener('resize', () => this.resize());
+            }
+
+            resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            render() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+                this.angle += 0.005;
+
+                const theme = EngineConfig.THEMES[currentThemeKey];
+
+                // 1. Draw 3D Wireframe Box on Top Left (SIMAX Screenshot 1)
+                this.drawWireframeBox(140, 160, 80, theme.primary);
+
+                // 2. Draw 3D Geodesic Sphere Grid on Bottom Right (SIMAX Screenshot 1)
+                this.drawWireframeSphere(this.canvas.width - 150, this.canvas.height - 150, 100, theme.secondary);
+
+                requestAnimationFrame(() => this.render());
+            }
+
+            drawWireframeBox(cx, cy, size, color) {
+                const ctx = this.ctx;
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1.2;
+
+                const nodes = [
+                    [-1, -1, -1], [1, -1, -1], [1, 1, -1], [-1, 1, -1],
+                    [-1, -1, 1], [1, -1, 1], [1, 1, 1], [-1, 1, 1]
+                ];
+
+                const edges = [
+                    [0,1],[1,2],[2,3],[3,0],
+                    [4,5],[5,6],[6,7],[7,4],
+                    [0,4],[1,5],[2,6],[3,7]
+                ];
+
+                const projected = nodes.map(node => {
+                    let x = node[0] * size;
+                    let y = node[1] * size;
+                    let z = node[2] * size;
+
+                    // Y & X Rotation
+                    let x1 = x * Math.cos(this.angle) - z * Math.sin(this.angle);
+                    let z1 = x * Math.sin(this.angle) + z * Math.cos(this.angle);
+                    let y1 = y * Math.cos(this.angle * 0.7) - z1 * Math.sin(this.angle * 0.7);
+
+                    return [x1, y1];
+                });
+
+                edges.forEach(edge => {
+                    ctx.beginPath();
+                    ctx.moveTo(projected[edge[0]][0], projected[edge[0]][1]);
+                    ctx.lineTo(projected[edge[1]][0], projected[edge[1]][1]);
+                    ctx.stroke();
+                });
+
+                ctx.restore();
+            }
+
+            drawWireframeSphere(cx, cy, radius, color) {
+                const ctx = this.ctx;
+                ctx.save();
+                ctx.translate(cx, cy);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+
+                const latLines = 8;
+                const longLines = 12;
+
+                for (let i = 0; i <= latLines; i++) {
+                    const lat = (Math.PI / latLines) * i - Math.PI / 2;
+                    const r = radius * Math.cos(lat);
+                    const y = radius * Math.sin(lat);
+
+                    ctx.beginPath();
+                    for (let j = 0; j <= longLines; j++) {
+                        const lon = (Math.PI * 2 / longLines) * j + this.angle;
+                        const x = r * Math.cos(lon);
+                        const z = r * Math.sin(lon);
+                        if (j === 0) ctx.moveTo(x, y + z * 0.2);
+                        else ctx.lineTo(x, y + z * 0.2);
+                    }
+                    ctx.stroke();
+                }
+                ctx.restore();
+            }
+        }
+
+        const bgCanvas = new BackgroundCanvas();
+        bgCanvas.render();
+
+        class AudioSynth {
+            constructor() {
+                this.ctx = null;
+                this.muted = false;
+                this.timer = null;
+                this.step = 0;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioCtx();
+                }
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playJump() {
+                if (this.muted || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(180, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(620, this.ctx.currentTime + 0.12);
+                gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.12);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.12);
+            }
+
+            playDeath() {
+                if (this.muted || !this.ctx) return;
+                const bufferSize = this.ctx.sampleRate * 0.3;
+                const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+
+                const noise = this.ctx.createBufferSource();
+                noise.buffer = buffer;
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                noise.connect(gain);
+                gain.connect(this.ctx.destination);
+                noise.start();
+            }
+
+            playPad() {
+                if (this.muted || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(260, this.ctx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.22);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.22);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.22);
+            }
+
+            playOrb() {
+                if (this.muted || !this.ctx) return;
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(523.25, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(659.25, this.ctx.currentTime + 0.06);
+                gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + 0.2);
+            }
+
+            startMusic() {
+                if (this.timer) clearInterval(this.timer);
+                this.step = 0;
+                this.timer = setInterval(() => this.tickMusic(), 125);
+            }
+
+            stopMusic() {
+                if (this.timer) clearInterval(this.timer);
+                this.timer = null;
+            }
+
+            tickMusic() {
+                if (this.muted || !this.ctx) return;
+                const t = this.ctx.currentTime;
+                // Kick drum pattern
+                if (this.step % 4 === 0) {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.frequency.setValueAtTime(120, t);
+                    osc.frequency.exponentialRampToValueAtTime(30, t + 0.08);
+                    gain.gain.setValueAtTime(0.25, t);
+                    gain.gain.exponentialRampToValueAtTime(0.01, t + 0.08);
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.08);
+                }
+                this.step = (this.step + 1) % 32;
+            }
+        }
+
+        const audioSynth = new AudioSynth();
+
+        class ParticleSystem {
+            constructor() {
+                this.particles = [];
+            }
+
+            spawnTrail(x, y, color) {
+                this.particles.push({
+                    x, y,
+                    vx: (Math.random() - 0.5) * 2 - 2,
+                    vy: (Math.random() - 0.5) * 2,
+                    size: Math.random() * 6 + 3,
+                    color,
+                    alpha: 0.8,
+                    decay: 0.06
+                });
+            }
+
+            spawnExplosion(x, y, color) {
+                for (let i = 0; i < 35; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 12 + 3;
+                    this.particles.push({
+                        x, y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        size: Math.random() * 10 + 4,
+                        color: Math.random() > 0.5 ? color : '#f43f5e',
+                        alpha: 1.0,
+                        decay: Math.random() * 0.03 + 0.02
+                    });
+                }
+            }
+
+            spawnDust(x, y) {
+                for (let i = 0; i < 6; i++) {
+                    this.particles.push({
+                        x, y,
+                        vx: (Math.random() - 0.5) * 4,
+                        vy: -Math.random() * 3,
+                        size: Math.random() * 5 + 2,
+                        color: '#ffffff',
+                        alpha: 0.6,
+                        decay: 0.09
+                    });
+                }
+            }
+
+            update() {
+                for (let i = this.particles.length - 1; i >= 0; i--) {
+                    const p = this.particles[i];
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    p.alpha -= p.decay;
+                    if (p.alpha <= 0) this.particles.splice(i, 1);
+                }
+            }
+
+            draw(ctx) {
+                ctx.save();
+                for (let p of this.particles) {
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
+                }
+                ctx.restore();
+            }
+        }
+
+        const particleSystem = new ParticleSystem();
+
+        class Player {
+            constructor() {
+                this.size = EngineConfig.PLAYER_SIZE;
+                this.primaryColor = '#00f3ff';
+                this.accentColor = '#ffe600';
+                this.reset();
+            }
+
+            reset() {
+                this.x = 180;
+                this.y = EngineConfig.GROUND_Y - this.size;
+                this.vy = 0;
+                this.rotation = 0;
+                this.isGrounded = true;
+                this.dead = false;
+                this.holdingJump = false;
+            }
+
+            jump(force = EngineConfig.JUMP_FORCE) {
+                this.vy = force;
+                this.isGrounded = false;
+                audioSynth.playJump();
+                particleSystem.spawnDust(this.x + this.size / 2, this.y + this.size);
+            }
+
+            update() {
+                if (this.dead) return;
+
+                // Gravity Curve Application
+                this.vy += EngineConfig.GRAVITY;
+                this.y += this.vy;
+
+                // Continuous Rotation while airborne
+                if (!this.isGrounded) {
+                    this.rotation += 8.5;
+                    particleSystem.spawnTrail(this.x, this.y + this.size / 2, this.primaryColor);
+                } else {
+                    // Snap rotation to 90 degrees when grounded
+                    this.rotation = Math.round(this.rotation / 90) * 90;
+                }
+
+                // Ground Floor Snap
+                if (this.y >= EngineConfig.GROUND_Y - this.size) {
+                    this.y = EngineConfig.GROUND_Y - this.size;
+                    this.vy = 0;
+                    if (!this.isGrounded) {
+                        particleSystem.spawnDust(this.x + this.size / 2, this.y + this.size);
+                    }
+                    this.isGrounded = true;
+                }
+            }
+
+            draw(ctx) {
+                if (this.dead) return;
+
+                ctx.save();
+                ctx.translate(this.x + this.size / 2, this.y + this.size / 2);
+                ctx.rotate((this.rotation * Math.PI) / 180);
+
+                // Neon Glow Frame
+                ctx.fillStyle = this.primaryColor;
+                ctx.shadowColor = this.primaryColor;
+                ctx.shadowBlur = 15;
+                ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+
+                // Inner Accent Core Box
+                ctx.fillStyle = this.accentColor;
+                ctx.shadowBlur = 0;
+                ctx.fillRect(-this.size / 4, -this.size / 4, this.size / 2, this.size / 2);
+
+                // Geometric Eyes
+                ctx.fillStyle = '#0a0814';
+                ctx.fillRect(-this.size / 6, -this.size / 6, this.size / 6, this.size / 3);
+                ctx.fillRect(this.size / 24, -this.size / 6, this.size / 6, this.size / 3);
+
+                ctx.restore();
+            }
+        }
+
+        const PREBUILT_LEVELS = [
+            {
+                name: "SIMAX VIVID",
+                speed: 9.5,
+                map: [
+                    {x: 10, y: 0, type: "spike"}, {x: 16, y: 0, type: "spike"}, {x: 17, y: 0, type: "spike"},
+                    {x: 23, y: 0, type: "block"}, {x: 24, y: 0, type: "block"}, {x: 25, y: 0, type: "block"},
+                    {x: 31, y: 0, type: "pad"}, {x: 36, y: 3, type: "block"}, {x: 37, y: 3, type: "block"},
+                    {x: 43, y: 0, type: "spike"}, {x: 44, y: 0, type: "spike"}, {x: 50, y: 2, type: "orb"},
+                    {x: 56, y: 0, type: "block"}, {x: 57, y: 1, type: "block"}, {x: 58, y: 2, type: "block"},
+                    {x: 59, y: 2, type: "spike"}, {x: 68, y: 0, type: "finish"}
+                ]
+            },
+            {
+                name: "CYBER PURSUIT",
+                speed: 11.5,
+                map: [
+                    {x: 8, y: 0, type: "spike"}, {x: 12, y: 0, type: "pad"}, {x: 17, y: 3, type: "block"},
+                    {x: 18, y: 3, type: "spike"}, {x: 24, y: 2, type: "orb"}, {x: 30, y: 0, type: "spike"},
+                    {x: 31, y: 0, type: "spike"}, {x: 32, y: 0, type: "spike"}, {x: 38, y: 0, type: "pad"},
+                    {x: 44, y: 4, type: "orb"}, {x: 50, y: 0, type: "block"}, {x: 51, y: 1, type: "block"},
+                    {x: 52, y: 2, type: "block"}, {x: 62, y: 0, type: "finish"}
+                ]
+            },
+            {
+                name: "SYNTH WAVE RUN",
+                speed: 13.0,
+                map: [
+                    {x: 7, y: 0, type: "spike"}, {x: 11, y: 0, type: "spike"}, {x: 15, y: 0, type: "pad"},
+                    {x: 20, y: 4, type: "orb"}, {x: 25, y: 0, type: "block"}, {x: 26, y: 0, type: "spike"},
+                    {x: 32, y: 0, type: "pad"}, {x: 38, y: 3, type: "orb"}, {x: 44, y: 0, type: "spike"},
+                    {x: 45, y: 0, type: "spike"}, {x: 52, y: 0, type: "block"}, {x: 53, y: 1, type: "block"},
+                    {x: 54, y: 2, type: "block"}, {x: 55, y: 3, type: "block"}, {x: 65, y: 0, type: "finish"}
+                ]
+            }
+        ];
+
+        class PhysicsEngine {
+            static checkCollisions(player, levelMap, cameraX, onDeath, onVictory) {
+                if (player.dead) return;
+
+                const pBox = {
+                    left: player.x,
+                    right: player.x + player.size,
+                    top: player.y,
+                    bottom: player.y + player.size
+                };
+
+                for (let obj of levelMap) {
+                    const objX = obj.x * EngineConfig.TILE_SIZE - cameraX;
+                    const objY = EngineConfig.GROUND_Y - (obj.y + 1) * EngineConfig.TILE_SIZE;
+
+                    if (objX < -EngineConfig.TILE_SIZE || objX > EngineConfig.INTERNAL_WIDTH + EngineConfig.TILE_SIZE) continue;
+
+                    // 1. Solid Block Collisions
+                    if (obj.type === 'block') {
+                        const bBox = {
+                            left: objX,
+                            right: objX + EngineConfig.TILE_SIZE,
+                            top: objY,
+                            bottom: objY + EngineConfig.TILE_SIZE
+                        };
+
+                        if (pBox.right > bBox.left && pBox.left < bBox.right &&
+                            pBox.bottom > bBox.top && pBox.top < bBox.bottom) {
+
+                            // Top Landing Check
+                            if (player.vy >= 0 && (pBox.bottom - player.vy) <= bBox.top + 14) {
+                                player.y = bBox.top - player.size;
+                                player.vy = 0;
+                                player.isGrounded = true;
+                            } else {
+                                onDeath();
+                                return;
+                            }
+                        }
+                    }
+
+                    // 2. Triangular Spike Hazards
+                    else if (obj.type === 'spike') {
+                        const sBox = {
+                            left: objX + 10,
+                            right: objX + EngineConfig.TILE_SIZE - 10,
+                            top: objY + 10,
+                            bottom: objY + EngineConfig.TILE_SIZE
+                        };
+
+                        if (pBox.right > sBox.left && pBox.left < sBox.right &&
+                            pBox.bottom > sBox.top && pBox.top < sBox.bottom) {
+                            onDeath();
+                            return;
+                        }
+                    }
+
+                    // 3. Bounce Pad Spring
+                    else if (obj.type === 'pad') {
+                        const padBox = {
+                            left: objX + 6,
+                            right: objX + EngineConfig.TILE_SIZE - 6,
+                            top: objY + EngineConfig.TILE_SIZE - 15,
+                            bottom: objY + EngineConfig.TILE_SIZE
+                        };
+
+                        if (pBox.right > padBox.left && pBox.left < padBox.right &&
+                            pBox.bottom >= padBox.top && pBox.top < padBox.bottom) {
+                            player.jump(EngineConfig.PAD_JUMP_FORCE);
+                            audioSynth.playPad();
+                        }
+                    }
+
+                    // 4. Mid-air Jump Orb
+                    else if (obj.type === 'orb') {
+                        const orbCenter = { x: objX + EngineConfig.TILE_SIZE / 2, y: objY + EngineConfig.TILE_SIZE / 2 };
+                        const dist = Math.hypot((player.x + player.size / 2) - orbCenter.x, (player.y + player.size / 2) - orbCenter.y);
+
+                        if (dist < 38 && player.holdingJump) {
+                            player.jump(EngineConfig.ORB_JUMP_FORCE);
+                            player.holdingJump = false; // Require separate tap per orb
+                            audioSynth.playOrb();
+                        }
+                    }
+
+                    // 5. Level Finish Line
+                    else if (obj.type === 'finish') {
+                        if (player.x >= objX) {
+                            onVictory();
+                            return;
+                        }
+                    }
+                }
+            }
+        }
+
+        class GameEngine {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.canvas.width = EngineConfig.INTERNAL_WIDTH;
+                this.canvas.height = EngineConfig.INTERNAL_HEIGHT;
+
+                this.state = 'MENU';
+                this.player = new Player();
+                this.cameraX = 0;
+                this.attempts = 1;
+                this.activeLevel = PREBUILT_LEVELS[0];
+                this.customLevelMap = [{x: 50, y: 0, type: 'finish'}];
+
+                // Practice Mode
+                this.practiceMode = false;
+                this.checkpoints = [];
+
+                // Level Editor
+                this.selectedTool = 'block';
+                this.editorScrollX = 0;
+
+                this.bindEvents();
+            }
+
+            startLevel(levelData) {
+                this.activeLevel = JSON.parse(JSON.stringify(levelData));
+                this.attempts = 1;
+                this.checkpoints = [];
+                this.resetToStart();
+                this.state = 'PLAYING';
+                audioSynth.startMusic();
+                this.updateHUD();
+            }
+
+            resetToStart() {
+                this.player.reset();
+                this.cameraX = 0;
+                audioSynth.startMusic();
+            }
+
+            triggerDeath() {
+                if (this.player.dead) return;
+                this.player.dead = true;
+                audioSynth.playDeath();
+                particleSystem.spawnExplosion(this.player.x + this.player.size / 2, this.player.y + this.player.size / 2, this.player.primaryColor);
+
+                setTimeout(() => {
+                    if (this.practiceMode && this.checkpoints.length > 0) {
+                        const cp = this.checkpoints[this.checkpoints.length - 1];
+                        this.cameraX = cp.cameraX;
+                        this.player.x = cp.px;
+                        this.player.y = cp.py;
+                        this.player.vy = 0;
+                        this.player.dead = false;
+                    } else {
+                        this.attempts++;
+                        this.resetToStart();
+                    }
+                    this.updateHUD();
+                }, 450);
+            }
+
+            triggerVictory() {
+                this.state = 'VICTORY';
+                audioSynth.stopMusic();
+                document.getElementById('victory-stats-text').innerText = `COMPLETED IN ${this.attempts} ATTEMPT${this.attempts > 1 ? 'S' : ''}`;
+                document.getElementById('screen-victory').classList.remove('hidden');
+            }
+
+            setCheckpoint() {
+                if (!this.practiceMode || this.state !== 'PLAYING') return;
+                this.checkpoints.push({
+                    cameraX: this.cameraX,
+                    px: this.player.x,
+                    py: this.player.y
+                });
+                particleSystem.spawnDust(this.player.x, this.player.y);
+            }
+
+            removeCheckpoint() {
+                if (this.checkpoints.length > 0) {
+                    this.checkpoints.pop();
+                }
+            }
+
+            updateHUD() {
+                document.getElementById('hud-level-title').innerText = this.activeLevel.name;
+                document.getElementById('hud-attempt').innerText = `ATTEMPT ${this.attempts}`;
+                document.getElementById('hud-practice-tag').classList.toggle('hidden', !this.practiceMode);
+            }
+
+            update() {
+                if (this.state === 'PLAYING') {
+                    this.cameraX += this.activeLevel.speed;
+                    this.player.update();
+
+                    PhysicsEngine.checkCollisions(
+                        this.player,
+                        this.activeLevel.map,
+                        this.cameraX,
+                        () => this.triggerDeath(),
+                        () => this.triggerVictory()
+                    );
+
+                    if (this.player.holdingJump && this.player.isGrounded) {
+                        this.player.jump();
+                    }
+
+                    // Update HUD Progress Fill
+                    const finishObj = this.activeLevel.map.find(o => o.type === 'finish');
+                    const totalDist = finishObj ? (finishObj.x * EngineConfig.TILE_SIZE) - 180 : 3000;
+                    const pct = Math.min(100, Math.max(0, Math.floor((this.cameraX / totalDist) * 100)));
+                    document.getElementById('hud-progress-fill').style.width = `${pct}%`;
+                    document.getElementById('hud-progress-text').innerText = `${pct}%`;
+
+                    particleSystem.update();
+                }
+            }
+
+            render() {
+                const theme = EngineConfig.THEMES[currentThemeKey];
+
+                // Background Canvas Fill
+                this.ctx.fillStyle = theme.bgDark;
+                this.ctx.fillRect(0, 0, EngineConfig.INTERNAL_WIDTH, EngineConfig.INTERNAL_HEIGHT);
+
+                // Grid Lines
+                this.ctx.strokeStyle = theme.grid;
+                this.ctx.lineWidth = 1;
+                const cam = (this.state === 'EDITOR') ? this.editorScrollX : this.cameraX;
+                const offsetX = cam % EngineConfig.TILE_SIZE;
+
+                for (let x = -offsetX; x < EngineConfig.INTERNAL_WIDTH; x += EngineConfig.TILE_SIZE) {
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(x, 0);
+                    this.ctx.lineTo(x, EngineConfig.GROUND_Y);
+                    this.ctx.stroke();
+                }
+
+                // Ground Floor
+                this.ctx.fillStyle = theme.ground;
+                this.ctx.fillRect(0, EngineConfig.GROUND_Y, EngineConfig.INTERNAL_WIDTH, EngineConfig.GROUND_HEIGHT);
+
+                // Ground Neon Line
+                this.ctx.strokeStyle = theme.primary;
+                this.ctx.shadowColor = theme.primary;
+                this.ctx.shadowBlur = 12;
+                this.ctx.lineWidth = 3;
+                this.ctx.beginPath();
+                this.ctx.moveTo(0, EngineConfig.GROUND_Y);
+                this.ctx.lineTo(EngineConfig.INTERNAL_WIDTH, EngineConfig.GROUND_Y);
+                this.ctx.stroke();
+                this.ctx.shadowBlur = 0;
+
+                // Render Level Objects
+                const mapToDraw = (this.state === 'EDITOR') ? this.customLevelMap : this.activeLevel.map;
+
+                for (let obj of mapToDraw) {
+                    const renderX = obj.x * EngineConfig.TILE_SIZE - cam;
+                    const renderY = EngineConfig.GROUND_Y - (obj.y + 1) * EngineConfig.TILE_SIZE;
+
+                    if (renderX < -EngineConfig.TILE_SIZE || renderX > EngineConfig.INTERNAL_WIDTH + EngineConfig.TILE_SIZE) continue;
+
+                    if (obj.type === 'block') {
+                        this.ctx.fillStyle = theme.block;
+                        this.ctx.fillRect(renderX, renderY, EngineConfig.TILE_SIZE, EngineConfig.TILE_SIZE);
+                        this.ctx.strokeStyle = theme.primary;
+                        this.ctx.lineWidth = 2;
+                        this.ctx.strokeRect(renderX, renderY, EngineConfig.TILE_SIZE, EngineConfig.TILE_SIZE);
+                    } else if (obj.type === 'spike') {
+                        this.ctx.fillStyle = theme.highlight;
+                        this.ctx.shadowColor = theme.highlight;
+                        this.ctx.shadowBlur = 8;
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(renderX + EngineConfig.TILE_SIZE / 2, renderY);
+                        this.ctx.lineTo(renderX + EngineConfig.TILE_SIZE, renderY + EngineConfig.TILE_SIZE);
+                        this.ctx.lineTo(renderX, renderY + EngineConfig.TILE_SIZE);
+                        this.ctx.closePath();
+                        this.ctx.fill();
+                        this.ctx.shadowBlur = 0;
+                    } else if (obj.type === 'pad') {
+                        this.ctx.fillStyle = '#ffe600';
+                        this.ctx.fillRect(renderX + 6, renderY + EngineConfig.TILE_SIZE - 12, EngineConfig.TILE_SIZE - 12, 12);
+                    } else if (obj.type === 'orb') {
+                        this.ctx.strokeStyle = '#ffe600';
+                        this.ctx.lineWidth = 4;
+                        this.ctx.beginPath();
+                        this.ctx.arc(renderX + EngineConfig.TILE_SIZE / 2, renderY + EngineConfig.TILE_SIZE / 2, 16, 0, Math.PI * 2);
+                        this.ctx.stroke();
+                    } else if (obj.type === 'finish') {
+                        this.ctx.fillStyle = '#10b981';
+                        this.ctx.fillRect(renderX, 0, 10, EngineConfig.GROUND_Y);
+                    }
+                }
+
+                // Render Practice Checkpoints
+                if (this.practiceMode) {
+                    for (let cp of this.checkpoints) {
+                        const cpX = cp.px - cam;
+                        this.ctx.fillStyle = '#ffe600';
+                        this.ctx.beginPath();
+                        this.ctx.arc(cpX, cp.py + 25, 8, 0, Math.PI * 2);
+                        this.ctx.fill();
+                    }
+                }
+
+                // Render Player
+                if (this.state === 'PLAYING') {
+                    this.player.draw(this.ctx);
+                    particleSystem.draw(this.ctx);
+                }
+            }
+
+            bindEvents() {
+                const handleJumpStart = () => {
+                    audioSynth.init();
+                    if (this.state === 'PLAYING') {
+                        this.player.holdingJump = true;
+                        if (this.player.isGrounded) this.player.jump();
+                    }
+                };
+
+                const handleJumpEnd = () => {
+                    if (this.state === 'PLAYING') {
+                        this.player.holdingJump = false;
+                    }
+                };
+
+                window.addEventListener('keydown', (e) => {
+                    if (e.code === 'Space' || e.code === 'ArrowUp') {
+                        e.preventDefault();
+                        handleJumpStart();
+                    } else if (e.code === 'KeyZ') {
+                        this.setCheckpoint();
+                    } else if (e.code === 'KeyX') {
+                        this.removeCheckpoint();
+                    } else if (e.code === 'Escape' && this.state === 'PLAYING') {
+                        this.togglePause();
+                    }
+                });
+
+                window.addEventListener('keyup', (e) => {
+                    if (e.code === 'Space' || e.code === 'ArrowUp') {
+                        handleJumpEnd();
+                    }
+                });
+
+                this.canvas.addEventListener('mousedown', (e) => {
+                    if (this.state === 'PLAYING') handleJumpStart();
+                    else if (this.state === 'EDITOR') this.handleEditorClick(e);
+                });
+
+                this.canvas.addEventListener('mouseup', handleJumpEnd);
+                this.canvas.addEventListener('touchstart', (e) => {
+                    if (this.state === 'PLAYING') handleJumpStart();
+                });
+                this.canvas.addEventListener('touchend', handleJumpEnd);
+            }
+
+            handleEditorClick(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                const scaleX = EngineConfig.INTERNAL_WIDTH / rect.width;
+                const scaleY = EngineConfig.INTERNAL_HEIGHT / rect.height;
+
+                const clickX = (e.clientX - rect.left) * scaleX;
+                const clickY = (e.clientY - rect.top) * scaleY;
+
+                if (clickY >= EngineConfig.GROUND_Y) return;
+
+                const gridX = Math.floor((clickX + this.editorScrollX) / EngineConfig.TILE_SIZE);
+                const gridY = Math.floor((EngineConfig.GROUND_Y - clickY) / EngineConfig.TILE_SIZE);
+
+                this.customLevelMap = this.customLevelMap.filter(o => !(o.x === gridX && o.y === gridY));
+
+                if (this.selectedTool !== 'erase') {
+                    this.customLevelMap.push({ x: gridX, y: gridY, type: this.selectedTool });
+                }
+            }
+
+            togglePause() {
+                if (this.state === 'PLAYING') {
+                    this.state = 'PAUSED';
+                    document.getElementById('screen-pause').classList.remove('hidden');
+                } else if (this.state === 'PAUSED') {
+                    this.state = 'PLAYING';
+                    document.getElementById('screen-pause').classList.add('hidden');
+                }
+            }
+        }
+
+        const engine = new GameEngine();
+
+        function hideAllScreens() {
+            document.getElementById('screen-main-menu').classList.add('hidden');
+            document.getElementById('screen-level-select').classList.add('hidden');
+            document.getElementById('screen-skins').classList.add('hidden');
+            document.getElementById('screen-pause').classList.add('hidden');
+            document.getElementById('screen-victory').classList.add('hidden');
+            document.getElementById('editor-bar').classList.add('hidden');
+            document.getElementById('modal-json').classList.add('hidden');
+        }
+
+        function drawSkinPreview() {
+            const canvas = document.getElementById('skinCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, 80, 80);
+            ctx.fillStyle = engine.player.primaryColor;
+            ctx.fillRect(15, 15, 50, 50);
+            ctx.fillStyle = engine.player.accentColor;
+            ctx.fillRect(27.5, 27.5, 25, 25);
+            ctx.fillStyle = '#0a0814';
+            ctx.fillRect(23, 23, 8, 16);
+            ctx.fillRect(35, 23, 8, 16);
+        }
+
+        // Apply Theme Function
+        function applyTheme(themeKey) {
+            currentThemeKey = themeKey;
+            const theme = EngineConfig.THEMES[themeKey];
+            document.getElementById('lbl-active-theme').innerText = theme.name;
+            document.getElementById('theme-indicator-dot').style.background = theme.primary;
+            document.documentElement.style.setProperty('--bg-dark', theme.bgDark);
+            document.documentElement.style.setProperty('--bg-accent', theme.bgAccent);
+            document.documentElement.style.setProperty('--color-primary', theme.primary);
+            document.documentElement.style.setProperty('--color-secondary', theme.secondary);
+            document.documentElement.style.setProperty('--color-highlight', theme.highlight);
+            document.documentElement.style.setProperty('--color-block', theme.block);
+            document.documentElement.style.setProperty('--color-ground', theme.ground);
+            document.documentElement.style.setProperty('--color-grid', theme.grid);
+            
+            // Set Player default primary color to theme primary
+            engine.player.primaryColor = theme.primary;
+        }
+
+        // Theme Dropdown Toggle
+        document.getElementById('btn-theme-menu').addEventListener('click', () => {
+            document.getElementById('theme-dropdown').classList.toggle('hidden');
+            document.getElementById('theme-dropdown').classList.toggle('flex');
+        });
+
+        document.querySelectorAll('.btn-select-theme').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const key = btn.getAttribute('data-theme');
+                applyTheme(key);
+                document.getElementById('theme-dropdown').classList.add('hidden');
+                document.getElementById('theme-dropdown').classList.remove('flex');
+            });
+        });
+
+        // Menu Handlers
+        document.getElementById('btn-menu-play').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('screen-level-select').classList.remove('hidden');
+            engine.state = 'LEVEL_SELECT';
+        });
+
+        document.getElementById('btn-menu-skins').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('screen-skins').classList.remove('hidden');
+            engine.state = 'SKINS';
+            drawSkinPreview();
+        });
+
+        document.getElementById('btn-menu-editor').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('editor-bar').classList.remove('hidden');
+            engine.state = 'EDITOR';
+        });
+
+        document.querySelectorAll('.level-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const idx = parseInt(card.getAttribute('data-level'));
+                hideAllScreens();
+                engine.startLevel(PREBUILT_LEVELS[idx]);
+            });
+        });
+
+        document.getElementById('btn-back-levels').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('screen-main-menu').classList.remove('hidden');
+            engine.state = 'MENU';
+        });
+
+        document.getElementById('btn-back-skins').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('screen-main-menu').classList.remove('hidden');
+            engine.state = 'MENU';
+        });
+
+        // Skin Customization
+        document.querySelectorAll('.btn-color').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                const color = btn.getAttribute('data-color');
+                if (type === 'primary') engine.player.primaryColor = color;
+                if (type === 'accent') engine.player.accentColor = color;
+                drawSkinPreview();
+            });
+        });
+
+        // Pause & Victory Buttons
+        document.getElementById('btn-pause-game').addEventListener('click', () => engine.togglePause());
+        document.getElementById('btn-pause-resume').addEventListener('click', () => engine.togglePause());
+        document.getElementById('btn-pause-restart').addEventListener('click', () => {
+            hideAllScreens();
+            engine.resetToStart();
+            engine.state = 'PLAYING';
+        });
+        document.getElementById('btn-pause-menu').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('screen-main-menu').classList.remove('hidden');
+            engine.state = 'MENU';
+        });
+
+        document.getElementById('btn-victory-replay').addEventListener('click', () => {
+            hideAllScreens();
+            engine.resetToStart();
+            engine.state = 'PLAYING';
+        });
+        document.getElementById('btn-victory-menu').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('screen-main-menu').classList.remove('hidden');
+            engine.state = 'MENU';
+        });
+
+        // Toggle Practice & Global Audio
+        document.getElementById('btn-toggle-practice').addEventListener('click', () => {
+            engine.practiceMode = !engine.practiceMode;
+            engine.updateHUD();
+        });
+
+        document.getElementById('btn-global-audio').addEventListener('click', () => {
+            audioSynth.init();
+            audioSynth.muted = !audioSynth.muted;
+            document.getElementById('icon-sound-on').classList.toggle('hidden', audioSynth.muted);
+            document.getElementById('icon-sound-off').classList.toggle('hidden', !audioSynth.muted);
+        });
+
+        // Level Editor Tools
+        document.querySelectorAll('.btn-tool').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.btn-tool').forEach(b => {
+                    b.classList.remove('bg-purple-500/20', 'border-purple-400', 'text-purple-300');
+                    b.classList.add('bg-slate-800/80', 'border-slate-700', 'text-slate-300');
+                });
+                btn.classList.remove('bg-slate-800/80', 'border-slate-700', 'text-slate-300');
+                btn.classList.add('bg-purple-500/20', 'border-purple-400', 'text-purple-300');
+                engine.selectedTool = btn.getAttribute('data-tool');
+            });
+        });
+
+        document.getElementById('btn-editor-play').addEventListener('click', () => {
+            hideAllScreens();
+            engine.startLevel({ name: "CUSTOM TRACK", speed: 9.5, map: engine.customLevelMap });
+        });
+
+        document.getElementById('btn-editor-clear').addEventListener('click', () => {
+            engine.customLevelMap = [{x: 50, y: 0, type: 'finish'}];
+        });
+
+        document.getElementById('btn-editor-exit').addEventListener('click', () => {
+            hideAllScreens();
+            document.getElementById('screen-main-menu').classList.remove('hidden');
+            engine.state = 'MENU';
+        });
+
+        // JSON Code Export/Import for Claude AI
+        document.getElementById('btn-editor-json').addEventListener('click', () => {
+            const jsonText = JSON.stringify({ name: "CUSTOM TRACK", speed: 9.5, map: engine.customLevelMap }, null, 2);
+            document.getElementById('json-textarea').value = jsonText;
+            document.getElementById('modal-json').classList.remove('hidden');
+        });
+
+        document.getElementById('btn-json-load').addEventListener('click', () => {
+            try {
+                const parsed = JSON.parse(document.getElementById('json-textarea').value);
+                if (parsed && parsed.map) {
+                    engine.customLevelMap = parsed.map;
+                    document.getElementById('modal-json').classList.add('hidden');
+                }
+            } catch (err) {
+                // Ignore invalid JSON format
+            }
+        });
+
+        document.getElementById('btn-json-close').addEventListener('click', () => {
+            document.getElementById('modal-json').classList.add('hidden');
+        });
+
+        // Auto-match whatever theme is currently active on the SIMAX site itself
+        // (this file is embedded same-origin via <iframe>, so window.parent is reachable).
+        // The manual dropdown above still works as a one-off preview; the next site
+        // theme change (the site dispatches a "themechange" event) will resync it.
+        function siteThemeKey() {
+            try {
+                const t = window.parent.document.documentElement.getAttribute('data-theme');
+                if (t && EngineConfig.THEMES[t]) return t;
+            } catch (e) { /* cross-origin or standalone — fall back below */ }
+            return 'vivid';
+        }
+        try {
+            applyTheme(siteThemeKey());
+            window.parent.addEventListener('themechange', () => applyTheme(siteThemeKey()));
+        } catch (e) {
+            applyTheme('vivid');
+        }
+
+        window.onload = () => {
+            function mainLoop() {
+                engine.update();
+                engine.render();
+                requestAnimationFrame(mainLoop);
+            }
+            mainLoop();
+        };
+    </script>
+</body>
+</html>

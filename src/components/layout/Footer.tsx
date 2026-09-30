@@ -2,9 +2,9 @@ import Link from "next/link";
 import { navLinks, site } from "@/lib/site";
 import { Reveal } from "@/components/ui/Reveal";
 import { Logomark } from "@/components/ui/Logomark";
-// FooterTetris kept in the codebase (unused) at Simon's request — swapped for
-// FooterDash, a Geometry-Dash-style runner; see that file for why.
-import { FooterDash } from "@/components/layout/FooterDash";
+// FooterTetris, then FooterDash, both kept in the codebase (unused): the real game
+// now lives in its own big section (GeometryDashSection) near the end of the page,
+// not squeezed into the footer.
 
 export function Footer() {
   return (
@@ -112,8 +112,6 @@ export function Footer() {
           <span className="hidden sm:inline">{site.tagline}</span>
         </div>
       </div>
-
-      <FooterDash />
     </footer>
   );
 }
