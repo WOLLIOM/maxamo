@@ -6,19 +6,9 @@ import { Certificates } from "@/sections/Certificates";
 import { PizzaShowcase } from "@/sections/PizzaShowcase";
 import { Story } from "@/sections/Story";
 import { ProcessSpectrum } from "@/sections/ProcessSpectrum";
-import { Signature } from "@/sections/Signature";
-import { ProjectLinks } from "@/sections/ProjectLinks";
-import { HomeExperience } from "@/sections/HomeExperience";
 import { GalleryPreview } from "@/sections/GalleryPreview";
-import { Testimonials } from "@/sections/Testimonials";
-import { Newsletter } from "@/sections/Newsletter";
-import { FAQ } from "@/sections/FAQ";
 import { GeometryDashSection } from "@/sections/GeometryDashSection";
-import { TextMarquee } from "@/components/ui/TextMarquee";
-import { PixelMarquee } from "@/components/ui/PixelMarquee";
 import { ScrollThemer } from "@/components/experience/ScrollThemer";
-import { faqs } from "@/lib/faq";
-import { faqSchema } from "@/lib/schema";
 
 /** Zero-height markers that drive the scroll theme journey (see ScrollThemer). */
 function Scene({ theme }: { theme: string }) {
@@ -44,12 +34,8 @@ const FEATURE_FLAGS = {
 export default function HomePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema(faqs)) }}
-      />
       <ScrollThemer />
-      {/* Scroll journey: Vivid → Monochrome (certificates) → Blueprint → Golden hour (bottom) */}
+      {/* Scroll journey: Vivid (top) → Monochrome (everything below) */}
       <Scene theme="vivid" />
       <Hero />
       {FEATURE_FLAGS.story && <Story />}
@@ -59,24 +45,8 @@ export default function HomePage() {
       {FEATURE_FLAGS.awards && <Awards />}
       {FEATURE_FLAGS.pizza && <PizzaShowcase />}
       {FEATURE_FLAGS.processSpectrum && <ProcessSpectrum />}
-      <TextMarquee text="THE ANSWER IS YES WE DO IT · THE ANSWER IS YES WE DO IT ·" />
-      {FEATURE_FLAGS.signature && <Signature />}
       <GuitarPlayground />
       <Music />
-      <Scene theme="blueprint" />
-      {FEATURE_FLAGS.projectLinks && <ProjectLinks />}
-      {FEATURE_FLAGS.homeExperience && <HomeExperience />}
-      <TextMarquee />
-      {FEATURE_FLAGS.testimonials && <Testimonials />}
-      <div className="h-16 md:h-24">
-        <PixelMarquee
-          text="wild · i will craft more of that   "
-          cell={7}
-        />
-      </div>
-      <Scene theme="evening" />
-      {FEATURE_FLAGS.newsletter && <Newsletter />}
-      {FEATURE_FLAGS.faq && <FAQ />}
       <GeometryDashSection />
     </>
   );
