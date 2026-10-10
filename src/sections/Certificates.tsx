@@ -296,13 +296,13 @@ export function Certificates() {
   const renderChip = (i: number, color: string, idx: number, brand: BrandKey) => {
     const c = certificates[i];
     return (
-      <Reveal key={c.title} delay={idx} variant="scale" className="flex-1 basis-[280px]">
+      <Reveal key={c.title} delay={idx} variant="scale" className="shrink-0 basis-[78%] snap-start md:flex-1 md:basis-[280px]">
         <TiltCard
           as="button"
           glow={color}
           max={8}
           onClick={() => setActive(i)}
-          className="group flex h-full w-full cursor-pointer flex-col gap-4 overflow-hidden rounded-2xl border bg-surface/40 p-4 text-left backdrop-blur-sm md:p-5"
+          className="hud group flex h-full w-full cursor-pointer flex-col gap-3 overflow-hidden rounded-2xl border bg-surface/40 p-4 text-left backdrop-blur-sm md:p-5"
           style={{ borderColor: `${color}55` }}
         >
           <span
@@ -343,7 +343,7 @@ export function Certificates() {
     return (
       <div key={brand} className="relative">
         <div
-          className="mb-4 flex items-center gap-3 border-l-2 pl-4"
+          className="mb-3 flex items-center gap-3 border-l-2 pl-3"
           style={{ borderColor: meta.color }}
         >
           <BrandLogo brand={brand} />
@@ -357,7 +357,7 @@ export function Certificates() {
             {list.length} cert{list.length > 1 ? "s" : ""}
           </span>
         </div>
-        <div className="flex flex-wrap gap-4">
+        <div className="-mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-2 [scrollbar-width:none] md:mx-0 md:flex-wrap md:gap-4 md:overflow-visible md:px-0 [&::-webkit-scrollbar]:hidden">
           {list.map((i, idx) => renderChip(i, meta.color, idx, brand))}
         </div>
       </div>
@@ -370,38 +370,38 @@ export function Certificates() {
       aria-label="Certificates"
       data-cursor="heart"
       data-section="certificates"
-      className="relative border-y border-line/60 bg-surface/20 py-12 md:py-16 scroll-mt-24"
+      className="relative border-y border-line/60 bg-surface/20 py-10 md:py-16 scroll-mt-24"
     >
       <div className="mx-auto max-w-[1200px] px-5 md:px-10">
         <SectionHeading
           kicker="Certified"
           title="Certificates"
-          lede="Simon Maxam's verified credentials from Google, Amazon Web Services, IBM, Microsoft, Adobe, GitHub, Siemens, Autodesk and the University of London. Tap any card to see the certificate."
+          lede="Verified by Google, AWS, IBM and more. Tap a card to open it."
         />
 
         <Reveal delay={1}>
-          <dl className="mt-8 grid grid-cols-3 gap-4 border-y border-line/60 py-6 md:max-w-xl">
+          <dl className="mt-6 grid grid-cols-3 gap-4 border-y border-line/60 py-4 md:max-w-xl">
             {[
               { k: "Certificates", v: `${certificates.length}` },
-              { k: "Professional programs", v: `${programs.length}` },
+              { k: "Programs", v: `${programs.length}` },
               { k: "Issuers", v: `${wall.length}` },
             ].map((x) => (
               <div key={x.k}>
                 <dt className="text-[0.6rem] uppercase tracking-wider2 text-faint">{x.k}</dt>
-                <dd className="mt-1 font-serif text-3xl text-ink md:text-4xl">{x.v}</dd>
+                <dd className="mt-1 font-serif text-2xl text-ink md:text-4xl">{x.v}</dd>
               </div>
             ))}
           </dl>
         </Reveal>
 
         {/* Issuer logo wall: the big names, at a glance */}
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-6 hidden grid-cols-3 gap-2.5 md:grid lg:grid-cols-5">
           {wall.slice(0, 10).map((w, i) => (
             <Reveal key={w.brand} delay={i % 5} variant="scale">
               <TiltCard
                 glow={BRAND[w.brand].color}
                 max={12}
-                className="flex h-20 items-center justify-between gap-3 rounded-2xl border bg-surface/40 px-4 backdrop-blur-sm"
+                className="hud flex h-16 items-center justify-between gap-3 rounded-2xl border bg-surface/40 px-4 backdrop-blur-sm"
                 style={{ borderColor: `${BRAND[w.brand].color}44` }}
               >
                 <div className="origin-left scale-[0.8]">
@@ -432,16 +432,14 @@ export function Certificates() {
             Neutral outer shell; each card carries its own issuer's colour and logo
             so they read as distinct, premium credentials rather than one flat block. */}
         {programs.length > 0 && (
-          <div className="relative mt-12 overflow-hidden rounded-3xl border border-line bg-surface/30 p-5 md:p-7">
-            <div className="mb-6 flex flex-wrap items-center gap-3">
+          <div className="relative mt-8 overflow-hidden rounded-3xl border border-line bg-surface/30 p-4 md:mt-12 md:p-7">
+            <div className="mb-4 flex flex-wrap items-center gap-3">
               <span className="rounded-full border border-ink/20 bg-ink px-3 py-1 text-[0.58rem] font-semibold uppercase tracking-wider2 text-bg">
                 Professional Certificates
               </span>
-              <span className="text-xs uppercase tracking-wider2 text-faint">
-                Full multi-course programs, not single classes
-              </span>
+
             </div>
-            <div className="grid gap-5 md:grid-cols-2">
+            <div className="grid gap-3 md:grid-cols-2 md:gap-5">
               {programs.map((i) => {
                 const c = certificates[i];
                 const brand = brandOf(c.issuer, c.title);
@@ -453,7 +451,7 @@ export function Certificates() {
                     glow={color}
                     max={7}
                     onClick={() => setActive(i)}
-                    className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border bg-bg/60 p-5 text-left backdrop-blur-sm"
+                    className="hud group flex cursor-pointer flex-col overflow-hidden rounded-2xl border bg-bg/60 p-4 text-left md:p-5 backdrop-blur-sm"
                     style={{ borderColor: `${color}66`, boxShadow: `0 18px 50px -24px ${color}88` }}
                   >
                     {/* per-issuer glow, top-right — this is where each card gets its own vibe */}
@@ -478,7 +476,7 @@ export function Certificates() {
                           {c.shortTitle}
                         </span>
                       </div>
-                      <div className="relative h-24 w-32 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white shadow-lg md:h-28 md:w-40">
+                      <div className="relative h-16 w-20 shrink-0 overflow-hidden rounded-lg border border-line/60 bg-white shadow-lg md:h-28 md:w-40">
                         <Image
                           src={thumbOf(c.image)}
                           alt={`${c.title} certificate`}
@@ -489,10 +487,10 @@ export function Certificates() {
                       </div>
                     </div>
                     {c.plain && (
-                      <span className="relative mt-3 block text-sm leading-snug text-muted">{c.plain}</span>
+                      <span className="relative mt-3 hidden text-sm leading-snug text-muted md:block">{c.plain}</span>
                     )}
-                    <span className="relative mt-4 block text-[0.62rem] uppercase tracking-wider2 text-faint">
-                      Issued to Simon Maxam · {c.date}
+                    <span className="relative mt-3 block text-[0.62rem] uppercase tracking-wider2 text-faint">
+                      {c.date}
                     </span>
                   </TiltCard>
                 );
@@ -501,7 +499,7 @@ export function Certificates() {
           </div>
         )}
 
-        <div className="mt-12 flex flex-col gap-12">
+        <div className="mt-8 flex flex-col gap-8 md:mt-12 md:gap-12">
           {topBrands.map((b) => renderGroup(b, top[b]))}
         </div>
 

@@ -46,7 +46,7 @@ export function Story() {
       aria-label="About Simon"
       data-section="story"
       data-palette="warm"
-      className="relative mx-auto max-w-[1400px] px-5 py-14 scroll-mt-24 md:px-10 md:py-20"
+      className="relative mx-auto max-w-[1400px] px-5 py-10 scroll-mt-24 md:px-10 md:py-20"
     >
       <WireframeMotif
         size={160}
@@ -61,7 +61,7 @@ export function Story() {
         reverse
         className="absolute bottom-8 left-2 hidden md:block"
       />
-      <div className="grid items-center gap-14 md:grid-cols-2 md:gap-20">
+      <div className="grid items-center gap-8 md:grid-cols-2 md:gap-20">
         <div className="order-2 md:order-1">
           <Reveal>
             <div className="flex items-center gap-3">
@@ -71,30 +71,19 @@ export function Story() {
           </Reveal>
 
           <AnimatedHeading
-            text="A builder at the intersection of art and technology."
+            text="I build things you can step into."
             className="mt-6 text-fluid-h2 leading-[1.05] text-ink"
           />
 
           <Reveal delay={1}>
-            <p className="mt-8 max-w-lg text-base leading-relaxed text-muted md:text-lg">
-              <strong className="text-ink">Simon Maxam</strong> is a web
-              developer, 3D artist and musician in Calgary, Alberta. {site.concept}
-            </p>
-          </Reveal>
-
-          <Reveal delay={2}>
-            <p className="mt-5 max-w-lg text-base leading-relaxed text-muted md:text-lg">
-              Guitar is my main instrument — I play fingerstyle and lead
-              worship as a volunteer musician at church, and it&apos;s the
-              thread running through everything else I build, from web
-              projects to the studio itself. Whether I&apos;m on stage or at
-              a keyboard, I&apos;m always chasing the same thing: turning an
-              idea into something you can actually step into.
+            <p className="mt-5 max-w-md text-base leading-snug text-muted">
+              <strong className="text-ink">Simon Maxam</strong> — web developer, 3D
+              artist and guitarist in Calgary.
             </p>
           </Reveal>
 
           <Reveal delay={3}>
-            <dl className="mt-10 grid grid-cols-2 gap-6 border-t border-line/60 pt-8 sm:grid-cols-4">
+            <dl className="mt-8 grid grid-cols-4 gap-3 border-t border-line/60 pt-6">
               {[
                 { k: "Based in", v: "Calgary" },
                 { k: "Guitar", v: "7 yrs" },
@@ -105,25 +94,24 @@ export function Story() {
                   <dt className="text-[0.62rem] uppercase tracking-wider2 text-faint">
                     {x.k}
                   </dt>
-                  <dd className="mt-2 font-serif text-3xl text-ink">{x.v}</dd>
+                  <dd className="mt-1.5 font-serif text-xl text-ink md:text-3xl">{x.v}</dd>
                 </div>
               ))}
             </dl>
           </Reveal>
 
           <Reveal delay={3}>
-            <div className="mt-8 grid gap-3 sm:grid-cols-2">
+            <div className="mt-8 grid grid-cols-2 gap-3">
               {focus.map((f) => (
                 <TiltCard
                   key={f.title}
                   glow={f.color}
                   max={8}
-                  className="rounded-2xl border bg-surface/40 p-4 backdrop-blur-sm"
+                  className="rounded-2xl border bg-surface/40 p-3.5 backdrop-blur-sm md:p-4"
                   style={{ borderColor: `${f.color}44` }}
                 >
                   <h3 className="font-serif text-lg text-ink">{f.title}</h3>
-                  <p className="mt-1.5 text-sm leading-snug text-muted">{f.body}</p>
-                  <p className="mt-3 text-[0.6rem] uppercase tracking-wider2" style={{ color: f.color }}>
+                  <p className="mt-2 text-[0.6rem] uppercase leading-relaxed tracking-wider2" style={{ color: f.color }}>
                     {f.tools}
                   </p>
                 </TiltCard>
@@ -148,7 +136,7 @@ export function Story() {
           </Reveal>
 
           <Reveal delay={4}>
-            <div className="mt-10 grid gap-8 border-t border-line/60 pt-8 sm:grid-cols-2">
+            <div className="mt-8 grid grid-cols-2 gap-5 border-t border-line/60 pt-6">
               <div
                 data-cursor-mood="happy"
                 className="flex flex-col items-start gap-3"
@@ -158,8 +146,7 @@ export function Story() {
                   Brilliant at
                 </div>
                 <p className="text-sm leading-relaxed text-muted">
-                  Producing a lot of work quickly, and getting a rough first
-                  version of almost anything in front of you.
+                  Making a lot, fast.
                 </p>
               </div>
               <div
@@ -171,8 +158,7 @@ export function Story() {
                   Hopeless at
                 </div>
                 <p className="text-sm leading-relaxed text-muted">
-                  Knowing which of those versions is actually any good, and
-                  having the nerve to throw the rest away.
+                  Throwing the rest away.
                 </p>
               </div>
             </div>
@@ -185,7 +171,7 @@ export function Story() {
               src="/images/real/throne-portrait.webp"
               alt="Simon Maxam as a kid"
               label="Simon Maxam · as a kid"
-              className="aspect-[4/5] md:aspect-[3/4]"
+              className="aspect-[16/11] md:aspect-[3/4]"
               data-cursor-heart
             />
           </Reveal>

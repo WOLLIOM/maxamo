@@ -374,3 +374,37 @@ h1, h2, h3, h4, h5, h6 {
 .has-custom-cursor button {
   cursor: none;
 }
+
+/* ===========================================================================
+   Monochrome "HUD" skin — precise, modern, game-menu feel. Square-ish radii,
+   hairline borders, a fine dot grid, mono-spaced labels. Only active in mono,
+   i.e. everything below the vivid hero.
+   ======================================================================== */
+[data-theme="mono"] body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.55;
+  background-image: radial-gradient(rgb(var(--c-ink) / 0.09) 1px, transparent 1px);
+  background-size: 22px 22px;
+}
+[data-theme="mono"] main .rounded-3xl { border-radius: 0.9rem; }
+[data-theme="mono"] main .rounded-2xl { border-radius: 0.6rem; }
+[data-theme="mono"] main .kicker {
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  letter-spacing: 0.22em;
+  font-size: 0.64rem;
+}
+[data-theme="mono"] main .kicker::before { content: "// "; opacity: 0.5; }
+[data-theme="mono"] main section { border-color: rgb(var(--c-line)); }
+/* HUD corner ticks on cards that opt in */
+.hud { position: relative; }
+.hud::before, .hud::after {
+  content: ""; position: absolute; width: 10px; height: 10px; pointer-events: none;
+  border: 0 solid rgb(var(--c-ink) / 0.55); opacity: 0; transition: opacity .25s;
+}
+.hud::before { top: 6px; left: 6px; border-top-width: 1px; border-left-width: 1px; }
+.hud::after { bottom: 6px; right: 6px; border-bottom-width: 1px; border-right-width: 1px; }
+[data-theme="mono"] .hud::before, [data-theme="mono"] .hud::after { opacity: 1; }

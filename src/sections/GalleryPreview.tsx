@@ -10,11 +10,11 @@ export function GalleryPreview() {
       data-section="gallery"
       data-palette="blue"
       data-cursor="box"
-      className="mx-auto max-w-[1400px] px-5 pt-24 md:px-10 md:pt-36"
+      className="mx-auto max-w-[1400px] px-5 pt-12 md:px-10 md:pt-36"
     >
       <SectionHeading kicker="In frame" title="Moments from the work" className="max-w-2xl" />
 
-      <div className="mt-12">
+      <div className="mt-6 md:mt-12">
         {/* Music is the shortest category (2 photos) -- Simon wanted the
             gallery to default to something short rather than the longer
             Travel set, to cut down on mobile scroll length. */}
@@ -27,7 +27,7 @@ export function GalleryPreview() {
             href={site.social.instagram}
             target="_blank"
             rel="noopener noreferrer"
-            className="mb-24 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-accent md:mb-36"
+            className="mb-10 mt-4 inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-accent md:mb-36"
           >
             Follow along on Instagram
           </a>
